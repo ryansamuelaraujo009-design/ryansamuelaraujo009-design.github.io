@@ -125,7 +125,7 @@ const TOPICOS = [
       let html = `
         <p>🐙 <strong>Seu GitHub:</strong></p>
         <ul>
-          <li><strong>${num(gh.repos)}</strong> repositórios públicos</li>
+          <li><strong>${num(gh.repos)}</strong> ${gh.repos === 1 ? 'repositório público' : 'repositórios públicos'}</li>
           <li><strong>★ ${num(gh.estrelas)}</strong> estrelas · <strong>${num(gh.forks)}</strong> forks</li>
           <li><strong>Último push:</strong> ${dataCurta(gh.ultimoPush)}</li>
         </ul>`;
@@ -166,7 +166,7 @@ const TOPICOS = [
 
       let github;
       if (ctx.github && ctx.github.status === 'ok') {
-        github = `<strong>${num(ctx.github.repos)}</strong> repositórios · ★ <strong>${num(ctx.github.estrelas)}</strong> · <strong>${num(ctx.github.forks)}</strong> forks`;
+        github = `<strong>${num(ctx.github.repos)}</strong> ${ctx.github.repos === 1 ? 'repositório' : 'repositórios'} · ★ <strong>${num(ctx.github.estrelas)}</strong> · <strong>${num(ctx.github.forks)}</strong> forks`;
       } else if (ctx.github && ctx.github.status === 'carregando') {
         github = 'carregando…';
       } else {

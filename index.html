@@ -24,6 +24,13 @@
   <meta name="author" content="Ryan Samuel Araújo dos Santos">
   <meta name="theme-color" content="#0a0607">
 
+  <!--
+    Verificação do Google Search Console: etiqueta gerada pelo Google
+    para provar que este site é seu. NÃO REMOVA — o Google pode
+    re-verificar a propriedade periodicamente.
+  -->
+  <meta name="google-site-verification" content="RA9spW6bDe8TdCXcacsimnescYG8wgi6FgAXKMOtpcM">
+
   <!-- Open Graph: define como o link aparece ao ser compartilhado em redes sociais -->
   <meta property="og:title" content="DEV.programier — Portfólio de Ryan Samuel">
   <meta property="og:site_name" content="DEV.programier">
@@ -31,10 +38,10 @@
   <meta property="og:type" content="website">
   <!--
     Imagem mostrada ao compartilhar o link.
-    ATENÇÃO: redes sociais exigem URL ABSOLUTA (com https://seusite.com).
-    Quando o site for publicado, troque pelo endereço completo.
+    Redes sociais exigem URL ABSOLUTA — o site já está publicado,
+    então o endereço completo é usado desde já.
   -->
-  <meta property="og:image" content="assets/img/perfil.png">
+  <meta property="og:image" content="https://ryansamuelaraujo009-design.github.io/assets/img/perfil.png">
 
   <!--
     Título = marca + nome + o que é (é o texto que aparece na aba do
@@ -558,7 +565,11 @@
   <footer class="rodape">
     <div class="container rodape__interno">
       <p class="rodape__nome">Ryan Samuel Araújo dos Santos</p>
-      <p class="rodape__nota">DEV.programier — portfólio construído com HTML, CSS e JavaScript.</p>
+      <p class="rodape__nota">
+        DEV.programier — portfólio construído com HTML, CSS e JavaScript.
+        <!-- Link DISCRETO para o painel privado (métricas + assistente) -->
+        <a class="rodape__painel" href="painel.html" title="Painel privado">◈ painel</a>
+      </p>
     </div>
   </footer>
 
@@ -572,6 +583,26 @@
         python -m http.server 8000
   -->
   <script type="module" src="js/main.js"></script>
+
+  <!--
+    ============================================================
+    CONTADOR DE VISITANTES — GoatCounter (grátis, sem cookies)
+    ============================================================
+    COMO ATIVAR (1 vez, ~2 minutos):
+      1. Crie a conta em https://www.goatcounter.com/signup
+      2. Copie o seu código (o começo do endereço do painel deles)
+      3. Troque "SEU-CODE" abaixo pelo seu código e publique no GitHub
+      4. Pronto: as visitas aparecem no painel.html e no dashboard
+         do GoatCounter (desative o adblocker para testar)
+    Enquanto "SEU-CODE" não for trocado, o contador simplesmente não
+    envia nada — o site continua funcionando normalmente.
+    ============================================================
+  -->
+  <script
+    data-goatcounter="https://SEU-CODE.goatcounter.com/count"
+    async
+    src="https://gc.zgo.at/count.js"
+  ></script>
 
 </body>
 </html>

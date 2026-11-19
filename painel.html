@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  PAINEL PRIVADO — RYAN SAMUEL
+  ------------------------------------------------------------
+  Página de uso PESSOAL (não entra no menu do portfólio).
+  Mostra só o importante:
+    • Resumo executivo (visitantes, GitHub, status do site)
+    • Assistente do negócio de criação de sites (chat)
+    • Detalhes: visitantes (GoatCounter) e repositórios (GitHub)
+    • Configuração do contador de visitas
+
+  IMPORTANTE: site estático = proteção por senha é apenas contra
+  olhares curiosos. Não coloque dados sensíveis aqui.
+  ============================================================
+-->
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Não indexar no Google (a URL não deve aparecer em buscas) -->
+  <meta name="robots" content="noindex, nofollow">
+
+  <meta name="description" content="Painel privado DEV.programier — métricas do site, visitantes no GitHub e assistente do negócio de criação de sites.">
+  <meta name="theme-color" content="#0a0607">
+  <title>Painel — DEV.programier</title>
+
+  <!-- Mesmas fontes do portfólio (consistência visual) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+
+  <!-- Reaproveita o design system do portfólio + CSS próprio do painel -->
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/painel.css">
+</head>
+
+<body class="painel-corpo">
+
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <!-- ============================================================
+       TELA DE ACESSO (senha)
+       ============================================================ -->
+  <div class="gate" id="gate" hidden>
+    <form class="gate__cartao" id="gate-form" novalidate>
+      <img class="gate__avatar" src="assets/img/perfil.png" alt="" width="56" height="56">
+      <h1 class="gate__titulo" id="gate-titulo">Painel privado</h1>
+      <p class="gate__texto" id="gate-texto">Digite sua senha para acessar o painel do portfólio.</p>
+
+      <label class="campo">
+        <span class="campo__rotulo">Senha</span>
+        <input type="password" id="gate-entrada" autocomplete="current-password" required>
+      </label>
+
+      <label class="campo" id="gate-confirmar" hidden>
+        <span class="campo__rotulo">Repita a senha</span>
+        <input type="password" id="gate-confirmar-input" autocomplete="new-password">
+      </label>
+
+      <p class="gate__erro" id="gate-erro" role="alert" hidden></p>
+
+      <button class="botao botao--primario gate__botao" type="submit" id="gate-botao">Entrar</button>
+
+      <p class="gate__nota">
+        Proteção básica: este painel é uma página estática — a senha evita
+        acesso casual, mas não é segurança forte. Não use aqui dados sensíveis.
+      </p>
+    </form>
+  </div>
+
+  <!-- ============================================================
+       APLICATIVO DO PAINEL
+       ============================================================ -->
+  <div class="app" id="app" hidden>
+
+    <!-- Cabeçalho do painel -->
+    <header class="painel-topo">
+      <div class="container painel-topo__interno">
+        <a class="logo" href="index.html" aria-label="Ryan Samuel — voltar ao portfólio">
+          <img class="logo__avatar" src="assets/img/perfil.png" alt="" width="36" height="36" aria-hidden="true">
+          <span class="logo__nome">Painel</span>
+        </a>
+
+        <div class="painel-topo__acoes">
+          <span class="chip chip--neutro" id="chip-status" aria-live="polite">… verificando</span>
+          <button class="botao botao--secundario botao--pequeno" type="button" id="botao-atualizar">Atualizar</button>
+          <button class="botao botao--secundario botao--pequeno" type="button" id="botao-travar">Travar</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="conteudo" class="container painel-main">
+
+      <!-- ========================================================
+           RESUMO EXECUTIVO — "só o importante"
+           ======================================================== -->
+      <section class="resumo" aria-labelledby="titulo-resumo">
+        <header class="secao__cabecalho">
+          <p class="secao__kicker">resumo executivo</p>
+          <h1 id="titulo-resumo" class="secao__titulo">Só o importante</h1>
+        </header>
+
+        <div class="metricas">
+          <article class="card metrica">
+            <p class="metrica__rotulo">Visitantes hoje</p>
+            <p class="metrica__valor" id="m-hoje">···</p>
+            <p class="metrica__nota" id="m-hoje-nota"></p>
+          </article>
+
+          <article class="card metrica">
+            <p class="metrica__rotulo">Últimos 7 dias</p>
+            <p class="metrica__valor" id="m-sete">···</p>
+            <p class="metrica__nota" id="m-sete-nota"></p>
+          </article>
+
+          <article class="card metrica">
+            <p class="metrica__rotulo">Últimos 30 dias</p>
+            <p class="metrica__valor" id="m-trinta">···</p>
+            <p class="metrica__nota" id="m-trinta-nota"></p>
+          </article>
+
+          <article class="card metrica">
+            <p class="metrica__rotulo">★ Estrelas</p>
+            <p class="metrica__valor" id="m-estrelas">···</p>
+            <p class="metrica__nota" id="m-estrelas-nota"></p>
+          </article>
+
+          <article class="card metrica">
+            <p class="metrica__rotulo">Repositórios</p>
+            <p class="metrica__valor" id="m-repos">···</p>
+            <p class="metrica__nota" id="m-repos-nota"></p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           COLUNAS: assistente (esquerda) | métricas (direita)
+           ======================================================== -->
+      <div class="painel-colunas">
+
+        <!-- ---------- ASSISTENTE (chat) ---------- -->
+        <section class="chat card" aria-labelledby="titulo-chat">
+          <header class="chat__topo">
+            <h2 id="titulo-chat" class="card__titulo">Assistente do negócio</h2>
+            <p class="chat__sub">Orçamento, briefing, entrega, divulgação e métricas — só perguntar.</p>
+          </header>
+
+          <div class="chat__atalhos" id="chat-atalhos" aria-label="Atalhos"></div>
+
+          <div class="chat__hist" id="chat-hist" role="log" aria-live="polite"></div>
+
+          <form class="chat__form" id="chat-form">
+            <label class="visivel-para-leitores" for="chat-entrada">Sua pergunta</label>
+            <input
+              class="chat__entrada"
+              id="chat-entrada"
+              type="text"
+              autocomplete="off"
+              placeholder="Ex.: quanto cobrar por um site?"
+              maxlength="300"
+            >
+            <button class="botao botao--primario chat__enviar" type="submit">Enviar</button>
+          </form>
+        </section>
+
+        <!-- ---------- COLUNA DIREITA ---------- -->
+        <div class="painel-lateral">
+
+          <!-- Visitantes -->
+          <section class="card" aria-labelledby="titulo-goat">
+            <h2 class="card__titulo" id="titulo-goat">Visitantes do site</h2>
+            <div id="goat-conteudo">
+              <p class="notificacao">Carregando…</p>
+            </div>
+          </section>
+
+          <!-- GitHub -->
+          <section class="card" aria-labelledby="titulo-repos">
+            <h2 class="card__titulo" id="titulo-repos">GitHub</h2>
+            <div id="repos-conteudo">
+              <p class="notificacao">Carregando…</p>
+            </div>
+          </section>
+
+          <!-- Configurações -->
+          <details class="card config" id="config">
+            <summary class="card__titulo config__resumo">Configurações do contador</summary>
+
+            <p class="config__passos">
+              <strong>Primeira vez (2 minutos):</strong>
+            </p>
+            <ol class="config__lista">
+              <li>Crie conta grátis em <a href="https://www.goatcounter.com/signup" target="_blank" rel="noopener">goatcounter.com</a>.</li>
+              <li>Copie seu <strong>código</strong> (o início do endereço: <code>SEU-CODE</code>).</li>
+              <li>No GoatCounter: <strong>Username → API → Create key</strong> e copie a chave.</li>
+              <li>Cole as duas abaixo e clique em <strong>Salvar</strong>.</li>
+              <li>No <code>index.html</code> do portfólio, troque <code>SEU-CODE</code> no script do contador e publique.</li>
+            </ol>
+
+            <form id="cfg-form">
+              <label class="campo">
+                <span class="campo__rotulo">Código do GoatCounter</span>
+                <input type="text" id="cfg-codigo" placeholder="ex.: meucodigo" autocomplete="off">
+              </label>
+              <label class="campo">
+                <span class="campo__rotulo">Chave de API</span>
+                <input type="password" id="cfg-chave" placeholder="chave gerada no GoatCounter" autocomplete="off">
+              </label>
+              <p class="cfg-estado" id="cfg-estado">Não configurado</p>
+              <p class="notificacao" id="cfg-status" role="status"></p>
+              <div class="config__botoes">
+                <button class="botao botao--primario" type="submit">Salvar</button>
+                <button class="botao botao--secundario" type="button" id="cfg-limpar">Limpar</button>
+              </div>
+            </form>
+
+            <p class="config__nota">
+              A chave fica só neste navegador e serve para <strong>ler</strong> as
+              estatísticas. Nada é enviado a outros serviços.
+            </p>
+          </details>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- Rodapé do painel -->
+    <footer class="rodape painel-rodape">
+      <div class="container rodape__interno">
+        <p class="rodape__nome">DEV.programier — painel</p>
+        <p class="rodape__nota">
+          Uso pessoal · dados de visitas via GoatCounter · GitHub via API pública
+        </p>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Módulo ES: porte de entrada do painel -->
+  <script type="module" src="js/painel.js"></script>
+
+</body>
+</html>

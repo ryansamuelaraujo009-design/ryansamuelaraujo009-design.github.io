@@ -5,5 +5,9 @@
 User-agent: *
 Allow: /
 
+# Painel privado: não indexar (também tem meta noindex no HTML)
+User-agent: *
+Disallow: /painel.html
+
 # Mapa do site: lista as páginas que devem ser indexadas
 Sitemap: https://ryansamuelaraujo009-design.github.io/sitemap.xml
