@@ -510,19 +510,25 @@
         -->
         <ul class="contato__lista">
 
-          <!-- E-mail: link mailto: abre o programa de e-mail do usuário -->
+          <!-- WhatsApp primeiro: canal mais usado (número fornecido por Ryan) -->
           <li class="contato__item contato__item--link">
-            <a class="contato__link" href="mailto:ryansamuelaraujo009@gmail.com">
-              <span class="contato__nome">E-mail</span>
-              <span class="contato__valor">ryansamuelaraujo009@gmail.com</span>
+            <a
+              class="contato__link"
+              href="https://wa.me/5511940812604"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-contador="whatsapp"
+            >
+              <span class="contato__nome">WhatsApp</span>
+              <span class="contato__valor">+55 11 94081-2604</span>
             </a>
           </li>
 
-          <!-- Telefone: link tel: dispara a ligação no celular -->
+          <!-- E-mail: link mailto: abre o programa de e-mail do usuário -->
           <li class="contato__item contato__item--link">
-            <a class="contato__link" href="tel:+5511940812604">
-              <span class="contato__nome">Telefone</span>
-              <span class="contato__valor">+55 11 94081-2604</span>
+            <a class="contato__link" href="mailto:ryansamuelaraujo009@gmail.com" data-contador="gmail">
+              <span class="contato__nome">E-mail</span>
+              <span class="contato__valor">ryansamuelaraujo009@gmail.com</span>
             </a>
           </li>
 
@@ -533,9 +539,18 @@
               href="https://github.com/ryansamuelaraujo009-design"
               target="_blank"
               rel="noopener noreferrer"
+              data-contador="github"
             >
               <span class="contato__nome">GitHub</span>
               <span class="contato__valor">ryansamuelaraujo009-design</span>
+            </a>
+          </li>
+
+          <!-- Telefone: link tel: dispara a ligação no celular -->
+          <li class="contato__item contato__item--link">
+            <a class="contato__link" href="tel:+5511940812604">
+              <span class="contato__nome">Telefone</span>
+              <span class="contato__valor">+55 11 94081-2604</span>
             </a>
           </li>
 
@@ -586,23 +601,12 @@
 
   <!--
     ============================================================
-    CONTADOR DE VISITANTES — GoatCounter (grátis, sem cookies)
-    ============================================================
-    COMO ATIVAR (1 vez, ~2 minutos):
-      1. Crie a conta em https://www.goatcounter.com/signup
-      2. Copie o seu código (o começo do endereço do painel deles)
-      3. Troque "SEU-CODE" abaixo pelo seu código e publique no GitHub
-      4. Pronto: as visitas aparecem no painel.html e no dashboard
-         do GoatCounter (desative o adblocker para testar)
-    Enquanto "SEU-CODE" não for trocado, o contador simplesmente não
-    envia nada — o site continua funcionando normalmente.
+    CONTADOR DE MENSAGENS — conta cliques nos links de contato
+    (GitHub, e-mail e WhatsApp) via CountAPI (grátis, sem cadastro).
+    Os totais aparecem no painel privado: painel.html → Mensagens.
     ============================================================
   -->
-  <script
-    data-goatcounter="https://SEU-CODE.goatcounter.com/count"
-    async
-    src="https://gc.zgo.at/count.js"
-  ></script>
+  <script type="module" src="js/contador.js"></script>
 
 </body>
 </html>
