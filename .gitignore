@@ -1,0 +1,9 @@
+# ============================================================
+# Arquivos que NAO pertencem ao repositorio do portfolio.
+# O codigo do RPG vive no repositorio proprio:
+#   github.com/ryansamuelaraujo009-design/rpg
+# O git ignora estas pastas: elas continuam no disco, mas nunca
+# mais serao varridas por "git add ." de nenhuma sessao.
+# ============================================================
+/projeto-rpg/
+/docs/PROJETO_RPG_MESTRE.md
