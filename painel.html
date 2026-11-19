@@ -5,10 +5,10 @@
   ------------------------------------------------------------
   Página de uso PESSOAL (não entra no menu do portfólio).
   Mostra só o importante:
-    • Resumo executivo (visitantes, GitHub, status do site)
+    • Resumo executivo (mensagens, GitHub, status do site)
     • Assistente do negócio de criação de sites (chat)
-    • Detalhes: visitantes (GoatCounter) e repositórios (GitHub)
-    • Configuração do contador de visitas
+    • Detalhes: cliques nas mensagens (GitHub, e-mail, WhatsApp)
+      e repositórios (GitHub)
 
   IMPORTANTE: site estático = proteção por senha é apenas contra
   olhares curiosos. Não coloque dados sensíveis aqui.
@@ -22,7 +22,7 @@
   <!-- Não indexar no Google (a URL não deve aparecer em buscas) -->
   <meta name="robots" content="noindex, nofollow">
 
-  <meta name="description" content="Painel privado DEV.programier — métricas do site, visitantes no GitHub e assistente do negócio de criação de sites.">
+  <meta name="description" content="Painel privado DEV.programier — cliques nas mensagens, métricas do GitHub e assistente do negócio de criação de sites.">
   <meta name="theme-color" content="#0a0607">
   <title>Painel — DEV.programier</title>
 
@@ -106,21 +106,27 @@
 
         <div class="metricas">
           <article class="card metrica">
-            <p class="metrica__rotulo">Visitantes hoje</p>
-            <p class="metrica__valor" id="m-hoje">···</p>
-            <p class="metrica__nota" id="m-hoje-nota"></p>
+            <p class="metrica__rotulo">Total</p>
+            <p class="metrica__valor" id="m-total">···</p>
+            <p class="metrica__nota" id="m-total-nota"></p>
           </article>
 
           <article class="card metrica">
-            <p class="metrica__rotulo">Últimos 7 dias</p>
-            <p class="metrica__valor" id="m-sete">···</p>
-            <p class="metrica__nota" id="m-sete-nota"></p>
+            <p class="metrica__rotulo">GitHub</p>
+            <p class="metrica__valor" id="m-github">···</p>
+            <p class="metrica__nota" id="m-github-nota"></p>
           </article>
 
           <article class="card metrica">
-            <p class="metrica__rotulo">Últimos 30 dias</p>
-            <p class="metrica__valor" id="m-trinta">···</p>
-            <p class="metrica__nota" id="m-trinta-nota"></p>
+            <p class="metrica__rotulo">E-mail</p>
+            <p class="metrica__valor" id="m-gmail">···</p>
+            <p class="metrica__nota" id="m-gmail-nota"></p>
+          </article>
+
+          <article class="card metrica">
+            <p class="metrica__rotulo">WhatsApp</p>
+            <p class="metrica__valor" id="m-whatsapp">···</p>
+            <p class="metrica__nota" id="m-whatsapp-nota"></p>
           </article>
 
           <article class="card metrica">
@@ -170,10 +176,10 @@
         <!-- ---------- COLUNA DIREITA ---------- -->
         <div class="painel-lateral">
 
-          <!-- Visitantes -->
-          <section class="card" aria-labelledby="titulo-goat">
-            <h2 class="card__titulo" id="titulo-goat">Visitantes do site</h2>
-            <div id="goat-conteudo">
+          <!-- Mensagens (cliques nos canais de contato) -->
+          <section class="card card--destaque" aria-labelledby="titulo-msg">
+            <h2 class="card__titulo" id="titulo-msg">Mensagens</h2>
+            <div id="msg-conteudo">
               <p class="notificacao">Carregando…</p>
             </div>
           </section>
@@ -186,44 +192,6 @@
             </div>
           </section>
 
-          <!-- Configurações -->
-          <details class="card config" id="config">
-            <summary class="card__titulo config__resumo">Configurações do contador</summary>
-
-            <p class="config__passos">
-              <strong>Primeira vez (2 minutos):</strong>
-            </p>
-            <ol class="config__lista">
-              <li>Crie conta grátis em <a href="https://www.goatcounter.com/signup" target="_blank" rel="noopener">goatcounter.com</a>.</li>
-              <li>Copie seu <strong>código</strong> (o início do endereço: <code>SEU-CODE</code>).</li>
-              <li>No GoatCounter: <strong>Username → API → Create key</strong> e copie a chave.</li>
-              <li>Cole as duas abaixo e clique em <strong>Salvar</strong>.</li>
-              <li>No <code>index.html</code> do portfólio, troque <code>SEU-CODE</code> no script do contador e publique.</li>
-            </ol>
-
-            <form id="cfg-form">
-              <label class="campo">
-                <span class="campo__rotulo">Código do GoatCounter</span>
-                <input type="text" id="cfg-codigo" placeholder="ex.: meucodigo" autocomplete="off">
-              </label>
-              <label class="campo">
-                <span class="campo__rotulo">Chave de API</span>
-                <input type="password" id="cfg-chave" placeholder="chave gerada no GoatCounter" autocomplete="off">
-              </label>
-              <p class="cfg-estado" id="cfg-estado">Não configurado</p>
-              <p class="notificacao" id="cfg-status" role="status"></p>
-              <div class="config__botoes">
-                <button class="botao botao--primario" type="submit">Salvar</button>
-                <button class="botao botao--secundario" type="button" id="cfg-limpar">Limpar</button>
-              </div>
-            </form>
-
-            <p class="config__nota">
-              A chave fica só neste navegador e serve para <strong>ler</strong> as
-              estatísticas. Nada é enviado a outros serviços.
-            </p>
-          </details>
-
         </div>
       </div>
     </main>
@@ -233,7 +201,7 @@
       <div class="container rodape__interno">
         <p class="rodape__nome">DEV.programier — painel</p>
         <p class="rodape__nota">
-          Uso pessoal · dados de visitas via GoatCounter · GitHub via API pública
+          Uso pessoal · cliques de contato via CountAPI · GitHub via API pública
         </p>
       </div>
     </footer>
