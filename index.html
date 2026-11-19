@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  PORTFÓLIO — RYAN SAMUEL
+  ============================================================
+  Página única (single-page) com 6 seções.
+  HTML SEMÂNTICO: usamos <header>, <main>, <section>, <footer>
+  porque isso ajuda:
+    1. Buscadores (SEO) a entenderem a estrutura da página
+    2. Leitores de tela (acessibilidade) a navegarem melhor
+    3. Você a manter o código organizado
+  ============================================================
+-->
+<html lang="pt-BR">
+<head>
+  <!-- Charset: garante que acentos e caracteres especiais apareçam corretamente -->
+  <meta charset="UTF-8">
+
+  <!-- Viewport: essencial para o site funcionar bem no celular -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO: texto que aparece nos resultados do Google -->
+  <meta name="description" content="Portfólio de Ryan Samuel Araújo dos Santos, estudante de programação: Python, desenvolvimento full-stack, jogos com Godot Engine e inteligência artificial.">
+  <meta name="author" content="Ryan Samuel Araújo dos Santos">
+  <meta name="theme-color" content="#0a0607">
+
+  <!-- Open Graph: define como o link aparece ao ser compartilhado em redes sociais -->
+  <meta property="og:title" content="Ryan Samuel Araújo dos Santos — Portfólio">
+  <meta property="og:description" content="Estudante de programação: Python, full-stack, jogos e inteligência artificial.">
+  <meta property="og:type" content="website">
+  <!--
+    Imagem mostrada ao compartilhar o link.
+    ATENÇÃO: redes sociais exigem URL ABSOLUTA (com https://seusite.com).
+    Quando o site for publicado, troque pelo endereço completo.
+  -->
+  <meta property="og:image" content="assets/img/perfil.png">
+
+  <title>Ryan Samuel Araújo dos Santos — Portfólio</title>
+
+  <!--
+    FONTES (Google Fonts)
+    - preconnect: avisa o navegador com antecedência, reduzindo o tempo de carregamento
+    - display=swap: o texto aparece com a fonte reserva e troca depois,
+      evitando a página ficar "vazia" enquanto carrega
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+
+  <!--
+    CSS em ordem específica:
+    1. reset.css       → zera estilos padrão do navegador (base neutra)
+    2. variables.css   → define as cores/fontes do tema (variáveis)
+    3. styles.css      → estilos das seções (usa as variáveis)
+    4. responsive.css  → ajustes para celular/tablet (sempre por último)
+  -->
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+  <!-- Link de pular conteúdo: apenas usuários de teclado/leitores de tela veem ele -->
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <!-- ============================================================
+       CABEÇALHO FIXO + NAVEGAÇÃO
+       ============================================================ -->
+  <header class="cabecalho">
+    <div class="container cabecalho__interno">
+
+      <!-- Logo: iniciais + nome -->
+      <!-- O aria-label precisa conter TODO o texto visível ("RS Ryan Samuel"),
+           senão leitores de tela ficam confusos (erro de acessibilidade) -->
+      <a href="#inicio" class="logo" aria-label="Ryan Samuel — voltar ao início">
+        <!--
+          Avatar: logo gerada em código (semicírculo + círculo brancos).
+          alt="" e aria-hidden: imagem decorativa — o nome visível ao lado
+          já descreve o link para leitores de tela.
+        -->
+        <img
+          class="logo__avatar"
+          src="assets/img/perfil.png"
+          alt=""
+          width="36"
+          height="36"
+          aria-hidden="true"
+        >
+        <span class="logo__nome">Ryan Samuel</span>
+      </a>
+
+      <!--
+        Botão do menu hambúrguer: aparece apenas no celular (ver responsive.css).
+        aria-expanded informa ao leitor de tela se o menu está aberto.
+        aria-controls liga o botão ao elemento que ele controla.
+      -->
+      <button
+        class="menu-botao"
+        type="button"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+        aria-controls="menu-principal"
+      >
+        <span class="menu-botao__barra" aria-hidden="true"></span>
+        <span class="menu-botao__barra" aria-hidden="true"></span>
+        <span class="menu-botao__barra" aria-hidden="true"></span>
+      </button>
+
+      <!-- Navegação: âncoras apontam para os IDs das seções -->
+      <nav class="nav" id="menu-principal" aria-label="Navegação principal">
+        <ul class="nav__lista">
+          <li><a class="nav__link" href="#inicio">Início</a></li>
+          <li><a class="nav__link" href="#sobre">Sobre</a></li>
+          <li><a class="nav__link" href="#tecnologias">Tecnologias</a></li>
+          <li><a class="nav__link" href="#projetos">Projetos</a></li>
+          <li><a class="nav__link" href="#estudos">Estudos</a></li>
+          <li><a class="nav__link" href="#contato">Contato</a></li>
+        </ul>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- main = conteúdo principal da página -->
+  <main id="conteudo">
+
+    <!-- ============================================================
+         SEÇÃO 1 — INÍCIO (HERO)
+         ============================================================ -->
+    <section id="inicio" class="hero" aria-labelledby="titulo-hero">
+      <div class="container hero__interno">
+
+        <!-- Saudação com "cursor" piscando (efeito de terminal, discreto) -->
+        <p class="hero__saudacao">Olá, mundo. Meu nome é</p>
+
+        <h1 id="titulo-hero" class="hero__titulo">
+          <span class="palavra">Ryan</span>
+          <span class="palavra hero__destaque">Samuel</span>
+          <span class="palavra">Araújo</span>
+          <span class="palavra">dos</span>
+          <span class="palavra">Santos</span>
+        </h1>
+
+        <p class="hero__descricao">
+          Estudante de programação em constante evolução. Estudo
+          <strong>desenvolvimento full-stack</strong>, <strong>Python</strong>,
+          <strong>criação de jogos</strong> com Godot Engine e
+          <strong>inteligência artificial</strong>.
+        </p>
+
+        <!-- Botões de ação: principal (vermelho) e secundário (contorno) -->
+        <div class="hero__acoes">
+          <a href="#projetos" class="botao botao--primario">Conhecer projetos</a>
+          <a href="#contato" class="botao botao--secundario">Entrar em contato</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SEÇÃO 2 — SOBRE MIM
+         ============================================================ -->
+    <section id="sobre" class="secao" aria-labelledby="titulo-sobre">
+      <div class="container">
+
+        <header class="secao__cabecalho">
+          <p class="secao__kicker">01 / sobre</p>
+          <h2 id="titulo-sobre" class="secao__titulo">Sobre mim</h2>
+        </header>
+
+        <div class="sobre__grid">
+
+          <!-- Coluna 1: texto da trajetória -->
+          <div class="sobre__texto">
+
+            <!--
+              Foto real do ambiente de estudo (fornecida por Ryan).
+              width/height no HTML: o navegador reserva o espaço e a
+              página não "pula" enquanto a imagem carrega.
+              loading="lazy": carrega só quando a seção chega perto da
+              tela — economiza dados, principalmente no celular.
+            -->
+            <figure class="sobre__foto">
+              <img
+                src="assets/img/setup-estudo.jpg"
+                alt="Notebook exibindo código de um programa e caderno com anotações de estudo, iluminados no escuro"
+                width="736"
+                height="414"
+                loading="lazy"
+              >
+              <figcaption>Meu ambiente de estudo: código no notebook e anotações no caderno.</figcaption>
+            </figure>
+
+            <p>
+              Sou estudante de programação e estou aprendendo a desenvolver
+              software. Meu foco atual é construir uma base sólida em lógica
+              de programação e nas tecnologias que uso no dia a dia do
+              desenvolvimento.
+            </p>
+            <p>
+              Quero apresentar minha evolução como desenvolvedor de forma
+              honesta: cada projeto e cada estudo aqui representam uma etapa
+              real do meu aprendizado — sem atalhos e sem experiências
+              inventadas.
+            </p>
+            <p>
+              Meu objetivo é crescer na área de tecnologia, evoluir
+              constantemente e trabalhar com projetos que unam programação,
+              criatividade e inteligência artificial.
+            </p>
+          </div>
+
+          <!-- Coluna 2: card com a lista do que estuda -->
+          <aside class="card sobre__card" aria-label="Áreas de estudo">
+            <h3 class="card__titulo">O que eu estudo</h3>
+            <ul class="sobre__lista">
+              <li>Desenvolvimento Full-Stack</li>
+              <li>Python</li>
+              <li>HTML, CSS e JavaScript</li>
+              <li>Desenvolvimento de jogos</li>
+              <li>Godot Engine</li>
+              <li>Inteligência Artificial</li>
+            </ul>
+          </aside>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SEÇÃO 3 — TECNOLOGIAS
+         Organizadas por categoria, sem níveis de proficiência
+         (nada de "avançado" sem confirmação).
+         ============================================================ -->
+    <section id="tecnologias" class="secao" aria-labelledby="titulo-tecnologias">
+      <div class="container">
+
+        <header class="secao__cabecalho">
+          <p class="secao__kicker">02 / tecnologias</p>
+          <h2 id="titulo-tecnologias" class="secao__titulo">Tecnologias</h2>
+        </header>
+
+        <div class="tecnologias__grade">
+
+          <!-- Linguagens -->
+          <article class="card">
+            <h3 class="card__titulo">Linguagens</h3>
+            <ul class="tags">
+              <li class="tag">Python</li>
+              <li class="tag">HTML5</li>
+              <li class="tag">CSS3</li>
+              <li class="tag">JavaScript</li>
+            </ul>
+          </article>
+
+          <!-- Frameworks: estado vazio (sem inventar conhecimentos) -->
+          <article class="card">
+            <h3 class="card__titulo">Frameworks</h3>
+            <p class="card__vazio">
+              Nenhum framework confirmado ainda. Esta lista será atualizada
+              conforme eu avançar no desenvolvimento full-stack.
+            </p>
+          </article>
+
+          <!-- Ferramentas: estado vazio -->
+          <article class="card">
+            <h3 class="card__titulo">Ferramentas</h3>
+            <p class="card__vazio">
+              Lista em construção. As ferramentas que eu utilizar serão
+              adicionadas aqui.
+            </p>
+          </article>
+
+          <!-- Engines -->
+          <article class="card">
+            <h3 class="card__titulo">Engines</h3>
+            <ul class="tags">
+              <li class="tag">Godot Engine</li>
+            </ul>
+          </article>
+
+          <!-- Tecnologias em aprendizado -->
+          <article class="card">
+            <h3 class="card__titulo">Em aprendizado</h3>
+            <ul class="tags">
+              <li class="tag tag--aprendendo">Desenvolvimento Full-Stack</li>
+              <li class="tag tag--aprendendo">Inteligência Artificial</li>
+              <li class="tag tag--aprendendo">Desenvolvimento de jogos</li>
+            </ul>
+          </article>
+
+        </div>
+
+        <!-- Nota honesta sobre níveis de conhecimento -->
+        <p class="tecnologias__nota">
+          Sem porcentagens nem rótulos de "avançado": apenas o que estou
+          estudando de verdade.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SEÇÃO 4 — PROJETOS
+         Espaços reservados para J.A.R.V.I.S. e RPG.
+         Nenhuma funcionalidade ou resultado foi inventado.
+         ============================================================ -->
+    <section id="projetos" class="secao" aria-labelledby="titulo-projetos">
+      <div class="container">
+
+        <header class="secao__cabecalho">
+          <p class="secao__kicker">03 / projetos</p>
+          <h2 id="titulo-projetos" class="secao__titulo">Projetos</h2>
+        </header>
+
+        <div class="projetos__lista">
+
+          <!-- Projeto 1: J.A.R.V.I.S. -->
+          <article class="card projeto">
+            <!-- Área da imagem: substituir por <img> quando houver captura de tela -->
+            <div class="projeto__thumb" role="img" aria-label="Imagem do projeto J.A.R.V.I.S. em breve">
+              <span class="projeto__monograma" aria-hidden="true">J</span>
+              <span class="projeto__legenda">Imagem em breve</span>
+            </div>
+
+            <div class="projeto__corpo">
+              <div class="projeto__topo">
+                <h3 class="projeto__nome">J.A.R.V.I.S.</h3>
+                <!-- Situação real: ainda não informada -->
+                <span class="situacao situacao--neutra">A definir</span>
+              </div>
+
+              <p class="projeto__descricao">
+                Projeto reservado. Descrição, tecnologias e resultados serão
+                apresentados aqui assim que houver informações confirmadas.
+              </p>
+
+              <ul class="tags">
+                <li class="tag tag--desativada">Tecnologias a definir</li>
+              </ul>
+
+              <!-- Sem link falso: o repositório será adicionado quando existir -->
+              <span class="projeto__link projeto__link--desativado">
+                Repositório em breve
+              </span>
+            </div>
+          </article>
+
+          <!-- Projeto 2: RPG -->
+          <article class="card projeto">
+            <div class="projeto__thumb" role="img" aria-label="Imagem do projeto RPG em breve">
+              <span class="projeto__monograma" aria-hidden="true">R</span>
+              <span class="projeto__legenda">Imagem em breve</span>
+            </div>
+
+            <div class="projeto__corpo">
+              <div class="projeto__topo">
+                <h3 class="projeto__nome">RPG</h3>
+                <span class="situacao situacao--neutra">A definir</span>
+              </div>
+
+              <p class="projeto__descricao">
+                Projeto reservado. Descrição, tecnologias e resultados serão
+                apresentados aqui assim que houver informações confirmadas.
+              </p>
+
+              <ul class="tags">
+                <li class="tag tag--desativada">Tecnologias a definir</li>
+              </ul>
+
+              <span class="projeto__link projeto__link--desativado">
+                Repositório em breve
+              </span>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SEÇÃO 5 — ESTUDOS
+         ============================================================ -->
+    <section id="estudos" class="secao" aria-labelledby="titulo-estudos">
+      <div class="container">
+
+        <header class="secao__cabecalho">
+          <p class="secao__kicker">04 / estudos</p>
+          <h2 id="titulo-estudos" class="secao__titulo">Estudos</h2>
+        </header>
+
+        <div class="estudos__grade">
+
+          <!-- Cursos -->
+          <article class="card">
+            <h3 class="card__titulo">Cursos</h3>
+            <ul class="cursos">
+              <li class="curso">
+                <div>
+                  <p class="curso__nome">Curso de Frontend</p>
+                  <p class="curso__local">EBAC</p>
+                </div>
+                <!-- Situação real informada por Ryan -->
+                <span class="situacao situacao--andamento">Em andamento</span>
+              </li>
+            </ul>
+          </article>
+
+          <!-- Tecnologias em aprendizado -->
+          <article class="card">
+            <h3 class="card__titulo">O que estou aprendendo</h3>
+            <ul class="sobre__lista sobre__lista--compacta">
+              <li>Desenvolvimento Full-Stack</li>
+              <li>Python</li>
+              <li>HTML, CSS e JavaScript</li>
+              <li>Godot Engine e desenvolvimento de jogos</li>
+              <li>Inteligência Artificial</li>
+            </ul>
+          </article>
+
+          <!-- Objetivos de estudo -->
+          <article class="card">
+            <h3 class="card__titulo">Objetivos de estudo</h3>
+            <p class="estudos__texto">
+              Construir uma base sólida em programação, aprender a criar
+              aplicações full-stack completas, desenvolver jogos com Godot e
+              explorar aplicações de inteligência artificial no
+              desenvolvimento.
+            </p>
+          </article>
+
+          <!-- Evolução e conquistas: estado vazio -->
+          <article class="card">
+            <h3 class="card__titulo">Evolução e conquistas</h3>
+            <p class="card__vazio">
+              Espaço reservado para registrar marcos e conquistas conforme eu
+              avançar nos estudos.
+            </p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SEÇÃO 6 — CONTATO
+         Sem links inventados: cada canal recebe um status.
+         ============================================================ -->
+    <section id="contato" class="secao" aria-labelledby="titulo-contato">
+      <div class="container">
+
+        <header class="secao__cabecalho">
+          <p class="secao__kicker">05 / contato</p>
+          <h2 id="titulo-contato" class="secao__titulo">Contato</h2>
+        </header>
+
+        <p class="contato__intro">
+          Se você quer conversar sobre projetos, oportunidades ou trocar
+          ideias sobre tecnologia, entre em contato pelos canais abaixo.
+        </p>
+
+        <!--
+          Canais de contato. E-mail, telefone e redes foram fornecidos
+          por Ryan e os links das redes foram verificados (GitHub
+          confirmado; LinkedIn copiado da própria conta).
+          target="_blank" = abre em nova aba.
+          rel="noopener noreferrer" = obrigatório com target="_blank"
+          por segurança (impede que a página aberta interfira nesta)
+          e é exigência do Lighthouse.
+        -->
+        <ul class="contato__lista">
+
+          <!-- E-mail: link mailto: abre o programa de e-mail do usuário -->
+          <li class="contato__item contato__item--link">
+            <a class="contato__link" href="mailto:ryansamuelaraujo009@gmail.com">
+              <span class="contato__nome">E-mail</span>
+              <span class="contato__valor">ryansamuelaraujo009@gmail.com</span>
+            </a>
+          </li>
+
+          <!-- Telefone: link tel: dispara a ligação no celular -->
+          <li class="contato__item contato__item--link">
+            <a class="contato__link" href="tel:+5511940812604">
+              <span class="contato__nome">Telefone</span>
+              <span class="contato__valor">+55 11 94081-2604</span>
+            </a>
+          </li>
+
+          <!-- GitHub: perfil público confirmado -->
+          <li class="contato__item contato__item--link">
+            <a
+              class="contato__link"
+              href="https://github.com/ryansamuelaraujo009-design"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span class="contato__nome">GitHub</span>
+              <span class="contato__valor">ryansamuelaraujo009-design</span>
+            </a>
+          </li>
+
+          <!-- LinkedIn: endereço limpo da URL de edição que Ryan enviou -->
+          <li class="contato__item contato__item--link">
+            <a
+              class="contato__link"
+              href="https://www.linkedin.com/in/ryan-samuel-ara%C3%BAjo-dos-santos-a88825316"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span class="contato__nome">LinkedIn</span>
+              <span class="contato__valor">Ryan Samuel Araújo dos Santos</span>
+            </a>
+          </li>
+
+        </ul>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       RODAPÉ
+       ============================================================ -->
+  <footer class="rodape">
+    <div class="container rodape__interno">
+      <p class="rodape__nome">Ryan Samuel Araújo dos Santos</p>
+      <p class="rodape__nota">Portfólio construído com HTML, CSS e JavaScript.</p>
+    </div>
+  </footer>
+
+  <!--
+    JavaScript do portfólio — módulos ES (import/export).
+    type="module" faz o navegador carregar em modo módulo, com escopo
+    próprio para cada arquivo (nada vaza para o escopo global).
+
+    IMPORTANTE: módulos ES NÃO funcionam abrindo o arquivo com file://
+    por segurança do navegador. É preciso rodar um servidor local:
+        python -m http.server 8000
+  -->
+  <script type="module" src="js/main.js"></script>
+
+</body>
+</html>

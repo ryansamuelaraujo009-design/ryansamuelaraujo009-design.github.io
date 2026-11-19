@@ -1,0 +1,126 @@
+/* ====================================================================
+   RESPONSIVE.CSS — Ajustes para telas menores
+   --------------------------------------------------------------------
+   ESTRATÉGIA: partimos do layout de desktop e reduzimos para telas
+   menores usando media queries (consultas de mídia).
+   Este arquivo carrega POR ÚLTIMO, então ele sobrescreve regras
+   anteriores quando a condição da tela é atendida.
+
+   PONTOS DE QUEBRA (breakpoints) usados:
+     - 960px: tablets e telas médias
+     - 720px: celulares (menu vira hambúrguer) ← deve bater com
+              LARGURA_MENU_CELULAR no js/navigation.js
+     - 480px: celulares em retrato
+   ==================================================================== */
+
+/* ---------- Telas até 960px (tablets) ---------- */
+@media (max-width: 960px) {
+
+  /* Sobre mim: duas colunas viram uma */
+  .sobre__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Telas até 720px (celulares) ---------- */
+@media (max-width: 720px) {
+
+  /* O botão hambúrguer aparece (no desktop ele fica oculto) */
+  .menu-botao {
+    display: flex;
+  }
+
+  /*
+   * Painel do menu: fixo logo abaixo do cabeçalho, oculto por padrão.
+   * NOTA: usamos top: --altura-cabecalho (e não top: 100%) porque o
+   * cabeçalho tem backdrop-filter, que pode virar a "caixa de
+   * referência" de elementos position: fixed. Com o valor fixo, o
+   * cálculo fica correto nos dois cenários.
+   */
+  .nav {
+    position: fixed;
+    top: var(--altura-cabecalho);
+    left: 0;
+    right: 0;
+    background: rgba(10, 6, 7, 0.97);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--cor-borda);
+    padding: 0.35rem 1.25rem 0.85rem;
+
+    /* Estado fechado: quase invisível, com leve deslocamento */
+    opacity: 0;
+    visibility: hidden; /* tira os links da ordem de tabulação (teclado) */
+    transform: translateY(-8px);
+    transition: opacity 250ms ease, transform 250ms ease, visibility 250ms;
+  }
+
+  /* Estado aberto: aparece com uma transição suave */
+  .nav.aberto {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  /* Links viram itens de lista empilhados (fáceis de tocar) */
+  .nav__lista {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .nav__link {
+    display: block;
+    padding: 0.85rem 0.25rem;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--cor-borda);
+  }
+
+  /* Último item não precisa de separador */
+  .nav__lista li:last-child .nav__link {
+    border-bottom: none;
+  }
+
+  /* Projetos: cartões empilhados */
+  .projetos__lista {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Telas até 480px (celulares em retrato) ---------- */
+@media (max-width: 480px) {
+
+  /* Container com menos margem lateral para aproveitar o espaço */
+  .container {
+    width: min(100% - 1.75rem, var(--largura-max));
+  }
+
+  /* Botões ocupam a largura toda (mais fáceis de tocar) */
+  .hero__acoes {
+    flex-direction: column;
+  }
+
+  .botao {
+    justify-content: center;
+  }
+
+  /* Rodapé empilhado */
+  .rodape__interno {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  /* Contato: ajuste fino dos itens com e sem link */
+  .contato__item:not(.contato__item--link) {
+    padding: 1rem;
+  }
+
+  .contato__item--link {
+    padding: 0; /* o espaçamento fica no link interno */
+  }
+
+  .contato__link {
+    padding: 1rem;
+  }
+}

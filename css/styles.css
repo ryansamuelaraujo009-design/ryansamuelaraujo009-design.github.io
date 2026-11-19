@@ -1,0 +1,983 @@
+/* ====================================================================
+   STYLES.CSS — Estilos gerais e seções do portfólio
+   --------------------------------------------------------------------
+   ORDEM DE LEITURA:
+     1. Base e tipografia
+     2. Utilitários (.container, .secao, títulos)
+     3. Cabeçalho / navegação
+     4. Hero (início)
+     5. Cartões e botões (reutilizados em várias seções)
+     6. Sobre mim
+     7. Tecnologias
+     8. Projetos
+     9. Estudos
+    10. Contato
+    11. Rodapé
+    12. Acessibilidade e ajustes globais
+
+   TODA cor, fonte e espaço vem de variables.css (variáveis CSS).
+   ==================================================================== */
+
+/* ---------- 1. Base e tipografia ---------- */
+
+html {
+  /* Rolagem suave ao clicar nos links do menu (sem JavaScript) */
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: var(--fonte);
+  font-size: 1rem;
+
+  /* Brilho vermelho discreto no topo do site */
+  background-image: radial-gradient(
+    70% 45% at 50% 0%,
+    var(--cor-brilho),
+    transparent 70%
+  );
+  background-repeat: no-repeat;
+
+  /* Compensa o cabeçalho fixo para o conteúdo não ficar por baixo dele */
+  padding-top: var(--altura-cabecalho);
+
+  /* Evita rolagem horizontal acidental causada por efeitos */
+  overflow-x: hidden;
+}
+
+/* Títulos maiores com espaçamento negativo (visual mais moderno) */
+h1,
+h2,
+h3 {
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+p {
+  color: var(--cor-texto-suave);
+}
+
+strong {
+  color: var(--cor-texto);
+  font-weight: 600;
+}
+
+/* ---------- 2. Utilitários ---------- */
+
+/* Container centraliza o conteúdo e define a largura máxima */
+.container {
+  width: min(100% - 2.5rem, var(--largura-max));
+  margin-inline: auto;
+}
+
+/* Cada seção recebe espaçamento vertical e uma borda sutil em cima */
+.secao {
+  padding-block: clamp(4rem, 9vw, 6rem);
+  border-top: 1px solid var(--cor-borda);
+  /* Âncoras param abaixo do cabeçalho fixo (evita "esconder" o título) */
+  scroll-margin-top: var(--altura-cabecalho);
+}
+
+/* Cabeçalho padrão de cada seção: etiqueta + título */
+.secao__cabecalho {
+  margin-bottom: clamp(2rem, 5vw, 3rem);
+}
+
+.secao__kicker {
+  font-family: var(--fonte-mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--cor-vermelho-claro);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+
+  /* Linha vermelha discreta ao lado da etiqueta */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.secao__kicker::after {
+  content: "";
+  height: 1px;
+  width: 3rem;
+  background: linear-gradient(90deg, var(--cor-vermelho-claro), transparent);
+}
+
+.secao__titulo {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  margin-top: 0.5rem;
+}
+
+/* ---------- 3. Cabeçalho / navegação ---------- */
+
+.cabecalho {
+  position: fixed;       /* fica sempre visível ao rolar */
+  top: 0;
+  inset-inline: 0;       /* atalho para left: 0 + right: 0 */
+  z-index: 100;          /* fica acima das demais camadas */
+  background: rgba(10, 6, 7, 0.82);
+  /* Desfoque do fundo atrás do cabeçalho (efeito "vidro fosco") */
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.cabecalho__interno {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: var(--altura-cabecalho);
+}
+
+/* Logo */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+}
+
+/* Avatar do logo: a imagem gerada (formas brancas em fundo preto).
+   A borda sutil impede que o preto da logo "some" com o fundo do site. */
+.logo__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--raio-botoes);
+  border: 1px solid var(--cor-borda);
+  background: #000;
+}
+
+.logo__nome {
+  font-size: 1rem;
+}
+
+/* Links do menu */
+.nav__lista {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.75rem);
+}
+
+.nav__link {
+  position: relative;
+  padding-block: 0.35rem;
+  font-size: 0.92rem;
+  color: var(--cor-texto-suave);
+  transition: color var(--transicao);
+  white-space: nowrap; /* impede quebra de texto no menu */
+}
+
+/* Sublinhado vermelho que cresce no hover */
+.nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 0;
+  background: var(--cor-vermelho-claro);
+  transition: width var(--transicao);
+}
+
+.nav__link:hover,
+.nav__link:focus-visible {
+  color: var(--cor-texto);
+}
+
+.nav__link:hover::after,
+.nav__link--ativo::after {
+  width: 100%;
+}
+
+/* Seção atualmente visível na tela: mesmo destaque do hover */
+.nav__link--ativo {
+  color: var(--cor-texto);
+}
+
+/* ---------- Botão do menu hambúrguer ---------- */
+/* No desktop fica oculto; aparecer no celular está no responsive.css */
+.menu-botao {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;   /* área de toque confortável (mínimo recomendado: 44px) */
+  height: 44px;
+  padding: 10px;
+  border-radius: var(--raio-botoes);
+  transition: background-color var(--transicao);
+}
+
+.menu-botao:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.menu-botao__barra {
+  display: block;
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--cor-texto);
+  transition: transform var(--transicao), opacity var(--transicao);
+}
+
+/* Estado aberto: as três barras se transformam em um "X" */
+.menu-botao[aria-expanded='true'] .menu-botao__barra:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.menu-botao[aria-expanded='true'] .menu-botao__barra:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-botao[aria-expanded='true'] .menu-botao__barra:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ---------- 4. Hero (início) ---------- */
+
+.hero {
+  position: relative;
+  min-height: calc(100svh - var(--altura-cabecalho));
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+  scroll-margin-top: var(--altura-cabecalho);
+}
+
+/* Grade técnica sutil ao fundo (inspiração em interfaces tech) */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 52px 52px;
+  /* Agrade a grade apenas no centro, saindo nas bordas */
+  -webkit-mask-image: radial-gradient(ellipse 70% 65% at 50% 45%, #000 35%, transparent 78%);
+  mask-image: radial-gradient(ellipse 70% 65% at 50% 45%, #000 35%, transparent 78%);
+  pointer-events: none;
+}
+
+/* Mancha vermelha discreta no canto superior direito */
+.hero::after {
+  content: "";
+  position: absolute;
+  top: -10%;
+  right: -5%;
+  width: 40vw;
+  height: 40vw;
+  max-width: 520px;
+  max-height: 520px;
+  background: radial-gradient(circle, var(--cor-brilho), transparent 65%);
+  pointer-events: none;
+}
+
+.hero__interno {
+  position: relative;
+  z-index: 1; /* garante que o texto fique acima dos efeitos de fundo */
+  padding-block: 4rem;
+}
+
+.hero__saudacao {
+  font-family: var(--fonte-mono);
+  font-size: 0.95rem;
+  color: var(--cor-vermelho-claro);
+  margin-bottom: 1rem;
+}
+
+/* Cursor piscando (efeito de terminal, discreto) */
+.hero__saudacao::after {
+  content: " ▌";
+  animation: pisca 1.1s steps(2, start) infinite;
+}
+
+@keyframes pisca {
+  50% {
+    opacity: 0;
+  }
+}
+
+.hero__titulo {
+  font-size: clamp(2.75rem, 9vw, 5.5rem);
+  letter-spacing: -0.02em;
+  margin-bottom: 1.25rem;
+}
+
+.hero__destaque {
+  color: var(--cor-vermelho-claro);
+}
+
+.hero__descricao {
+  max-width: 34rem;   /* limita a linha para facilitar a leitura */
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  margin-bottom: 2rem;
+}
+
+.hero__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* ---------- 5. Botões e cartões ---------- */
+
+.botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.6rem;
+  border-radius: var(--raio-botoes);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: transform var(--transicao), box-shadow var(--transicao),
+    border-color var(--transicao), background-color var(--transicao);
+}
+
+/* Botão principal: vermelho */
+.botao--primario {
+  background: linear-gradient(135deg, var(--cor-vermelho), var(--cor-vermelho-escuro));
+  color: #fff;
+  box-shadow: 0 10px 30px -12px var(--cor-brilho-card);
+}
+
+.botao--primario:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px -12px var(--cor-brilho-card);
+}
+
+/* Botão secundário: contorno */
+.botao--secundario {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--cor-texto);
+}
+
+.botao--secundario:hover {
+  border-color: var(--cor-vermelho-claro);
+  color: var(--cor-vermelho-claro);
+  transform: translateY(-2px);
+}
+
+/* Cartão base — usado em Sobre, Tecnologias, Projetos e Estudos */
+.card {
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: var(--espaco-md);
+  transition: border-color var(--transicao), background-color var(--transicao),
+    transform var(--transicao);
+}
+
+.card:hover {
+  border-color: rgba(179, 15, 15, 0.45);
+  background: var(--cor-superficie-alta);
+  /* Elevação + brilho: o card "desgruda" do fundo ao passar o mouse */
+  transform: translateY(-6px);
+  box-shadow:
+    0 18px 40px -18px var(--cor-brilho-card),
+    0 0 0 1px rgba(179, 15, 15, 0.14);
+}
+
+.card__titulo {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Estado vazio: caixa tracejada para conteúdo ainda não preenchido */
+.card__vazio {
+  font-size: 0.9rem;
+  color: var(--cor-texto-apagado);
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  border-radius: var(--raio-botoes);
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.015);
+}
+
+/* Etiquetas de tecnologia (tags) */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  font-family: var(--fonte-mono);
+  font-size: 0.78rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  color: var(--cor-texto);
+  background: rgba(179, 15, 15, 0.14);
+  border: 1px solid rgba(179, 15, 15, 0.35);
+}
+
+/* Tag "em aprendizado": contorno tracejado (sinaliza que está em evolução) */
+.tag--aprendendo {
+  background: transparent;
+  border-style: dashed;
+  color: var(--cor-texto-suave);
+}
+
+/* Tag desativada: conteúdo a definir */
+.tag--desativada {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--cor-texto-apagado);
+}
+
+/* ---------- 6. Sobre mim ---------- */
+
+.sobre__grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+}
+
+/* Foto do ambiente de estudo (figure = semântica de imagem + legenda) */
+.sobre__foto {
+  margin-bottom: 1.75rem;
+}
+
+.sobre__foto img {
+  display: block;
+  width: 100%;
+  height: auto; /* mantém a proporção original736x414 */
+  border-radius: var(--raio);
+  border: 1px solid var(--cor-borda);
+}
+
+.sobre__foto figcaption {
+  margin-top: 0.5rem;
+  font-family: var(--fonte-mono);
+  font-size: 0.75rem;
+  color: var(--cor-texto-apagado);
+}
+
+.sobre__texto p + p {
+  margin-top: 1rem; /* espaço entre parágrafos, exceto o primeiro */
+}
+
+.sobre__lista {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.sobre__lista li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  color: var(--cor-texto-suave);
+  font-size: 0.95rem;
+}
+
+/* Marcador vermelho personalizado no lugar do marcador padrão */
+.sobre__lista li::before {
+  content: "▸";
+  color: var(--cor-vermelho-claro);
+}
+
+.sobre__lista--compacta {
+  gap: 0.55rem;
+}
+
+/* ---------- 7. Tecnologias ---------- */
+
+.tecnologias__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 1.25rem;
+}
+
+.tecnologias__nota {
+  margin-top: 1.75rem;
+  font-family: var(--fonte-mono);
+  font-size: 0.82rem;
+  color: var(--cor-texto-apagado);
+}
+
+/* ---------- 8. Projetos ---------- */
+
+.projetos__lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: 1.5rem;
+}
+
+/* Remove o padding do cartão para a imagem sangrar até as bordas */
+.projeto {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.projeto__thumb {
+  aspect-ratio: 16 / 9; /* proporção fixa: evita "pulo" de layout ao carregar */
+  display: grid;
+  place-content: center;
+  gap: 0.5rem;
+  text-align: center;
+  background:
+    linear-gradient(135deg, #1c1112, #0d0809 65%),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.02) 0 12px,
+      transparent 12px 24px
+    );
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.projeto__monograma {
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.12);
+  text-shadow: 0 0 50px var(--cor-brilho-card);
+}
+
+.projeto__legenda {
+  font-family: var(--fonte-mono);
+  font-size: 0.75rem;
+  color: var(--cor-texto-apagado);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.projeto__corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: var(--espaco-md);
+  flex: 1; /* ocupa o espaço restante quando os cartões têm alturas diferentes */
+}
+
+.projeto__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.projeto__nome {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Indicador de situação do projeto */
+.situacao {
+  font-family: var(--fonte-mono);
+  font-size: 0.72rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.situacao--neutra {
+  color: var(--cor-texto-apagado);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.projeto__descricao {
+  font-size: 0.92rem;
+  flex: 1;
+}
+
+/* Link do repositório (versão desativada — sem href falso) */
+.projeto__link {
+  font-family: var(--fonte-mono);
+  font-size: 0.82rem;
+}
+
+.projeto__link--desativado {
+  color: var(--cor-texto-apagado);
+}
+
+/* Linha de curso (seção Estudos) */
+.cursos {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.curso {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-botoes);
+  transition: border-color var(--transicao);
+}
+
+.curso:hover {
+  border-color: rgba(179, 15, 15, 0.45);
+}
+
+.curso__nome {
+  color: var(--cor-texto);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.curso__local {
+  font-family: var(--fonte-mono);
+  font-size: 0.8rem;
+  color: var(--cor-texto-suave);
+  margin-top: 0.15rem;
+}
+
+/* Indicador de curso em andamento (no tom do tema) */
+.situacao--andamento {
+  /* Tom mais claro que --cor-vermelho-claro: sobre o fundo tintado do
+     badge, apenas #eb4040 atinge 4.38:1 (abaixo do mínimo de 4.5:1).
+     Este tom chega a ~4.9:1 mantendo o mesmo caráter vermelho. */
+  color: #f25454;
+  background: rgba(179, 15, 15, 0.14);
+  border: 1px solid rgba(179, 15, 15, 0.35);
+}
+
+/* ---------- 9. Estudos ---------- */
+
+.estudos__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 1.25rem;
+}
+
+.estudos__texto {
+  font-size: 0.92rem;
+}
+
+/* ---------- 10. Contato ---------- */
+
+.contato__intro {
+  max-width: 36rem;
+  margin-bottom: 2rem;
+}
+
+.contato__lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 1rem;
+}
+
+.contato__item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 1.15rem 1.25rem;
+  transition: border-color var(--transicao);
+}
+
+.contato__item:hover {
+  border-color: rgba(179, 15, 15, 0.45);
+}
+
+/* Item com link real (e-mail e telefone) */
+.contato__item--link {
+  padding: 0; /* o espaçamento fica no link interno */
+}
+
+.contato__link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 1.15rem 1.25rem;
+}
+
+.contato__nome {
+  font-weight: 600;
+}
+
+/* Valor do contato (e-mail/telefone) em fonte de código */
+.contato__valor {
+  font-family: var(--fonte-mono);
+  font-size: 0.82rem;
+  color: var(--cor-vermelho-claro);
+  /* Quebra linhas longas (e-mail) em vez de criar rolagem horizontal */
+  overflow-wrap: anywhere;
+  transition: color var(--transicao);
+}
+
+.contato__link:hover .contato__valor {
+  color: var(--cor-texto);
+}
+
+.contato__status {
+  font-family: var(--fonte-mono);
+  font-size: 0.75rem;
+  color: var(--cor-texto-apagado);
+}
+
+/* ---------- 11. Rodapé ---------- */
+
+.rodape {
+  border-top: 1px solid var(--cor-borda);
+  padding-block: 2rem;
+}
+
+.rodape__interno {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.rodape__nome {
+  color: var(--cor-texto);
+  font-weight: 600;
+}
+
+.rodape__nota {
+  font-family: var(--fonte-mono);
+  font-size: 0.8rem;
+  color: var(--cor-texto-apagado);
+}
+
+/* ---------- 11.5 Animação de entrada (reveal) ----------
+   ATENÇÃO: as classes .reveal são adicionadas pelo JavaScript
+   (js/animations.js). Sem JavaScript, nada aqui é aplicado e todo o
+   conteúdo fica visível normalmente — este CSS só "esconde" elementos
+   que o JS marcou como animáveis. */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal--visivel {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Rede de segurança: com movimento reduzido, nunca deixe conteúdo
+   escondido (caso o JS falhe antes de marcar como visível) */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- 11.6 Animações de destaque ----------
+   Pacote "completo": palavras do hero entrando, letras dos títulos,
+   palavras-chave pulsando, borda de luz girando nos projetos e
+   elevação dos cards no hover.
+
+   PADRÃO "backwards" (fill-mode): o estado escondido vale apenas
+   DURANTE o atraso da animação. Quando ela termina, o elemento volta
+   aos estilos normais (visível) — assim o hover continua funcionando
+   e nada fica preso em opacity:0 se algo falhar. */
+
+/* ---1. Palavras do título do hero entrando em sequência --- */
+.hero__titulo .palavra {
+  display: inline-block; /* permite deslocar cada palavra individualmente */
+  animation: sobePalavra 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* Atrasos escalonados: as palavras sobem uma após a outra */
+.hero__titulo .palavra:nth-child(1) { animation-delay: 1s; }
+.hero__titulo .palavra:nth-child(2) { animation-delay: 1.12s; }
+.hero__titulo .palavra:nth-child(3) { animation-delay: 1.24s; }
+.hero__titulo .palavra:nth-child(4) { animation-delay: 1.36s; }
+.hero__titulo .palavra:nth-child(5) { animation-delay: 1.48s; }
+
+@keyframes sobePalavra {
+  from {
+    opacity: 0;
+    transform: translateY(0.7em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---2. Botões do hero entram depois das palavras --- */
+.hero__acoes .botao {
+  animation: sobePalavra 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.hero__acoes .botao:nth-child(1) { animation-delay: 1.85s; }
+.hero__acoes .botao:nth-child(2) { animation-delay: 2s; }
+
+/* ---3. Letras dos títulos de seção (classes criadas pelo JS) ---
+   A animação só dispara quando o cabeçalho da seção fica visível
+   (.reveal--visivel). O atraso de cada letra é aplicado via
+   style.animationDelay no animations.js. */
+.secao__titulo .letra {
+  display: inline-block;
+}
+
+.secao__cabecalho.reveal--visivel .secao__titulo .letra {
+  animation: sobePalavra 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* ---4. Palavras-chave do hero pulsando (brilho vermelho suave) ---
+   Pulso lento e periódico: chama a olhada sem incomodar a leitura.
+   Os atrasos evitam que as4 palavras pisquem juntas. */
+.hero__descricao strong {
+  color: #fff;
+  animation: pulsaBrilho 4s ease-in-out infinite;
+}
+
+.hero__descricao strong:nth-of-type(1) { animation-delay: 0s; }
+.hero__descricao strong:nth-of-type(2) { animation-delay: 1s; }
+.hero__descricao strong:nth-of-type(3) { animation-delay: 2s; }
+.hero__descricao strong:nth-of-type(4) { animation-delay: 3s; }
+
+@keyframes pulsaBrilho {
+  0%, 100% {
+    text-shadow: 0 0 0 rgba(235, 64, 64, 0);
+  }
+  50% {
+    text-shadow: 0 0 16px rgba(235, 64, 64, 0.7);
+  }
+}
+
+/* ---5. Borda com "corrente" de luz girando nos cards de projeto ---
+
+   @property registra --angulo-luz como um ANGULO de verdade, o que
+   permite animá-la (custom properties comuns não são animáveis).
+   Navegadores sem suporte a @property ignoram a animação e mostram
+   um arco de luz estático — o site nunca quebra, só fica menos vivo. */
+@property --angulo-luz {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.projeto {
+  position: relative; /* âncora para o pseudo-elemento da borda */
+}
+
+.projeto::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2; /* fica acima da thumb, mas abaixo do texto */
+  border-radius: inherit;
+  padding: 1.5px; /* espessura do "anel" de luz */
+
+  /* Gradiente cônico: um trecho vermelho girando em volta do card */
+  background: conic-gradient(
+    from var(--angulo-luz, 0deg),
+    transparent 0 62%,
+    var(--cor-vermelho-claro) 78%,
+    transparent 90% 100%
+  );
+
+  /* Máscara: mostra APENAS o anel de1.5px (o miolo fica transparente) */
+  -webkit-mask: linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+
+  pointer-events: none; /* nunca bloqueia cliques no card */
+  opacity: 0.7;          /* discreta por padrão... */
+  animation: giraLuz 6s linear infinite;
+}
+
+.projeto:hover::before {
+  opacity: 1; /* ...acende de verdade no hover */
+}
+
+@keyframes giraLuz {
+  to {
+    --angulo-luz: 360deg;
+  }
+}
+
+/* ---6. Transições do card após a entrada ---
+   .reveal deixa todas as transições em600ms (entrada suave). Depois
+   que o card aparece, devolvemos transform/borda/sombra para200ms —
+   assim o hover responde ágil em vez de "melar". */
+.card.reveal--visivel {
+  transition:
+    opacity 0.6s ease,
+    transform var(--transicao),
+    border-color var(--transicao),
+    background-color var(--transicao),
+    box-shadow var(--transicao);
+}
+
+/* ---------- 12. Acessibilidade e ajustes globais ---------- */
+
+/* Link "pular para o conteúdo": invisível até receber foco do teclado */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 1rem;
+  z-index: 200;
+  background: var(--cor-vermelho);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.65rem 1.1rem;
+  border-radius: 0 0 var(--raio-botoes) var(--raio-botoes);
+  transition: top var(--transicao);
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Anel de foco visível para navegação por teclado */
+:focus-visible {
+  outline: 2px solid var(--cor-vermelho-claro);
+  outline-offset: 3px;
+}
+
+/* Seleção de texto no tom do tema */
+::selection {
+  background: var(--cor-vermelho);
+  color: #fff;
+}
+
+/* Barra de rolagem discreta no tom do tema (Webkit: Chrome/Safari/Edge) */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cor-fundo);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2c1a1b;
+  border-radius: 999px;
+  border: 2px solid var(--cor-fundo);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cor-vermelho-escuro);
+}
+
+/* Respeita a preferência do usuário por menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

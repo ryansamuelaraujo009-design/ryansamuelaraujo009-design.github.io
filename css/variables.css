@@ -1,0 +1,60 @@
+/* ====================================================================
+   VARIABLES.CSS — Design tokens do site (tema escuro vermelho + preto)
+   --------------------------------------------------------------------
+   POR QUE USAR VARIÁVEIS CSS?
+   Em vez de repetir "#b30f0f" espalhado por todo o CSS, guardamos o
+   valor em UM lugar só. Se você quiser mudar a cor do site inteiro,
+   altera apenas aqui. É o mesmo conceito de "design tokens" usado
+   em empresas e grandes bibliotecas de componentes.
+   ==================================================================== */
+
+:root {
+  /* Paleta de cores — vermelho escuro forte + preto */
+  --cor-fundo: #0a0607;              /* preto levemente quente (fundo) */
+  --cor-fundo-alt: #100a0b;          /* fundo alternado (seções) */
+  --cor-superficie: #150e0f;         /* cartões e blocos */
+  --cor-superficie-alta: #1d1314;    /* superfície em hover */
+  --cor-borda: rgba(255, 255, 255, 0.08); /* bordas discretas */
+
+  --cor-vermelho: #b30f0f;           /* VERMELHO ESCURO FORTE — cor principal */
+  /* Clareado de #e63333 para #eb4040: o tom anterior ficava em 4.44:1
+     sobre os cartões, abaixo do mínimo de 4.5:1 (WCAG AA).
+     #eb4040 atinge ~4.85:1 mantendo o visual de vermelho forte. */
+  --cor-vermelho-claro: #eb4040;     /* destaque, hover e textos de ênfase */
+  --cor-vermelho-escuro: #7a0000;    /* estados pressionados / gradientes */
+  --cor-brilho: rgba(179, 15, 15, 0.16);  /* brilho suave no fundo */
+  --cor-brilho-card: rgba(179, 15, 15, 0.28); /* sombra de destaque */
+
+  --cor-texto: #f4eeee;             /* texto principal (quase branco) */
+  --cor-texto-suave: #b9aeae;       /* texto secundário */
+  /* Clareado de #8a7f7f para #9b9090: o valor antigo não atingia
+     o contraste mínimo de 4.5:1 exigido pela acessibilidade (WCAG AA) */
+  --cor-texto-apagado: #9b9090;     /* texto de apoio / estados vazios */
+
+  /* Tipografia
+     - Space Grotesk: fonte moderna, geométrica, usada em títulos e texto
+     - JetBrains Mono: fonte de código, usada em detalhes "técnicos"
+     As fontes após a vírgula são reservas: se o Google Fonts falhar,
+     o site continua legível com fontes do sistema. */
+  --fonte: 'Space Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --fonte-mono: 'JetBrains Mono', 'Consolas', monospace;
+
+  /* Espaçamentos (escala consistente — nada de valores aleatórios) */
+  --espaco-xs: 0.5rem;
+  --espaco-sm: 0.75rem;
+  --espaco-md: 1.25rem;
+  --espaco-lg: 2rem;
+  --espaco-xl: 3rem;
+
+  /* Layout */
+  --largura-max: 1120px;   /* largura máxima do conteúdo */
+  --raio: 12px;            /* arredondamento dos cartões */
+  --raio-botoes: 8px;      /* arredondamento dos botões */
+  --altura-cabecalho: 72px; /* altura fixa do cabeçalho */
+
+  /* Movimento — transições curtas e suaves (nada exagerado) */
+  --transicao: 200ms ease;
+
+  /* Força escura do navegador: rolagem, formulários etc. no tom certo */
+  color-scheme: dark;
+}
