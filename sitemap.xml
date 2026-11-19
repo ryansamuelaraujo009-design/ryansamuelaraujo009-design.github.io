@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  sitemap.xml — mapa do site para os buscadores.
+  Site single-page: apenas a página raiz, mas o arquivo já prepara
+  o terreno para quando houver mais páginas (ex.: página de projeto).
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://ryansamuelaraujo009-design.github.io/</loc>
+    <lastmod>2026-11-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

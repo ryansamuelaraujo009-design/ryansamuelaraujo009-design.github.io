@@ -20,12 +20,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- SEO: texto que aparece nos resultados do Google -->
-  <meta name="description" content="Portfólio de Ryan Samuel Araújo dos Santos, estudante de programação: Python, desenvolvimento full-stack, jogos com Godot Engine e inteligência artificial.">
+  <meta name="description" content="DEV.programier — portfólio de Ryan Samuel Araújo dos Santos: Python, desenvolvimento full-stack, jogos com Godot Engine e inteligência artificial.">
   <meta name="author" content="Ryan Samuel Araújo dos Santos">
   <meta name="theme-color" content="#0a0607">
 
   <!-- Open Graph: define como o link aparece ao ser compartilhado em redes sociais -->
-  <meta property="og:title" content="Ryan Samuel Araújo dos Santos — Portfólio">
+  <meta property="og:title" content="DEV.programier — Portfólio de Ryan Samuel">
+  <meta property="og:site_name" content="DEV.programier">
   <meta property="og:description" content="Estudante de programação: Python, full-stack, jogos e inteligência artificial.">
   <meta property="og:type" content="website">
   <!--
@@ -35,7 +36,38 @@
   -->
   <meta property="og:image" content="assets/img/perfil.png">
 
-  <title>Ryan Samuel Araújo dos Santos — Portfólio</title>
+  <!--
+    Título = marca + nome + o que é (é o texto que aparece na aba do
+    navegador E no resultado do Google — a marca vem primeiro por ser
+    o termo de busca alvo).
+  -->
+  <title>DEV.programier — Portfólio de Ryan Samuel Araújo dos Santos</title>
+
+  <!--
+    Dados estruturados (JSON-LD): um "cartão de visitas" em formato
+    que o Google lê. Ele associa a marca DEV.programier ao site e ao
+    autor, e lista os perfis oficiais (sameAs) — isso aumenta a
+    chance de o site aparecer quando alguém busca pela marca.
+  -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "DEV.programier",
+    "alternateName": "Ryan Samuel Araújo dos Santos — Portfólio",
+    "url": "https://ryansamuelaraujo009-design.github.io/",
+    "description": "DEV.programier — portfólio de Ryan Samuel Araújo dos Santos: Python, desenvolvimento full-stack, jogos com Godot Engine e inteligência artificial.",
+    "author": {
+      "@type": "Person",
+      "name": "Ryan Samuel Araújo dos Santos",
+      "email": "mailto:ryansamuelaraujo009@gmail.com",
+      "sameAs": [
+        "https://github.com/ryansamuelaraujo009-design",
+        "https://www.linkedin.com/in/ryan-samuel-ara%C3%BAjo-dos-santos-a88825316"
+      ]
+    }
+  }
+  </script>
 
   <!--
     FONTES (Google Fonts)
@@ -73,7 +105,7 @@
       <!-- Logo: iniciais + nome -->
       <!-- O aria-label precisa conter TODO o texto visível ("RS Ryan Samuel"),
            senão leitores de tela ficam confusos (erro de acessibilidade) -->
-      <a href="#inicio" class="logo" aria-label="Ryan Samuel — voltar ao início">
+      <a href="#inicio" class="logo" aria-label="DEV.programier — voltar ao início">
         <!--
           Avatar: logo gerada em código (semicírculo + círculo brancos).
           alt="" e aria-hidden: imagem decorativa — o nome visível ao lado
@@ -87,7 +119,7 @@
           height="36"
           aria-hidden="true"
         >
-        <span class="logo__nome">Ryan Samuel</span>
+        <span class="logo__nome">DEV.programier</span>
       </a>
 
       <!--
@@ -526,7 +558,7 @@
   <footer class="rodape">
     <div class="container rodape__interno">
       <p class="rodape__nome">Ryan Samuel Araújo dos Santos</p>
-      <p class="rodape__nota">Portfólio construído com HTML, CSS e JavaScript.</p>
+      <p class="rodape__nota">DEV.programier — portfólio construído com HTML, CSS e JavaScript.</p>
     </div>
   </footer>
 

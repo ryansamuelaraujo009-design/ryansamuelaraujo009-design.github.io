@@ -1,0 +1,9 @@
+# robots.txt — DEV.programier
+# Instruções para os robôs de busca (Google, Bing etc.)
+
+# Permitir a todos os robôs rastrearem todo o site
+User-agent: *
+Allow: /
+
+# Mapa do site: lista as páginas que devem ser indexadas
+Sitemap: https://ryansamuelaraujo009-design.github.io/sitemap.xml
