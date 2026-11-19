@@ -6,7 +6,7 @@
         "orçamento" e "orcamento" casem igual.
      2. Cada tópico tem palavras-chave; o tópico com MAIS pontos vence.
      3. Alguns tópicos são DINÂMICOS: recebem as métricas reais
-        (visitantes, GitHub, status) e montam a resposta na hora.
+        (mensagens, GitHub, status) e montam a resposta na hora.
 
    PARA ADICIONAR UM TÓPICO NOVO: copie um bloco do array TOPICOS e
    ajuste "chaves" (o que a pessoa pode digitar) e "responder" (o HTML
@@ -62,46 +62,39 @@ const TOPICOS = [
     id: 'visitantes',
     chaves: [
       'quantas pessoas', 'quantas visitas', 'quantas entraram', 'visitantes',
-      'acessos', 'quem entrou', 'entraram no site', 'trafego', 'publico do site',
-      'estatisticas do site', 'numero de visitas', 'visitas', 'contador',
+      'acessos', 'quem entrou', 'entraram no site', 'trafego', 'visitas',
+    ],
+    responder() {
+      return `
+        <p>📊 O contador de <strong>visitantes</strong> foi desligado — o painel agora conta só o que importa: <strong>cliques nas mensagens</strong>.</p>
+        <p>Pergunte <strong>"quantas mensagens"</strong> para ver os totais do GitHub, e-mail e WhatsApp.</p>`;
+    },
+  },
+
+  {
+    id: 'mensagens',
+    chaves: [
+      'quantas mensagens', 'quantos cliques', 'numero de mensagens',
+      'contador de mensagem', 'mensagens', 'cliques', 'clicaram',
+      'whatsapp', 'gmail', 'e-mail', 'email', 'chegaram',
     ],
     responder(ctx) {
-      const g = ctx.goat;
-      if (!g || g.status === 'carregando') {
-        return '<p>⏳ Ainda estou carregando suas métricas — tente de novo em alguns segundos.</p>';
+      const m = ctx.mensagens;
+      if (!m || m.status === 'carregando') {
+        return '<p>⏳ Ainda estou carregando seus contadores — tente de novo em alguns segundos.</p>';
       }
-      if (g.status !== 'ok') {
-        return `
-          <p>📊 O contador de visitantes <strong>ainda não está configurado</strong>.</p>
-          <p>Para eu conseguir te dizer quantas pessoas entraram no seu site:</p>
-          <ol>
-            <li>Crie uma conta grátis em <a href="https://www.goatcounter.com/signup" target="_blank" rel="noopener">goatcounter.com</a>;</li>
-            <li>Abra <strong>Configurações</strong> aqui no painel e cole o <strong>código</strong> e a <strong>chave de API</strong>;</li>
-            <li>Troque <code>SEU-CODE</code> no <code>index.html</code> do portfólio e publique.</li>
-          </ol>
-          <p>Digite <strong>"configurar"</strong> para ver o passo a passo completo.</p>`;
+      if (m.status !== 'ok') {
+        return `<p>⚠️ Não consegui buscar os contadores agora (${escapar(m.erro || 'erro desconhecido')}). Tente de novo em instantes.</p>`;
       }
-
-      let html = `
-        <p>📊 <strong>Visitantes do seu portfólio:</strong></p>
+      return `
+        <p>💬 <strong>Contador de mensagens (cliques de contato):</strong></p>
         <ul>
-          <li><strong>Hoje:</strong> ${num(g.hoje)}</li>
-          <li><strong>Últimos 7 dias:</strong> ${num(g.sete)}</li>
-          <li><strong>Últimos 30 dias:</strong> ${num(g.trinta)}</li>
-        </ul>`;
-
-      if (g.top && g.top.length) {
-        html += '<p><strong>As páginas mais vistas (7 dias):</strong></p><ul>';
-        for (const p of g.top) {
-          html += `<li><code>${escapar(p.path)}</code> — ${num(p.count)}</li>`;
-        }
-        html += '</ul>';
-      }
-
-      if (g.dashboard) {
-        html += `<p>Detalhes completos (países, horários, de onde vieram) no <a href="${g.dashboard}" target="_blank" rel="noopener">dashboard do GoatCounter</a>.</p>`;
-      }
-      return html;
+          <li><strong>GitHub:</strong> ${num(m.cliques.github)}</li>
+          <li><strong>E-mail:</strong> ${num(m.cliques.gmail)}</li>
+          <li><strong>WhatsApp:</strong> ${num(m.cliques.whatsapp)}</li>
+          <li><strong>Total:</strong> ${num(m.total)}</li>
+        </ul>
+        <p>É cada clique nos links de contato do seu portfólio. Peça <strong>"resumo"</strong> para ver tudo em uma linha.</p>`;
     },
   },
 
@@ -155,13 +148,13 @@ const TOPICOS = [
         ? '⏳ verificando…'
         : (ctx.site.noAr ? `🟢 <strong>no ar</strong> (${num(ctx.site.ms)} ms)` : '🔴 <strong>inacessível</strong>');
 
-      let visitantes;
-      if (ctx.goat && ctx.goat.status === 'ok') {
-        visitantes = `hoje <strong>${num(ctx.goat.hoje)}</strong> · 7 dias <strong>${num(ctx.goat.sete)}</strong> · 30 dias <strong>${num(ctx.goat.trinta)}</strong>`;
-      } else if (ctx.goat && ctx.goat.status === 'carregando') {
-        visitantes = 'carregando…';
+      let mensagens;
+      if (ctx.mensagens && ctx.mensagens.status === 'ok') {
+        mensagens = `GitHub <strong>${num(ctx.mensagens.cliques.github)}</strong> · E-mail <strong>${num(ctx.mensagens.cliques.gmail)}</strong> · WhatsApp <strong>${num(ctx.mensagens.cliques.whatsapp)}</strong> · total <strong>${num(ctx.mensagens.total)}</strong>`;
+      } else if (ctx.mensagens && ctx.mensagens.status === 'carregando') {
+        mensagens = 'carregando…';
       } else {
-        visitantes = 'contador não configurado';
+        mensagens = 'indisponível agora';
       }
 
       let github;
@@ -177,10 +170,10 @@ const TOPICOS = [
         <p>📊 <strong>Seu resumo — só o importante:</strong></p>
         <ul>
           <li><strong>Site:</strong> ${statusSite}</li>
-          <li><strong>Visitantes:</strong> ${visitantes}</li>
+          <li><strong>Mensagens:</strong> ${mensagens}</li>
           <li><strong>GitHub:</strong> ${github}</li>
         </ul>
-        <p>Pedir <strong>"visitantes"</strong>, <strong>"github"</strong> ou <strong>"status"</strong> traz o detalhe de cada um.</p>`;
+        <p>Pedir <strong>"mensagens"</strong>, <strong>"github"</strong> ou <strong>"status"</strong> traz o detalhe de cada um.</p>`;
     },
   },
 
@@ -213,26 +206,6 @@ const TOPICOS = [
     },
   },
 
-  {
-    id: 'configurar',
-    chaves: [
-      'configurar', 'goatcounter', 'chave api', 'sem dados', 'sem visitas',
-      'nao aparece', 'como ligar', 'contador nao', 'ligar o contador',
-    ],
-    responder() {
-      return `
-        <p>⚙️ <strong>Como ligar o contador de visitas (1 vez, ~2 minutos):</strong></p>
-        <ol>
-          <li>Crie a conta grátis em <a href="https://www.goatcounter.com/signup" target="_blank" rel="noopener">goatcounter.com</a> (e-mail + senha).</li>
-          <li>Copie seu <strong>código</strong>: é o começo do endereço do seu painel (<code>SEU-CODE.goatcounter.com</code>).</li>
-          <li>No site do GoatCounter: <strong>Username → API → Create key</strong> (se der opção de permissão, escolha só leitura de estatísticas) e copie a chave.</li>
-          <li>Aqui no painel: abra <strong>Configurações</strong>, cole o código e a chave e clique em <strong>Salvar</strong>.</li>
-          <li>No <code>index.html</code> do portfólio, troque <code>SEU-CODE</code> no script do contador (o trecho já está lá) e publique no GitHub.</li>
-        </ol>
-        <p>Pronto: as visitas aparecem em ~10 segundos após a primeira visita (desative o adblocker para testar).</p>`;
-    },
-  },
-
   /* ------------------- TÓPICOS DE NEGÓCIO (estáticos) ------------------- */
 
   {
@@ -242,9 +215,9 @@ const TOPICOS = [
     limite: 50,
     responder() {
       return `
-        <p>Olá, Ryan! 👋</p>
-        <p>Sou seu assistente do <strong>negócio de criação de sites</strong>: ajudo com orçamento, briefing, entrega, contrato e divulgação — e mostro o resumo das suas métricas.</p>
-        <p>Pergunte à vontade ou use um atalho. Digite <strong>"ajuda"</strong> para ver tudo o que sei.</p>`;
+        <p>E aí, Ryan! 👋</p>
+        <p>Sou seu assistente de <strong>criação de sites</strong>: orçamento, briefing, entrega, divulgação — e as métricas do painel.</p>
+        <p>É só perguntar do seu jeito. Digite <strong>"ajuda"</strong> que eu mostro tudo.</p>`;
     },
   },
 
@@ -257,22 +230,19 @@ const TOPICOS = [
     ],
     responder() {
       return `
-        <p>💰 <strong>Como cobrar um site (sem se prejudicar):</strong></p>
-        <ol>
-          <li><strong>Precifique pelo valor</strong>, não só pelas horas: quanto o site vai gerar para o cliente (vendas, agendamentos, credibilidade).</li>
-          <li><strong>Faixas de referência no Brasil</strong> (ajuste ao seu público e à sua região):</li>
-        </ol>
+        <p>💰 <strong>Quanto cobrar:</strong></p>
         <ul>
-          <li>Landing page simples: <strong>R$ 500 a R$ 1.500</strong></li>
-          <li>Site institucional (até 5 páginas): <strong>R$ 1.500 a R$ 5.000</strong></li>
+          <li>Landing page: <strong>R$ 500 a R$ 1.500</strong></li>
+          <li>Site institucional (até 5 págs): <strong>R$ 1.500 a R$ 5.000</strong></li>
           <li>Loja virtual: <strong>R$ 5.000+</strong></li>
         </ul>
+        <p>Regras de ouro:</p>
         <ul>
-          <li>Cobre <strong>50% de sinal</strong> antes de começar e os outros 50% na entrega.</li>
-          <li>Textos, logo, domínio e manutenção são <strong>extras</strong> — cobre à parte.</li>
-          <li>No começo pode cobrar um pouco menos para montar portfólio, mas <strong>nunca faça de graça</strong>: cliente que não paga valoriza menos.</li>
+          <li><strong>50% de sinal</strong> antes de começar, 50% na entrega</li>
+          <li>Domínio, textos, logo e manutenção são <strong>extras</strong></li>
+          <li>No começo pode baixar um pouco pra montar portfólio — mas <strong>nunca faça de graça</strong></li>
         </ul>
-        <p>Quer um <strong>modelo de proposta pronto</strong>? Pergunte por "modelo de proposta".</p>`;
+        <p>Quer um modelo pronto? Pede <strong>"modelo de proposta"</strong>.</p>`;
     },
   },
 
@@ -299,9 +269,9 @@ Minha proposta:
 
 Qualquer dúvida, estou à disposição!</pre>
         <ul>
-          <li>Sempre explique o que <strong>não</strong> está incluso (evita confusão depois).</li>
-          <li>Mande por escrito (e-mail ou WhatsApp) e peça uma confirmação — já vale como acordo inicial.</li>
-          <li>Se o cliente pedir desconto, desista de algo em troca (ex.: menos páginas), não só do valor.</li>
+          <li>Diga sempre o que <strong>não</strong> está incluso (evita confusão depois).</li>
+          <li>Mande por escrito e peça uma confirmação — já vale como acordo.</li>
+          <li>Desconto? Troque algo do escopo em vez de baixar o valor.</li>
         </ul>`;
     },
   },
@@ -328,7 +298,7 @@ Qualquer dúvida, estou à disposição!</pre>
           <li>Quem vai atualizar o site depois de pronto?</li>
           <li>Precisa de formulário, WhatsApp, mapa, pagamento ou blog?</li>
         </ol>
-        <p>Anote as respostas e mande de volta para o cliente <strong>confirmar por escrito</strong> — isso vira o escopo do contrato.</p>`;
+        <p>Anote as respostas e peça pra cliente <strong>confirmar por escrito</strong> — isso vira o escopo do contrato.</p>`;
     },
   },
 
@@ -353,7 +323,7 @@ Qualquer dúvida, estou à disposição!</pre>
           <li>Backup guardado e código no GitHub</li>
           <li>Cliente treinado (um vídeo curto de como editar resolve)</li>
         </ul>
-        <p><strong>Prazo:</strong> dobre o tempo que você estima — imprevistos sempre aparecem. E combine por escrito quantas rodadas de ajustes estão inclusas (padrão: <strong>2</strong>).</p>`;
+        <p><strong>Prazo:</strong> dobre sua estimativa — imprevisto sempre aparece. E combine por escrito as rodadas de ajuste (padrão: <strong>2</strong>).</p>`;
     },
   },
 
@@ -366,14 +336,13 @@ Qualquer dúvida, estou à disposição!</pre>
     ],
     responder() {
       return `
-        <p>📢 <strong>Como atrair clientes (o que funciona de verdade):</strong></p>
+        <p>📢 <strong>Como atrair clientes:</strong></p>
         <ol>
-          <li><strong>Portfólio primeiro</strong> — seu site é sua vitrine; mostre processo (antes/depois), não só o resultado.</li>
-          <li><strong>LinkedIn:</strong> publique 2x por semana — dicas rápidas, bastidores, projetos novos.</li>
-          <li><strong>GitHub:</strong> repositório organizado com README bom impressiona clientes técnicos e recrutadores.</li>
-          <li><strong>Indicação:</strong> peça a cada cliente satisfeito e ofereça um pequeno desconto por indicação.</li>
+          <li><strong>Portfólio primeiro</strong> — mostre processo (antes/depois), não só o resultado.</li>
+          <li><strong>LinkedIn:</strong> 2 posts por semana — dicas, bastidores, projetos.</li>
+          <li><strong>Indicação:</strong> peça a cada cliente satisfeito e ofereça desconto por indicar.</li>
           <li><strong>Nicho:</strong> escolha um segmento (restaurantes, barbearias, academias…) e fale a língua dele.</li>
-          <li><strong>Valor primeiro:</strong> audite 3 sites de empresas do nicho e mande 1 melhoria concreta — sem cobrar nada no primeiro contato.</li>
+          <li><strong>Audite 3 sites</strong> do nicho e mande 1 melhoria concreta — de graça, no primeiro contato.</li>
           <li><strong>Contato ativo:</strong> 5 mensagens por semana valem mais que 50 posts sem resposta.</li>
         </ol>`;
     },
@@ -387,14 +356,14 @@ Qualquer dúvida, estou à disposição!</pre>
     ],
     responder() {
       return `
-        <p>✍️ <strong>O que combinar por escrito (mesmo que seja só um e-mail):</strong></p>
+        <p>✍️ <strong>Combine por escrito (até um e-mail resolve):</strong></p>
         <ul>
-          <li><strong>Escopo:</strong> o que está incluso — e o que <strong>não</strong> está</li>
-          <li><strong>Valor e pagamento:</strong> 50% de sinal antes de começar, 50% na entrega (antes de publicar)</li>
-          <li><strong>Ajustes:</strong> quantas rodadas (ex.: 2) e o que vira cobrança extra</li>
-          <li><strong>Prazo:</strong> e o que acontece se o cliente atrasar os materiais (o prazo congela)</li>
+          <li><strong>Escopo:</strong> o que entra — e o que <strong>não</strong> entra</li>
+          <li><strong>Pagamento:</strong> 50% sinal, 50% na entrega (antes de publicar)</li>
+          <li><strong>Ajustes:</strong> quantas rodadas (padrão: 2) e o que vira extra</li>
+          <li><strong>Prazo:</strong> e o que acontece se os materiais atrasarem (o prazo congela)</li>
           <li><strong>Domínio e hospedagem:</strong> sempre no nome <strong>DO CLIENTE</strong></li>
-          <li><strong>Direitos:</strong> pagamento total = direitos transferidos</li>
+          <li><strong>Direitos:</strong> pago = transferidos</li>
         </ul>
         <p>Guarde os comprovantes e emita recibo — protege você e gera confiança.</p>`;
     },
@@ -411,18 +380,11 @@ Qualquer dúvida, estou à disposição!</pre>
       return `
         <p>🌐 <strong>Domínio × hospedagem × GitHub Pages:</strong></p>
         <ul>
-          <li><strong>Domínio</strong> = o endereço (ex.: ryan.dev.br). Custa ~R$ 30–40/ano.</li>
-          <li><strong>Hospedagem</strong> = onde os arquivos do site moram.</li>
-          <li><strong>GitHub Pages</strong> = hospedagem grátis para sites estáticos — é lá que seu portfólio está publicado.</li>
+          <li><strong>Domínio</strong> = o endereço (~R$ 30–40/ano).</li>
+          <li><strong>Hospedagem</strong> = onde os arquivos moram — o <strong>GitHub Pages</strong> é grátis e é onde seu site está.</li>
         </ul>
-        <p><strong>Para publicar um site no GitHub Pages:</strong></p>
-        <ol>
-          <li>Crie o repositório <code>seuusuario.github.io</code> (ou <code>nome-do-projeto</code>)</li>
-          <li>Envie o código para a branch <code>main</code></li>
-          <li>No repositório: <strong>Settings → Pages → branch main → Save</strong></li>
-          <li>Em 1–2 minutos o site fica no ar em <code>usuario.github.io</code></li>
-        </ol>
-        <p>Domínio próprio: compre, aponte o DNS e o HTTPS sai grátis. <strong>Nunca registre domínio ou hospedagem no seu nome para projeto de cliente.</strong></p>`;
+        <p><strong>Publicar:</strong> repositório <code>seuusuario.github.io</code> → branch <code>main</code> → Settings → Pages → Save. Em 1–2 min está no ar.</p>
+        <p>Domínio próprio: compre, aponte o DNS e o HTTPS sai grátis. <strong>Nunca registre no seu nome</strong> domínio ou hospedagem de cliente.</p>`;
     },
   },
 
@@ -436,10 +398,10 @@ Qualquer dúvida, estou à disposição!</pre>
       return `
         <p>🔧 <strong>Manutenção = sua receita recorrente:</strong></p>
         <ul>
-          <li>Cobre mensalidade por: backup, atualizações de segurança, pequenas alterações de texto e monitoramento.</li>
-          <li>Faixa de referência: <strong>R$ 50 a R$ 200/mês</strong> para site pequeno (ajuste ao porte do cliente).</li>
-          <li>Defina um limite (ex.: 1h de alterações por mês) e o que é extra.</li>
-          <li>Ofereça já na entrega: <em>"inclui 30 dias de ajustes; depois disso, existe o plano de manutenção"</em>.</li>
+          <li>Cobre por: backup, atualizações, textos pequenos e monitoramento.</li>
+          <li>Faixa: <strong>R$ 50 a R$ 200/mês</strong> em site pequeno (ajuste ao cliente).</li>
+          <li>Defina um limite (ex.: 1h/mês) e o que é extra.</li>
+          <li>Ofereça já na entrega: <em>"30 dias de ajustes inclusos; depois tem o plano."</em></li>
         </ul>`;
     },
   },
@@ -452,16 +414,14 @@ Qualquer dúvida, estou à disposição!</pre>
     ],
     responder() {
       return `
-        <p>🔍 <strong>SEO básico que TODO site precisa ter:</strong></p>
+        <p>🔍 <strong>SEO básico que TODO site precisa:</strong></p>
         <ul>
-          <li>Title único e descritivo + meta description em cada página</li>
-          <li>Um H1 por página e hierarquia de títulos lógica</li>
-          <li>Texto alternativo nas imagens e URLs limpas</li>
-          <li>Carregamento rápido e layout responsivo (o Google olha isso)</li>
-          <li>HTTPS ativo, Google Search Console + sitemap.xml enviados</li>
-          <li>Conteúdo relevante e atualizado</li>
+          <li>Title + meta description únicos por página; um H1 por página</li>
+          <li>Alt nas imagens, URLs limpas e texto relevante</li>
+          <li>Rápido, responsivo e com HTTPS</li>
+          <li>Google Search Console + sitemap.xml enviados</li>
         </ul>
-        <p>Realidade: SEO leva meses. Entregue o básico no site e cobre <strong>SEO como serviço à parte</strong> (mensalidade), com expectativa de prazo bem clara.</p>`;
+        <p>Realidade: SEO leva meses. Entregue o básico e cobre <strong>SEO à parte</strong> (mensalidade), com prazo bem claro.</p>`;
     },
   },
 
@@ -475,10 +435,10 @@ Qualquer dúvida, estou à disposição!</pre>
       return `
         <p>🛠 <strong>Por onde ir tecnicamente:</strong></p>
         <ul>
-          <li><strong>HTML + CSS + JavaScript</strong> (o que você já usa) resolvem a maioria dos sites pequenos — é uma base sólida.</li>
-          <li>Framework (React etc.) só quando o projeto pedir — não use por moda: manutenção e velocidade importam.</li>
-          <li>Cliente quer editar sozinho? Avalie um CMS (WordPress) e cobre como extra.</li>
-          <li>Antes de acumular ferramentas, domine: <strong>Git, acessibilidade, performance e teste em celular</strong>.</li>
+          <li><strong>HTML + CSS + JavaScript</strong> (o que você já usa) resolve quase tudo — siga firme com ele.</li>
+          <li>Framework (React etc.) só quando o projeto pedir — não use por moda.</li>
+          <li>Cliente quer editar sozinho? Aí é CMS (WordPress) — cobre como extra.</li>
+          <li>Antes de ferramenta nova, domine: <strong>Git, acessibilidade, performance e teste em celular</strong>.</li>
         </ul>`;
     },
   },
@@ -492,12 +452,11 @@ Qualquer dúvida, estou à disposição!</pre>
     ],
     responder() {
       return `
-        <p>🚀 <strong>Fluxo recomendado para um site novo:</strong></p>
+        <p>🚀 <strong>Fluxo de um site novo:</strong></p>
         <ol>
-          <li><strong>Briefing</strong> — as perguntas essenciais (peça "briefing").</li>
-          <li><strong>Proposta por escrito</strong> — escopo, prazo e valor (tem "modelo de proposta").</li>
-          <li><strong>Sinal de 50%</strong> — só então você começa.</li>
-          <li><strong>Desenvolvimento</strong> — mostre uma tela antes de terminar (evita retrabalho).</li>
+          <li><strong>Briefing</strong> — peça "briefing".</li>
+          <li><strong>Proposta por escrito</strong> + sinal de 50% — aí você começa.</li>
+          <li><strong>Desenvolvimento</strong> — mostre uma tela antes de fechar (evita retrabalho).</li>
           <li><strong>Checklist de entrega</strong> + treino do cliente.</li>
           <li><strong>Manutenção mensal</strong> — ofereça na hora da entrega.</li>
         </ol>
@@ -506,25 +465,78 @@ Qualquer dúvida, estou à disposição!</pre>
   },
 
   {
+    id: 'desconto',
+    chaves: [
+      'desconto', 'cobrar menos', 'abaixar o preco', 'negociar',
+      'cliente quer mais barato', 'mais barato', 'caiu o preco',
+    ],
+    responder() {
+      return `
+        <p>💸 <strong>Cliente pedindo desconto? Não baixe o valor — troque escopo:</strong></p>
+        <ul>
+          <li><em>"Consigo fechar por X"</em> → mas aí saem [páginas/extras]</li>
+          <li>Ou ofereça <strong>parcelamento</strong></li>
+          <li>Desconto só contra algo: menos rodadas de ajuste ou menos páginas</li>
+          <li>Sem acordo? Mantenha o valor e explique o porquê — firmeza gera respeito</li>
+        </ul>`;
+    },
+  },
+
+  {
+    id: 'primeiro_cliente',
+    chaves: [
+      'primeiro cliente', 'primeiro trabalho', 'comecar do zero',
+      'nunca tive cliente', 'conseguir cliente hoje', 'sem clientes',
+    ],
+    responder() {
+      return `
+        <p>🎯 <strong>Seu primeiro cliente (sem esperar sorte):</strong></p>
+        <ol>
+          <li>Monte <strong>2–3 projetos fictícios</strong> (restaurante, barbearia…) e publique no portfólio</li>
+          <li><strong>Audite 5 sites</strong> do bairro/nicho e mande 1 melhoria concreta — de graça</li>
+          <li>Avise no WhatsApp e no LinkedIn que está <strong>pegando projetos</strong></li>
+          <li>Poste no LinkedIn 2x/semana mostrando o processo</li>
+          <li>Feche o primeiro por <strong>valor justo</strong> (nunca de graça) e peça indicação</li>
+        </ol>`;
+    },
+  },
+
+  {
+    id: 'portfolio_tema',
+    chaves: [
+      'portfolio', 'montar meu site', 'mostrar meu trabalho',
+      'meus projetos', 'vitrine',
+    ],
+    responder() {
+      return `
+        <p>🎨 <strong>Portfólio que converte:</strong></p>
+        <ul>
+          <li><strong>3 a 5 projetos</strong> — menos é mais, qualidade acima de quantidade</li>
+          <li>Mostre <strong>processo</strong>: problema → solução → resultado</li>
+          <li>Projeto fictício vale, mas diga que é fictício (ou faça pra vizinhança)</li>
+          <li><strong>GitHub organizado</strong> com README bom</li>
+          <li>Em cada projeto: o que o cliente precisava, o que você fez, o resultado</li>
+        </ul>`;
+    },
+  },
+
+  {
     id: 'ajuda',
     chaves: ['ajuda', 'o que voce faz', 'como usar', 'comandos', 'help', 'menu', 'opcoes', 'assuntos'],
     responder() {
       return `
-        <p>🤖 <strong>O que eu faço:</strong> te ajudar no negócio de criação de sites e mostrar suas métricas. Temas:</p>
+        <p>🤖 <strong>O que sei fazer:</strong> te ajudar no negocio de sites e mostrar suas métricas. Temas:</p>
         <ul>
-          <li>💰 <strong>Orçamento</strong> — quanto cobrar, faixas de preço</li>
-          <li>📋 <strong>Proposta</strong> — modelo pronto para mandar ao cliente</li>
-          <li>🗣 <strong>Briefing</strong> — o que perguntar ao cliente</li>
-          <li>🚀 <strong>Site novo</strong> — fluxo completo do começo ao fim</li>
-          <li>✅ <strong>Entrega</strong> — checklist e prazos</li>
-          <li>📢 <strong>Divulgação</strong> — como atrair clientes</li>
-          <li>✍️ <strong>Contrato e pagamento</strong></li>
-          <li>🌐 <strong>Domínio, hospedagem e publicação</strong></li>
-          <li>🔧 <strong>Manutenção recorrente</strong></li>
-          <li>🔍 <strong>SEO básico</strong></li>
-          <li>📊 <strong>Métricas</strong> — "resumo", "visitantes", "github", "status"</li>
+          <li>💰 <strong>Orçamento</strong> — quanto cobrar</li>
+          <li>💸 <strong>Desconto e negociação</strong></li>
+          <li>🎯 <strong>Primeiro cliente</strong> · 🎨 <strong>Portfólio</strong></li>
+          <li>📋 <strong>Proposta</strong> · 🗣 <strong>Briefing</strong> · 🚀 <strong>Site novo</strong></li>
+          <li>✅ <strong>Entrega</strong> · ✍️ <strong>Contrato</strong> · 🔧 <strong>Manutenção</strong></li>
+          <li>📢 <strong>Divulgação</strong> · 🌐 <strong>Domínio/publicação</strong></li>
+          <li>🔍 <strong>SEO</strong> · 🛠 <strong>Tecnologia</strong></li>
+          <li>📊 <strong>Métricas</strong> — "resumo", "mensagens", "github", "status"</li>
         </ul>
-        <p>É só perguntar em palavras suas ou usar os atalhos abaixo.</p>`;
+        <p>É só perguntar do seu jeito ou usar os atalhos aí embaixo.</p>`;
     },
   },
 
@@ -532,7 +544,7 @@ Qualquer dúvida, estou à disposição!</pre>
     id: 'obrigado',
     chaves: ['obrigado', 'obrigada', 'valeu', 'vlw', 'brigado', 'flw', 'show demais', 'perfeito'],
     responder() {
-      return '<p>De nada! 💪 Se precisar, é só chamar — estou aqui no painel.</p>';
+      return '<p>Valeu! 💪 Qualquer coisa é só chamar.</p>';
     },
   },
 ];
@@ -544,7 +556,7 @@ Qualquer dúvida, estou à disposição!</pre>
 /**
  * Escolhe o melhor tópico para a pergunta e devolve a resposta em HTML.
  * @param {string} entrada Texto digitado pelo usuário.
- * @param {object} ctx Métricas reais {goat, github, site}.
+ * @param {object} ctx Métricas reais {mensagens, github, site}.
  * @returns {string} HTML da resposta (sempre seguro: conteúdo autorado + valores escapados).
  */
 export function responder(entrada, ctx = {}) {
@@ -580,7 +592,7 @@ export function responder(entrada, ctx = {}) {
         <li>🗣 <strong>"o que perguntar ao cliente"</strong></li>
         <li>✅ <strong>"checklist de entrega"</strong></li>
         <li>📢 <strong>"como atrair clientes"</strong></li>
-        <li>📊 <strong>"meu resumo"</strong> ou <strong>"quantas visitas"</strong></li>
+        <li>📊 <strong>"meu resumo"</strong> ou <strong>"quantas mensagens"</strong></li>
       </ul>
       <p>Ou digite <strong>"ajuda"</strong> para ver todos os temas.</p>`;
   }
@@ -600,5 +612,5 @@ export const ATALHOS = [
   { rotulo: '✅ Checklist', pergunta: 'checklist de entrega do site' },
   { rotulo: '📢 Atrair clientes', pergunta: 'como atrair clientes' },
   { rotulo: '📊 Meu resumo', pergunta: 'meu resumo' },
-  { rotulo: '👀 Visitantes', pergunta: 'quantas pessoas entraram no meu site' },
+  { rotulo: '💬 Mensagens', pergunta: 'quantas mensagens chegaram no meu portfólio' },
 ];
