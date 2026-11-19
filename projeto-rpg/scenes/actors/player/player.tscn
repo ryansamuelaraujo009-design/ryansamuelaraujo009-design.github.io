@@ -1,0 +1,87 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/player/player.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/components/stamina_component.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/components/hurtbox.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/components/hitbox.gd" id="5"]
+
+[sub_resource type="CircleShape2D" id="body_shape"]
+radius = 10.0
+
+[sub_resource type="CircleShape2D" id="hurt_shape"]
+radius = 13.0
+
+[sub_resource type="RectangleShape2D" id="melee_shape"]
+size = Vector2(38.0, 26.0)
+
+[sub_resource type="Gradient" id="slash_grad"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="slash_tex"]
+gradient = SubResource("slash_grad")
+width = 48
+height = 32
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("2")
+max_health = 100.0
+
+[node name="Stamina" type="Node" parent="."]
+script = ExtResource("3")
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+shape = SubResource("body_shape")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("4")
+
+[node name="Collision" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("hurt_shape")
+
+[node name="AimPivot" type="Node2D" parent="."]
+
+[node name="Visual" type="Polygon2D" parent="AimPivot"]
+color = Color(0.75, 0.78, 0.9, 1)
+polygon = PackedVector2Array(12, 0, 4, 7, -8, 6, -11, 0, -8, -6, 4, -7)
+
+[node name="Slash" type="Polygon2D" parent="AimPivot"]
+visible = false
+color = Color(1, 1, 1, 0.9)
+polygon = PackedVector2Array(14, -12, 30, -6, 34, 0, 30, 6, 14, 12, 20, 0)
+
+[node name="MeleeHitbox" type="Area2D" parent="AimPivot"]
+collision_layer = 32
+collision_mask = 16
+monitoring = false
+script = ExtResource("5")
+damage = 18.0
+knockback = 160.0
+
+[node name="Collision" type="CollisionShape2D" parent="AimPivot/MeleeHitbox"]
+position = Vector2(24, 0)
+shape = SubResource("melee_shape")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+
+[node name="DodgeTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="IframeTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="SwingTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="CooldownTimer" type="Timer" parent="."]
+one_shot = true

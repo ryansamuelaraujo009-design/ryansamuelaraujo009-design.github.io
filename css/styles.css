@@ -589,7 +589,7 @@ strong {
   flex: 1;
 }
 
-/* Link do repositório (versão desativada — sem href falso) */
+/* Link do repositório: versão desativada (span, sem href) e ativa (<a>) */
 .projeto__link {
   font-family: var(--fonte-mono);
   font-size: 0.82rem;
@@ -597,6 +597,18 @@ strong {
 
 .projeto__link--desativado {
   color: var(--cor-texto-apagado);
+}
+
+/* Versão ativa: mesmo vermelho dos valores de contato + hover legível */
+a.projeto__link {
+  color: var(--cor-vermelho-claro);
+  transition: color var(--transicao);
+}
+
+a.projeto__link:hover,
+a.projeto__link:focus-visible {
+  color: var(--cor-texto);
+  text-decoration: underline;
 }
 
 /* Linha de curso (seção Estudos) */

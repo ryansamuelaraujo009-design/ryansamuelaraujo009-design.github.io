@@ -129,7 +129,7 @@ body.painel-corpo {
   border-top: 1px dashed var(--cor-borda);
 }
 
-/* ---------- Campos de formulário (usados no gate e nas config) ---------- */
+/* ---------- Campos de formulário (tela de acesso) ---------- */
 
 .campo {
   display: block;
@@ -237,7 +237,7 @@ body.painel-corpo {
 
 .painel-main {
   flex: 1;
-  padding-block: clamp(2rem, 5vw, 3rem);
+  padding-block: clamp(1.4rem, 4vw, 2.2rem);
 }
 
 /* ====================================================================
@@ -255,7 +255,7 @@ body.painel-corpo {
 }
 
 .metrica {
-  padding: 1rem 1.1rem;
+  padding: 1.15rem 1.25rem;
 }
 
 .metrica__rotulo {
@@ -268,7 +268,7 @@ body.painel-corpo {
 }
 
 .metrica__valor {
-  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-size: clamp(1.9rem, 3.6vw, 2.5rem);
   font-weight: 700;
   color: var(--cor-texto);
   line-height: 1.1;
@@ -280,6 +280,19 @@ body.painel-corpo {
   margin-top: 0.3rem;
 }
 
+/* Card em destaque (seção Mensagens) — vermelho do tema */
+.card--destaque {
+  border-color: rgba(235, 64, 64, 0.45);
+  background:
+    linear-gradient(160deg, rgba(235, 64, 64, 0.08), transparent 55%),
+    var(--cor-superficie);
+  box-shadow: 0 18px 40px -32px rgba(235, 64, 64, 0.65);
+}
+
+.card--destaque .card__titulo {
+  color: var(--cor-vermelho-claro);
+}
+
 /* ====================================================================
    4. COLUNAS: assistente + lateral
    ==================================================================== */
@@ -288,7 +301,7 @@ body.painel-corpo {
   display: grid;
   gap: var(--espaco-md);
   grid-template-columns: 1fr;
-  margin-top: var(--espaco-lg);
+  margin-top: var(--espaco-md);
 }
 
 .painel-lateral {
@@ -319,7 +332,7 @@ body.painel-corpo {
   display: flex;
   flex-direction: column;
   padding: var(--espaco-md);
-  min-height: 540px;
+  min-height: 470px;
   /* Interação constante: sem "pulo" de hover no chat */
   transition: none;
 }
@@ -496,16 +509,16 @@ body.painel-corpo {
 }
 
 /* ====================================================================
-   6. LISTAS DE MÉTRICAS (visitantes e GitHub)
+   6. LISTAS DE MÉTRICAS (mensagens e GitHub)
    ==================================================================== */
 
-.goat-numeros {
+.msg-numeros {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.5rem;
 }
 
-.goat-numeros li {
+.msg-numeros li {
   background: var(--cor-fundo-alt);
   border: 1px solid var(--cor-borda);
   border-radius: var(--raio-botoes);
@@ -513,13 +526,13 @@ body.painel-corpo {
   text-align: center;
 }
 
-.goat-numeros strong {
+.msg-numeros strong {
   display: block;
-  font-size: 1.3rem;
+  font-size: 1.55rem;
   color: var(--cor-texto);
 }
 
-.goat-numeros span {
+.msg-numeros span {
   font-family: var(--fonte-mono);
   font-size: 0.68rem;
   text-transform: uppercase;
@@ -527,38 +540,15 @@ body.painel-corpo {
   color: var(--cor-texto-apagado);
 }
 
-.lista-top {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.lista-top li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.45rem 0;
-  border-bottom: 1px solid var(--cor-borda);
-  font-size: 0.88rem;
-}
-
-.lista-top li:last-child {
-  border-bottom: none;
-}
-
-.lista-top code {
-  font-family: var(--fonte-mono);
-  font-size: 0.82rem;
+.msg-total {
+  font-size: 0.9rem;
   color: var(--cor-texto-suave);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  margin: 0.75rem 0 0;
 }
 
-.lista-top span {
-  font-weight: 600;
+.msg-total strong {
   color: var(--cor-texto);
+  font-size: 1.05rem;
 }
 
 .lista-repos {
@@ -601,95 +591,7 @@ body.painel-corpo {
 }
 
 /* ====================================================================
-   7. CONFIGURAÇÕES
-   ==================================================================== */
-
-.config__resumo {
-  cursor: pointer;
-  list-style: none;
-  margin-bottom: 0;
-}
-
-.config__resumo::-webkit-details-marker {
-  display: none;
-}
-
-.config__resumo::after {
-  content: " ＋";
-  color: var(--cor-vermelho-claro);
-  font-weight: 400;
-}
-
-.config[open] .config__resumo::after {
-  content: " －";
-}
-
-.config[open] .config__resumo {
-  margin-bottom: 1rem;
-}
-
-.config__passos {
-  font-size: 0.9rem;
-  margin-bottom: 0.4rem;
-}
-
-.config__lista {
-  font-size: 0.87rem;
-  color: var(--cor-texto-suave);
-  padding-left: 1.25rem;
-  margin-bottom: 1.1rem;
-}
-
-.config__lista li {
-  margin: 0.35rem 0;
-}
-
-.config__lista a,
-.config a {
-  color: var(--cor-vermelho-claro);
-}
-
-.config code {
-  font-family: var(--fonte-mono);
-  font-size: 0.85em;
-  background: rgba(255, 255, 255, 0.07);
-  padding: 0.1em 0.4em;
-  border-radius: 4px;
-}
-
-.cfg-estado {
-  font-family: var(--fonte-mono);
-  font-size: 0.78rem;
-  color: var(--cor-texto-apagado);
-  margin: 0.25rem 0;
-}
-
-.cfg-estado--ok {
-  color: var(--cor-ok);
-}
-
-.config__botoes {
-  display: flex;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-  margin-top: 0.4rem;
-}
-
-.config__botoes .botao {
-  padding: 0.7rem 1.3rem;
-}
-
-.config__nota {
-  font-size: 0.78rem;
-  line-height: 1.55;
-  color: var(--cor-texto-apagado);
-  margin-top: 1rem;
-  padding-top: 0.75rem;
-  border-top: 1px dashed var(--cor-borda);
-}
-
-/* ====================================================================
-   8. RODAPÉ
+   7. RODAPÉ
    ==================================================================== */
 
 .painel-rodape {
@@ -697,7 +599,7 @@ body.painel-corpo {
 }
 
 /* ====================================================================
-   9. CELULAR
+   8. CELULAR
    ==================================================================== */
 
 @media (max-width: 640px) {
@@ -736,7 +638,7 @@ body.painel-corpo {
     justify-content: center;
   }
 
-  .goat-numeros strong {
+  .msg-numeros strong {
     font-size: 1.1rem;
   }
 }
