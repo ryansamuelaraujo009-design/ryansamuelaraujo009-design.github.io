@@ -4,13 +4,14 @@
    O que este arquivo faz:
      1. Bloqueio por senha (proteção básica — ver aviso no rodapé);
      2. Busca as métricas IMPORTANTES:
-        - GoatCounter  → quantas pessoas entraram no seu site
-        - GitHub API   → estrelas, forks, repositórios (dados públicos)
-        - Status       → se o site publicado responde
+        - Mensagens  → cliques nos contatos (GitHub, e-mail, WhatsApp)
+        - GitHub API → estrelas, forks, repositórios (dados públicos)
+        - Status     → se o site publicado responde
      3. Monta o resumo executivo e o chat com o assistente.
 
-   ONDE FICAM AS CONFIGURAÇÕES?
-     localStorage["painel.config"] = { codigo, chave }  (só neste navegador)
+   Os números de mensagens vêm do CountAPI — o mesmo serviço que o
+   js/contador.js incrementa quando alguém clica num link de contato
+   do portfólio. Sem cadastro, sem chave, sem cookies.
    ==================================================================== */
 
 import { responder, ATALHOS } from './assistente.js';
@@ -20,15 +21,21 @@ const USUARIO_GITHUB = 'ryansamuelaraujo009-design';
 const URL_SITE = 'https://ryansamuelaraujo009-design.github.io';
 
 /* ---------- Chaves de armazenamento ---------- */
-const CHAVE_CONFIG = 'painel.config';
 const CHAVE_SENHA = 'painel.senha';
 const CHAVE_ACESSO = 'painel.acesso';
 
+/* ---------- Canais contados (as chaves precisam casar com js/contador.js) ---------- */
+const CANAIS = [
+  { id: 'github', rotulo: 'GitHub', chave: 'devprogramier-msg-github' },
+  { id: 'gmail', rotulo: 'E-mail', chave: 'devprogramier-msg-gmail' },
+  { id: 'whatsapp', rotulo: 'WhatsApp', chave: 'devprogramier-msg-whatsapp' },
+];
+
 /* ---------- Estado das métricas (compartilhado com o assistente) ----------
-   status possíveis de goat/github: 'carregando' | 'ok' | 'nao-config' | 'erro'
-   site: null (verificando) | { noAr, ms }                                      */
+   status possíveis de mensagens/github: 'carregando' | 'ok' | 'erro'
+   site: null (verificando) | { noAr, ms }                                  */
 const estado = {
-  goat: { status: 'carregando' },
+  mensagens: { status: 'carregando' },
   github: { status: 'carregando' },
   site: null,
 };
@@ -37,41 +44,9 @@ const fmt = new Intl.NumberFormat('pt-BR');
 const $ = (seletor) => document.querySelector(seletor);
 
 /* ====================================================================
-   1. ARMAZENAMENTO (config e senha)
-   ==================================================================== */
-
-function lerConfig() {
-  try {
-    const cfg = JSON.parse(localStorage.getItem(CHAVE_CONFIG));
-    if (cfg && typeof cfg === 'object') {
-      return { codigo: cfg.codigo || '', chave: cfg.chave || '' };
-    }
-  } catch { /* JSON inválido — ignora e usa o padrão */ }
-  return { codigo: '', chave: '' };
-}
-
-function salvarConfig(cfg) {
-  localStorage.setItem(CHAVE_CONFIG, JSON.stringify(cfg));
-}
-
-/**
- * Aceita o código de várias formas ("meucodigo",
- * "https://meucodigo.goatcounter.com/count" etc.) e devolve só o código.
- */
-function limparCodigo(bruto) {
-  return String(bruto)
-    .trim()
-    .replace(/^https?:\/\//i, '')
-    .replace(/^www\./i, '')
-    .replace(/\.goatcounter\.com.*$/i, '')
-    .replace(/\/.*$/, '')
-    .trim();
-}
-
-/* ====================================================================
-   2. BLOQUEIO POR SENHA
+   1. BLOQUEIO POR SENHA
    --------------------------------------------------------------------
-   AVISO HONESTO: como o site é100% estático, qualquer pessoa com o
+   AVISO HONESTO: como o site é 100% estático, qualquer pessoa com o
    endereço pode abrir o código desta página. A senha protege contra
    olhares curiosos (e evita que alguém mexa por engano), mas NÃO é
    segurança real. Não coloque aqui dados sensíveis.
@@ -161,90 +136,38 @@ function destravar() {
 }
 
 /* ====================================================================
-   3. MÉTRICAS — GoatCounter (visitantes do site)
+   2. MÉTRICAS — Mensagens (cliques nos contatos do portfólio)
    ==================================================================== */
 
-function dataLocal(d) {
-  const p = (n) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+const URL_COUNTAPI = 'https://countapi.mileshilliard.com/api/v1';
+
+/** Lê o total de um contador. Contador ainda inexistente = 0 cliques. */
+async function lerContador(chave) {
+  const resp = await fetch(`${URL_COUNTAPI}/get/${chave}`, { cache: 'no-store' });
+  if (!resp.ok) return 0;
+  const dados = await resp.json();
+  const valor = Number(dados.value);
+  return Number.isFinite(valor) ? valor : 0;
 }
 
-async function carregarGoat() {
-  const cfg = lerConfig();
-  if (!cfg.codigo || !cfg.chave) {
-    estado.goat = { status: 'nao-config' };
-    return;
-  }
-
+async function carregarMensagens() {
   try {
-    const agora = new Date();
-    const inicio30 = new Date(agora);
-    inicio30.setDate(inicio30.getDate() - 29);
-    inicio30.setHours(0, 0, 0, 0);
-
-    const inicio7 = new Date(agora);
-    inicio7.setDate(inicio7.getDate() - 6);
-    inicio7.setHours(0, 0, 0, 0);
-
-    const base = `https://${cfg.codigo}.goatcounter.com/api/v0`;
-    const cabecalho = { Authorization: `Bearer ${cfg.chave}` };
-    const params = (ini) =>
-      `start=${encodeURIComponent(ini.toISOString())}&end=${encodeURIComponent(agora.toISOString())}`;
-
-    const [respTotal, respHits] = await Promise.all([
-      fetch(`${base}/stats/total?${params(inicio30)}`, { headers: cabecalho }),
-      fetch(`${base}/stats/hits?${params(inicio7)}&limit=3&group=day`, { headers: cabecalho }),
-    ]);
-
-    if (respTotal.status === 401 || respTotal.status === 403) {
-      estado.goat = { status: 'erro', erro: 'chave inválida ou sem permissão' };
-      return;
-    }
-    if (!respTotal.ok) {
-      estado.goat = { status: 'erro', erro: `resposta ${respTotal.status} do GoatCounter` };
-      return;
-    }
-
-    const dados = await respTotal.json();
-
-    // Soma por dia a partir do campo "daily" de cada dia do período
-    const hojeStr = dataLocal(agora);
-    const seteStr = dataLocal(inicio7);
-    let hoje = 0;
-    let sete = 0;
-    let trinta = 0;
-    for (const dia of dados.stats || []) {
-      if (!dia || !dia.day) continue;
-      const valor = dia.daily || 0;
-      trinta += valor;
-      if (dia.day === hojeStr) hoje = valor;
-      if (dia.day >= seteStr) sete += valor;
-    }
-    // Reserva: se o resumo diário vier vazio mas o total existir, usa o total
-    if (trinta === 0 && dados.total) trinta = dados.total;
-
-    let top = [];
-    if (respHits.ok) {
-      const hits = await respHits.json();
-      top = (hits.hits || [])
-        .filter((h) => h && !h.event && h.path)
-        .slice(0, 3)
-        .map((h) => ({ path: h.path, count: h.count || 0 }));
-    }
-
-    estado.goat = {
-      status: 'ok',
-      hoje, sete, trinta, top,
-      dashboard: `https://${cfg.codigo}.goatcounter.com`,
-    };
+    const valores = await Promise.all(CANAIS.map((c) => lerContador(c.chave)));
+    const cliques = {};
+    let total = 0;
+    CANAIS.forEach((c, i) => {
+      cliques[c.id] = valores[i];
+      total += valores[i];
+    });
+    estado.mensagens = { status: 'ok', total, cliques };
   } catch (erro) {
-    console.error('[painel] GoatCounter:', erro);
-    estado.goat = { status: 'erro', erro: 'falha de conexão' };
+    console.error('[painel] Mensagens:', erro);
+    estado.mensagens = { status: 'erro', erro: 'falha de conexão' };
   }
 }
 
 /* ====================================================================
-   4. MÉTRICAS — GitHub (dados públicos, sem token)
+   3. MÉTRICAS — GitHub (dados públicos, sem token)
    ==================================================================== */
 
 async function carregarGithub() {
@@ -294,7 +217,7 @@ async function carregarGithub() {
 }
 
 /* ====================================================================
-   5. STATUS DO SITE PUBLICADO
+   4. STATUS DO SITE PUBLICADO
    --------------------------------------------------------------------
    Usa mode "no-cors": a resposta é opaca (sem ler o conteúdo), mas se a
    promessa resolver é sinal de que o endereço respondeu.
@@ -312,17 +235,17 @@ async function carregarSite() {
 
 async function carregarTudo() {
   definirCarregando(true);
-  await Promise.allSettled([carregarGoat(), carregarGithub(), carregarSite()]);
+  await Promise.allSettled([carregarMensagens(), carregarGithub(), carregarSite()]);
   definirCarregando(false);
   renderizarTudo();
 }
 
 /* ====================================================================
-   6. RENDERIZAÇÃO (resumo executivo + seções)
+   5. RENDERIZAÇÃO (resumo executivo + seções)
    ==================================================================== */
 
 function definirCarregando(sim) {
-  for (const id of ['m-hoje', 'm-sete', 'm-trinta', 'm-estrelas', 'm-repos']) {
+  for (const id of ['m-total', 'm-github', 'm-gmail', 'm-whatsapp', 'm-estrelas', 'm-repos']) {
     const el = document.getElementById(id);
     if (el && sim) el.textContent = '···';
   }
@@ -338,31 +261,37 @@ function setNota(id, texto) {
 function renderizarTudo() {
   renderResumo();
   renderStatus();
-  renderGoat();
+  renderMensagens();
   renderGithub();
 }
 
 function renderResumo() {
-  const g = estado.goat;
+  const m = estado.mensagens;
   const gh = estado.github;
 
-  /* Visitantes */
-  if (g.status === 'ok') {
-    $('#m-hoje').textContent = fmt.format(g.hoje);
-    $('#m-sete').textContent = fmt.format(g.sete);
-    $('#m-trinta').textContent = fmt.format(g.trinta);
-    setNota('m-hoje-nota', 'acessos no portfólio');
-    setNota('m-sete-nota', 'acessos na semana');
-    setNota('m-trinta-nota', 'acessos no mês');
-  } else if (g.status === 'nao-config') {
-    for (const [v, n] of [['m-hoje', 'm-hoje-nota'], ['m-sete', 'm-sete-nota'], ['m-trinta', 'm-trinta-nota']]) {
-      document.getElementById(v).textContent = '—';
-      setNota(n, 'contador não configurado');
+  /* Mensagens (cliques de contato) */
+  const paresMsg = [
+    ['m-total', 'cliques no total'],
+    ['m-github', 'cliques no GitHub'],
+    ['m-gmail', 'cliques no e-mail'],
+    ['m-whatsapp', 'cliques no WhatsApp'],
+  ];
+
+  if (m.status === 'ok') {
+    $('#m-total').textContent = fmt.format(m.total);
+    $('#m-github').textContent = fmt.format(m.cliques.github || 0);
+    $('#m-gmail').textContent = fmt.format(m.cliques.gmail || 0);
+    $('#m-whatsapp').textContent = fmt.format(m.cliques.whatsapp || 0);
+    for (const [id, nota] of paresMsg) setNota(`${id}-nota`, nota);
+  } else if (m.status === 'carregando') {
+    for (const [id] of paresMsg) {
+      document.getElementById(id).textContent = '···';
+      setNota(`${id}-nota`, '');
     }
-  } else if (g.status === 'erro') {
-    for (const [v, n] of [['m-hoje', 'm-hoje-nota'], ['m-sete', 'm-sete-nota'], ['m-trinta', 'm-trinta-nota']]) {
-      document.getElementById(v).textContent = '—';
-      setNota(n, g.erro || 'erro ao consultar');
+  } else {
+    for (const [id] of paresMsg) {
+      document.getElementById(id).textContent = '—';
+      setNota(`${id}-nota`, m.erro || 'erro ao consultar');
     }
   }
 
@@ -370,7 +299,7 @@ function renderResumo() {
   if (gh.status === 'ok') {
     $('#m-estrelas').textContent = fmt.format(gh.estrelas);
     $('#m-repos').textContent = fmt.format(gh.repos);
-    setNota('m-estrelas-nota', `em ${fmt.format(gh.repos)} repositórios`);
+    setNota('m-estrelas-nota', `em ${fmt.format(gh.repos)} ${gh.repos === 1 ? 'repositório' : 'repositórios'}`);
     setNota('m-repos-nota', 'projetos públicos');
   } else if (gh.status === 'carregando') {
     $('#m-estrelas').textContent = '···';
@@ -399,47 +328,28 @@ function renderStatus() {
   }
 }
 
-function renderGoat() {
-  const alvo = $('#goat-conteudo');
-  const g = estado.goat;
+function renderMensagens() {
+  const alvo = $('#msg-conteudo');
+  const m = estado.mensagens;
 
-  if (g.status === 'carregando') {
-    alvo.innerHTML = '<p class="notificacao">Carregando visitantes…</p>';
+  if (m.status === 'carregando') {
+    alvo.innerHTML = '<p class="notificacao">Carregando contadores…</p>';
     return;
   }
 
-  if (g.status === 'nao-config') {
-    alvo.innerHTML = `
-      <p class="card__vazio">
-        O contador de visitantes ainda não foi configurado. Assim que você
-        ligar o GoatCounter, os números aparecem aqui automaticamente.
-      </p>
-      <p class="notificacao">Passo a passo: pergunte <strong>"configurar"</strong> ao assistente
-      ou abra <strong>Configurações</strong> aqui embaixo.</p>`;
+  if (m.status === 'erro') {
+    alvo.innerHTML = `<p class="notificacao notificacao--erro">Não consegui buscar os contadores: ${escapar(m.erro || 'erro')}.</p>`;
     return;
   }
 
-  if (g.status === 'erro') {
-    alvo.innerHTML = `<p class="notificacao notificacao--erro">Não consegui buscar os visitantes: ${g.erro || 'erro'}.</p>`;
-    return;
+  let html = '<ul class="msg-numeros">';
+  for (const c of CANAIS) {
+    html += `<li><strong>${fmt.format(m.cliques[c.id] || 0)}</strong><span>${c.rotulo}</span></li>`;
   }
-
-  let html = `
-    <ul class="goat-numeros">
-      <li><strong>${fmt.format(g.hoje)}</strong><span>hoje</span></li>
-      <li><strong>${fmt.format(g.sete)}</strong><span>7 dias</span></li>
-      <li><strong>${fmt.format(g.trinta)}</strong><span>30 dias</span></li>
-    </ul>`;
-
-  if (g.top && g.top.length) {
-    html += '<p class="subtitulo">Mais vistos (7 dias)</p><ul class="lista-top">';
-    for (const p of g.top) {
-      html += `<li><code>${escapar(p.path)}</code><span>${fmt.format(p.count)}</span></li>`;
-    }
-    html += '</ul>';
-  }
-
-  html += `<a class="link-externo" href="${g.dashboard}" target="_blank" rel="noopener">Ver dashboard completo →</a>`;
+  html += '</ul>';
+  html += `<p class="msg-total">Total: <strong>${fmt.format(m.total)}</strong> cliques</p>`;
+  html += '<p class="notificacao">Conta cada clique nos links de contato do portfólio. '
+    + 'Sem cadastro e sem cookies — se o serviço reiniciar, os números recomeçam do zero.</p>';
   alvo.innerHTML = html;
 }
 
@@ -481,7 +391,7 @@ function escapar(texto) {
 }
 
 /* ====================================================================
-   7. CHAT COM O ASSISTENTE
+   6. CHAT COM O ASSISTENTE
    ==================================================================== */
 
 function iniciarChat() {
@@ -548,60 +458,13 @@ function enviarMensagem(texto) {
 }
 
 /* ====================================================================
-   8. CONFIGURAÇÕES (código + chave do GoatCounter)
-   ==================================================================== */
-
-function iniciarConfig() {
-  const cfg = lerConfig();
-  $('#cfg-codigo').value = cfg.codigo || '';
-  $('#cfg-chave').value = cfg.chave || '';
-  atualizarEstadoConfig(cfg);
-
-  $('#cfg-form').addEventListener('submit', (evento) => {
-    evento.preventDefault();
-    const novo = {
-      codigo: limparCodigo($('#cfg-codigo').value),
-      chave: $('#cfg-chave').value.trim(),
-    };
-    salvarConfig(novo);
-    $('#cfg-status').textContent = novo.codigo && novo.chave
-      ? 'Salvo ✓ buscando dados…'
-      : 'Salvo (sem contador — nada será buscado).';
-    atualizarEstadoConfig(novo);
-    carregarTudo();
-  });
-
-  $('#cfg-limpar').addEventListener('click', () => {
-    localStorage.removeItem(CHAVE_CONFIG);
-    $('#cfg-codigo').value = '';
-    $('#cfg-chave').value = '';
-    $('#cfg-status').textContent = 'Configuração apagada.';
-    atualizarEstadoConfig({ codigo: '', chave: '' });
-    estado.goat = { status: 'nao-config' };
-    renderizarTudo();
-  });
-}
-
-function atualizarEstadoConfig(cfg) {
-  const el = $('#cfg-estado');
-  if (cfg.codigo && cfg.chave) {
-    el.textContent = `Configurado: ${cfg.codigo}.goatcounter.com`;
-    el.className = 'cfg-estado cfg-estado--ok';
-  } else {
-    el.textContent = 'Não configurado';
-    el.className = 'cfg-estado';
-  }
-}
-
-/* ====================================================================
-   9. INICIALIZAÇÃO
+   7. INICIALIZAÇÃO
    ==================================================================== */
 
 function iniciar() {
   $('#gate-form').addEventListener('submit', tentarEntrar);
   $('#botao-travar').addEventListener('click', destravar);
   $('#botao-atualizar').addEventListener('click', carregarTudo);
-  iniciarConfig();
   iniciarGate();
 }
 
