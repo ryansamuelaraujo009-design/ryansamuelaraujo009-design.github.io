@@ -607,6 +607,18 @@ strong {
   color: var(--cor-texto-apagado);
 }
 
+/* Crédito de autoria do projeto */
+.projeto__autor {
+  font-family: var(--fonte-mono);
+  font-size: 0.75rem;
+  color: var(--cor-texto-apagado);
+}
+
+.projeto__autor strong {
+  color: var(--cor-vermelho-claro);
+  font-weight: 500;
+}
+
 /* Versão ativa: mesmo vermelho dos valores de contato + hover legível */
 a.projeto__link {
   color: var(--cor-vermelho-claro);
