@@ -1,0 +1,17 @@
+{
+  "name": "J.A.R.V.I.S. — Demo Beta",
+  "short_name": "JARVIS Demo",
+  "description": "Demo responsiva do assistente de voz local J.A.R.V.I.S.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#06080b",
+  "theme_color": "#06080b",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

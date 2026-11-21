@@ -597,10 +597,37 @@ strong {
   flex: 1;
 }
 
+/* Ações do projeto: demo em destaque + link do repositório */
+.projeto__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+
 /* Link do repositório: versão desativada (span, sem href) e ativa (<a>) */
 .projeto__link {
   font-family: var(--fonte-mono);
   font-size: 0.82rem;
+}
+
+/* Botão da demo web responsiva (abre em nova aba) */
+a.projeto__link--demo {
+  color: var(--cor-texto);
+  text-decoration: none;
+  border: 1px solid rgba(235, 64, 64, 0.45);
+  background: rgba(179, 15, 15, 0.18);
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  transition: background var(--transicao), border-color var(--transicao);
+}
+
+a.projeto__link--demo:hover,
+a.projeto__link--demo:focus-visible {
+  background: rgba(179, 15, 15, 0.35);
+  border-color: var(--cor-vermelho-claro);
+  color: var(--cor-texto);
+  text-decoration: none;
 }
 
 .projeto__link--desativado {

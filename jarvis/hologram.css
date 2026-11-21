@@ -1,0 +1,275 @@
+* { box-sizing: border-box; }
+
+:root {
+  --amber: #ffb84d;
+  --amber-hot: #ff8a2b;
+  --amber-dim: rgba(255, 184, 77, 0.28);
+  --cyan: #67e8f9;
+}
+
+html, body {
+  width: 210px;
+  height: 210px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  overflow: hidden;
+  font-family: 'Consolas', 'Segoe UI', monospace;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.hologram {
+  position: relative;
+  width: 210px;
+  height: 210px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--amber);
+}
+
+/* Fundo: scanlines e vinheta sutil */
+.grid {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 184, 77, 0.035) 0 1px, transparent 1px 4px),
+    radial-gradient(circle at 50% 46%, rgba(255, 138, 43, 0.10), transparent 62%);
+  mask: radial-gradient(circle, black 55%, transparent 78%);
+  -webkit-mask: radial-gradient(circle, black 55%, transparent 78%);
+  pointer-events: none;
+}
+
+/* Cantos do HUD */
+.frame i {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(255, 184, 77, 0.55);
+  pointer-events: none;
+}
+.frame i:nth-child(1) { top: 4px; left: 4px; border-right: 0; border-bottom: 0; }
+.frame i:nth-child(2) { top: 4px; right: 4px; border-left: 0; border-bottom: 0; }
+.frame i:nth-child(3) { bottom: 4px; left: 4px; border-right: 0; border-top: 0; }
+.frame i:nth-child(4) { bottom: 4px; right: 4px; border-left: 0; border-top: 0; }
+
+/* Anéis concêntricos */
+.ring, .scan, .ticks, .arcs {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ring-outer {
+  width: 178px; height: 178px;
+  border: 1px dashed rgba(255, 184, 77, 0.24);
+  animation: spin 70s linear infinite;
+}
+.ring-mid {
+  width: 150px; height: 150px;
+  background: conic-gradient(from 0deg,
+    var(--amber-dim) 0deg 18deg, transparent 18deg 42deg,
+    var(--amber-dim) 42deg 58deg, transparent 58deg 90deg,
+    var(--amber-dim) 90deg 104deg, transparent 104deg 140deg,
+    var(--amber-dim) 140deg 158deg, transparent 158deg 190deg,
+    var(--amber-dim) 190deg 206deg, transparent 206deg 240deg,
+    var(--amber-dim) 240deg 256deg, transparent 256deg 290deg,
+    var(--amber-dim) 290deg 306deg, transparent 306deg 360deg);
+  mask: radial-gradient(circle, transparent 0 73px, black 74px 75px, transparent 76px);
+  -webkit-mask: radial-gradient(circle, transparent 0 73px, black 74px 75px, transparent 76px);
+  animation: spin 26s linear infinite;
+}
+.ring-inner {
+  width: 118px; height: 118px;
+  border: 1px solid rgba(255, 184, 77, 0.42);
+  border-left-color: transparent;
+  border-right-color: transparent;
+  box-shadow: inset 0 0 16px rgba(255, 138, 43, 0.10);
+  animation: spinBack 11s linear infinite;
+}
+
+/* Varredura de radar */
+.scan {
+  width: 162px; height: 162px;
+  background: conic-gradient(from 0deg,
+    transparent 0deg 300deg,
+    rgba(255, 184, 77, 0.02) 300deg 340deg,
+    rgba(255, 184, 77, 0.22) 358deg,
+    rgba(255, 220, 150, 0.55) 360deg);
+  mask: radial-gradient(circle, transparent 0 40px, black 41px 81px, transparent 82px);
+  -webkit-mask: radial-gradient(circle, transparent 0 40px, black 41px 81px, transparent 82px);
+  animation: spin 4.5s linear infinite;
+}
+
+/* Marcadores de graus */
+.ticks {
+  width: 186px; height: 186px;
+  background: repeating-conic-gradient(from 0deg,
+    rgba(255, 184, 77, 0.55) 0deg 1deg, transparent 1deg 10deg);
+  mask: radial-gradient(circle, transparent 0 89px, black 90px 93px, transparent 94px);
+  -webkit-mask: radial-gradient(circle, transparent 0 89px, black 90px 93px, transparent 94px);
+  opacity: 0.75;
+  animation: spin 90s linear infinite;
+}
+
+/* Arcos de energia */
+.arcs {
+  width: 138px; height: 138px;
+  background: conic-gradient(from 20deg,
+    rgba(255, 138, 43, 0.9) 0deg 38deg, transparent 38deg 120deg,
+    rgba(255, 184, 77, 0.65) 120deg 148deg, transparent 148deg 230deg,
+    rgba(255, 138, 43, 0.5) 230deg 252deg, transparent 252deg 360deg);
+  mask: radial-gradient(circle, transparent 0 66px, black 67px 69px, transparent 70px);
+  -webkit-mask: radial-gradient(circle, transparent 0 66px, black 67px 69px, transparent 70px);
+  animation: spinBack 8s linear infinite;
+}
+
+@keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes spinBack { to { transform: translate(-50%, -50%) rotate(-360deg); } }
+
+/* Núcleo hexagonal */
+.core {
+  position: absolute;
+  left: 50%; top: 46%;
+  width: 92px; height: 92px;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 138, 43, 0.20), rgba(10, 6, 2, 0.94) 70%);
+  border: 1px solid rgba(255, 184, 77, 0.55);
+  box-shadow: 0 0 26px rgba(255, 138, 43, 0.34), inset 0 0 24px rgba(255, 138, 43, 0.22);
+  transition: box-shadow .25s, border-color .25s;
+}
+.hex {
+  position: relative;
+  width: 56px; height: 54px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(160deg, rgba(255, 184, 77, 0.28), rgba(120, 50, 8, 0.35));
+  clip-path: polygon(50% 0%, 100% 26%, 100% 74%, 50% 100%, 0% 74%, 0% 26%);
+  filter: drop-shadow(0 0 7px rgba(255, 160, 60, 0.55));
+}
+.hex::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  clip-path: polygon(50% 0%, 100% 26%, 100% 74%, 50% 100%, 0% 74%, 0% 26%);
+  background: radial-gradient(circle, rgba(12, 8, 4, 0.9), rgba(40, 18, 4, 0.95));
+}
+.eye {
+  position: relative;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffe9c2 0 22%, var(--amber-hot) 23% 46%, rgba(120, 45, 5, 0.9) 47% 100%);
+  box-shadow: 0 0 14px rgba(255, 150, 50, 0.9), 0 0 28px rgba(255, 120, 30, 0.45);
+  animation: breathe 2.6s ease-in-out infinite;
+}
+.eye span {
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  background: #fff4dc;
+  box-shadow: 0 0 8px #fff;
+}
+@keyframes breathe { 50% { transform: scale(1.16); opacity: .9; } }
+
+/* Leitura técnica */
+.readout {
+  position: absolute;
+  top: 22px;
+  left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 26px;
+  font-size: 7px;
+  letter-spacing: 1.4px;
+  color: rgba(255, 200, 120, 0.72);
+  pointer-events: none;
+}
+.readout .name { color: rgba(255, 184, 77, 0.9); }
+.readout .signal { font-variant-numeric: tabular-nums; }
+
+/* Onda de voz */
+.wave {
+  position: absolute;
+  left: 50%; top: 118px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 16px;
+  opacity: .3;
+}
+.wave i {
+  display: block;
+  width: 3px;
+  height: 4px;
+  background: var(--amber);
+  box-shadow: 0 0 6px rgba(255, 184, 77, .6);
+  border-radius: 1px;
+  transition: height .12s ease;
+}
+
+/* Legenda e selo */
+.caption {
+  position: absolute;
+  bottom: 9px;
+  left: 10px;
+  right: 10px;
+  text-align: center;
+  font-size: 9px;
+  line-height: 1.25;
+  color: rgba(255, 214, 160, 0.82);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 0 8px rgba(0, 0, 0, .95);
+  pointer-events: none;
+}
+.badge {
+  position: absolute;
+  top: 6px;
+  right: 22px;
+  font: 700 8px 'Consolas', 'Segoe UI', monospace;
+  letter-spacing: 1px;
+  color: var(--amber);
+  border: 1px solid rgba(255, 184, 77, .4);
+  padding: 1px 4px;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Estados */
+.hologram.listening .core {
+  border-color: rgba(255, 160, 60, .9);
+  box-shadow: 0 0 40px rgba(255, 138, 43, .5), inset 0 0 28px rgba(255, 138, 43, .34);
+}
+.hologram.listening .eye { animation-duration: 1.1s; }
+.hologram.listening .wave { opacity: 1; }
+.hologram.listening .badge { color: #ffd08a; border-color: rgba(255, 184, 77, .75); }
+
+.hologram.thinking .core { animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 50% { transform: translate(-50%, -50%) scale(1.08); } }
+
+.hologram.speaking .core {
+  border-color: rgba(103, 232, 249, .8);
+  box-shadow: 0 0 34px rgba(103, 232, 249, .38), inset 0 0 24px rgba(103, 232, 249, .22);
+}
+.hologram.speaking .eye {
+  background: radial-gradient(circle, #e0fbff 0 22%, var(--cyan) 23% 48%, rgba(8, 60, 70, .9) 49% 100%);
+  box-shadow: 0 0 16px rgba(103, 232, 249, .9);
+  animation-duration: .7s;
+}
+.hologram.speaking .wave i { background: var(--cyan); box-shadow: 0 0 6px rgba(103, 232, 249, .7); }
+.hologram.speaking .wave { opacity: .85; }
+.hologram.speaking .badge { color: var(--cyan); border-color: rgba(103, 232, 249, .55); }
+.hologram.speaking .arcs { filter: hue-rotate(140deg); }
+
+.hologram.off { opacity: .42; filter: saturate(.45); }
+.hologram.off .scan { animation-duration: 12s; }

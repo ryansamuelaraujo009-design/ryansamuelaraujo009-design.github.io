@@ -1,0 +1,200 @@
+/* Ajustes da demo web: responsivo e com controles de toque. */
+:root {
+  --fundo: #06080b;
+  --texto: #f5e9d6;
+  --amber: #ffb84d;
+  --cyan: #67e8f9;
+  --vermelho: #f25454;
+}
+
+html, body {
+  width: 100% !important;
+  height: 100% !important;
+  background: var(--fundo) !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: var(--texto);
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+
+body {
+  min-height: 100%;
+  background:
+    radial-gradient(circle at 50% 22%, rgba(255, 138, 43, 0.08), transparent 45%),
+    var(--fundo);
+}
+
+.demo {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 18px 16px 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.demo__topo {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.demo__marca {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: rgba(255, 184, 77, 0.75);
+}
+
+.demo__selo {
+  font-size: 10px;
+  letter-spacing: 2px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  color: var(--vermelho);
+  border: 1px solid rgba(179, 15, 15, 0.55);
+  background: rgba(179, 15, 15, 0.14);
+}
+
+.demo__voltar {
+  font-size: 11px;
+  color: rgba(255, 214, 160, 0.65);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 214, 160, 0.25);
+}
+.demo__voltar:hover,
+.demo__voltar:focus-visible { color: var(--amber); }
+
+.holo-wrap {
+  width: 100%;
+  height: 340px;
+  display: grid;
+  place-items: center;
+}
+
+.holo-wrap .hologram {
+  transform: scale(1.5);
+  cursor: default;
+}
+
+.demo__status {
+  min-height: 36px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 214, 160, 0.82);
+}
+
+.mic {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 184, 77, 0.7);
+  background: radial-gradient(circle, rgba(255, 138, 43, 0.28), rgba(10, 6, 2, 0.9) 72%);
+  color: var(--amber);
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 0 26px rgba(255, 138, 43, 0.28);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.mic:hover { transform: scale(1.05); }
+.mic:active { transform: scale(0.96); }
+.mic.ouvindo {
+  border-color: rgba(103, 232, 249, 0.9);
+  color: var(--cyan);
+  box-shadow: 0 0 34px rgba(103, 232, 249, 0.45);
+  animation: micPulso 1.2s ease-in-out infinite;
+}
+@keyframes micPulso { 50% { transform: scale(1.08); } }
+
+.mic__legenda {
+  margin-top: -8px;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: rgba(255, 214, 160, 0.5);
+  text-transform: uppercase;
+}
+
+.forma {
+  width: 100%;
+  display: flex;
+  gap: 8px;
+}
+.forma input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 184, 77, 0.28);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--texto);
+  font: 14px 'Consolas', 'Courier New', monospace;
+}
+.forma input::placeholder { color: rgba(255, 214, 160, 0.38); }
+.forma input:focus {
+  outline: none;
+  border-color: rgba(255, 184, 77, 0.75);
+}
+.forma button {
+  padding: 0 18px;
+  border: 1px solid rgba(255, 184, 77, 0.55);
+  border-radius: 10px;
+  background: rgba(255, 138, 43, 0.16);
+  color: var(--amber);
+  font: 13px 'Consolas', 'Courier New', monospace;
+  cursor: pointer;
+}
+.forma button:hover { background: rgba(255, 138, 43, 0.28); }
+
+.dicas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.dica {
+  padding: 7px 11px;
+  border-radius: 999px;
+  border: 1px dashed rgba(255, 184, 77, 0.32);
+  background: transparent;
+  color: rgba(255, 214, 160, 0.75);
+  font: 11px 'Consolas', 'Courier New', monospace;
+  cursor: pointer;
+}
+.dica:hover { border-color: var(--amber); color: var(--amber); }
+
+.resposta {
+  width: 100%;
+  min-height: 66px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 184, 77, 0.2);
+  background: rgba(255, 138, 43, 0.05);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.nota {
+  max-width: 460px;
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.6;
+  color: rgba(255, 214, 160, 0.52);
+}
+
+@media (max-width: 600px) {
+  .holo-wrap { height: 285px; }
+  .holo-wrap .hologram { transform: scale(1.25); }
+  .mic { width: 68px; height: 68px; font-size: 26px; }
+  .demo { gap: 14px; padding-bottom: 32px; }
+}
+
+@media (max-width: 400px) {
+  .holo-wrap { height: 245px; }
+  .holo-wrap .hologram { transform: scale(1.05); }
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>J.A.R.V.I.S. — Demo Beta</title>
+  <meta name="theme-color" content="#06080b">
+  <meta name="description" content="Demo responsiva do J.A.R.V.I.S., assistente de voz local. Teste por voz no celular ou digite um comando.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="hologram.css">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <main class="demo">
+    <header class="demo__topo">
+      <span class="demo__marca">J.A.R.V.I.S. / DEMO WEB</span>
+      <span class="demo__selo">BETA</span>
+      <a class="demo__voltar" href="../#projetos">Voltar ao portfólio</a>
+    </header>
+
+    <div class="holo-wrap">
+      <div class="hologram off" id="hologram">
+        <div class="grid"></div>
+        <div class="frame"><i></i><i></i><i></i><i></i></div>
+        <div class="ring ring-outer"></div>
+        <div class="ring ring-mid"></div>
+        <div class="ring ring-inner"></div>
+        <div class="scan"></div>
+        <div class="ticks"></div>
+        <div class="arcs"></div>
+        <div class="core" id="reactor">
+          <div class="hex"><div class="eye"><span></span></div></div>
+        </div>
+        <div class="readout">
+          <span class="name">J.A.R.V.I.S.</span>
+          <span class="signal" id="signal">SIGNAL 00</span>
+        </div>
+        <div class="wave" id="wave">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+        <div class="caption" id="caption">Pronto para testar</div>
+        <div class="badge" id="badge">DEMO</div>
+      </div>
+    </div>
+
+    <div class="demo__status" id="status" role="status" aria-live="polite">
+      Toque no microfone e fale, ou digite um comando abaixo.
+    </div>
+
+    <button class="mic" id="mic" type="button" aria-label="Falar com o Jarvis">🎙</button>
+    <div class="mic__legenda" id="micLegenda">toque para falar</div>
+
+    <form class="forma" id="forma">
+      <input
+        id="entrada"
+        type="text"
+        autocomplete="off"
+        enterkeyhint="send"
+        placeholder="Ex.: quanto é 15% de 240"
+        aria-label="Escreva um comando"
+      >
+      <button type="submit">Enviar</button>
+    </form>
+
+    <div class="dicas" aria-label="Comandos de exemplo">
+      <button class="dica" type="button">bom dia</button>
+      <button class="dica" type="button">quanto é 15% de 240</button>
+      <button class="dica" type="button">que horas são</button>
+      <button class="dica" type="button">explique CSS</button>
+      <button class="dica" type="button">o papai chegou, crie uma tarefa estudar SEO</button>
+    </div>
+
+    <div class="resposta" id="resposta" aria-live="polite">
+      Esta é uma versão de teste, reduzida e local. O interpretador é o mesmo do app desktop, mas ações do Windows e buscas na web não funcionam aqui.
+    </div>
+
+    <p class="nota">
+      Sem API, sem chave e sem servidor de IA. O reconhecimento de voz usa o recurso do navegador (funciona melhor no Chrome para Android); em outros navegadores, use o campo de texto. A resposta falada usa a voz do próprio aparelho.
+    </p>
+  </main>
+
+  <script src="bundle.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
