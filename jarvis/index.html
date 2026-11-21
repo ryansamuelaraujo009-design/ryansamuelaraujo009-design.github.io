@@ -8,6 +8,7 @@
   <meta name="description" content="Demo responsiva do J.A.R.V.I.S., assistente de voz local. Teste por voz no celular ou digite um comando.">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="stylesheet" href="hologram.css">
   <link rel="stylesheet" href="demo.css">
 </head>
@@ -20,7 +21,8 @@
     </header>
 
     <div class="holo-wrap">
-      <div class="hologram off" id="hologram">
+      <!-- HUD decorativo: status e resposta já são aria-live fora daqui. -->
+      <div class="hologram off" id="hologram" aria-hidden="true">
         <div class="grid"></div>
         <div class="frame"><i></i><i></i><i></i><i></i></div>
         <div class="ring ring-outer"></div>
@@ -48,7 +50,7 @@
       Toque no microfone e fale, ou digite um comando abaixo.
     </div>
 
-    <button class="mic" id="mic" type="button" aria-label="Falar com o Jarvis">🎙</button>
+    <button class="mic" id="mic" type="button" aria-label="Falar com o Jarvis" aria-pressed="false">🎙</button>
     <div class="mic__legenda" id="micLegenda">toque para falar</div>
 
     <form class="forma" id="forma">

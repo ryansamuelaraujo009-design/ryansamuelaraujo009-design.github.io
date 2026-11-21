@@ -1,12 +1,27 @@
 {
+  "id": "./",
   "name": "J.A.R.V.I.S. — Demo Beta",
   "short_name": "JARVIS Demo",
   "description": "Demo responsiva do assistente de voz local J.A.R.V.I.S.",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#06080b",
   "theme_color": "#06080b",
   "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
     {
       "src": "icon.svg",
       "sizes": "any",

@@ -7,18 +7,8 @@
   --cyan: #67e8f9;
 }
 
-html, body {
-  width: 210px;
-  height: 210px;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  overflow: hidden;
-  font-family: 'Consolas', 'Segoe UI', monospace;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
+/* Escopo limitado ao HUD: a demo controla html/body em demo.css.
+   (No app desktop, este arquivo é carregado sozinho numa janela 210x210.) */
 .hologram {
   position: relative;
   width: 210px;
@@ -27,6 +17,9 @@ html, body {
   place-items: center;
   cursor: pointer;
   color: var(--amber);
+  font-family: 'Consolas', 'Segoe UI', monospace;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* Fundo: scanlines e vinheta sutil */
@@ -271,5 +264,16 @@ html, body {
 .hologram.speaking .badge { color: var(--cyan); border-color: rgba(103, 232, 249, .55); }
 .hologram.speaking .arcs { filter: hue-rotate(140deg); }
 
-.hologram.off { opacity: .42; filter: saturate(.45); }
+.hologram.off { opacity: .62; filter: saturate(.6); }
 .hologram.off .scan { animation-duration: 12s; }
+
+/* Respeita quem pediu menos movimento (o app.js também pausa a onda JS). */
+@media (prefers-reduced-motion: reduce) {
+  .hologram,
+  .hologram *,
+  .hologram *::before,
+  .hologram *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -388,6 +388,9 @@ function forget(query) {
     removed = state.facts.length + state.examples.length + state.webKnowledge.length + state.sentences.length;
     state.facts = []; state.examples = []; state.episodes = []; state.webKnowledge = [];
     state.sentences = []; state.corpus = {};
+  } else if (q.length < 3) {
+    // "esqueça a", "esqueça de" etc. casariam com quase tudo por substring.
+    return { reply: 'Diga um termo maior para eu esquecer (pelo menos 3 letras).', removed: 0 };
   } else {
     const matches = (value) => norm(value).includes(q) || q.includes(norm(value));
     const before = state.facts.length + state.examples.length + state.webKnowledge.length;
@@ -1118,7 +1121,8 @@ function parse(rawInput, options = {}) {
   if (/^(ler notas|mostrar minhas notas|ver notas|listar minhas notas)/.test(text)) {
     return { intent: 'chat', reply: 'Aqui estão suas notas.', data: { type: 'notesList' } };
   }
-  match = text.match(/^(criar|adicionar|nova)\s+tarefa\s+(.+)$/);
+  // "crie uma tarefa ..." vira "crie 1 tarefa ..." na normalização de fala.
+  match = text.match(/^(criar|crie|adicionar|adicione|nova|novo)\s+(?:um|uma|1)?\s*tarefa\s+(.+)$/);
   if (match) return { intent: 'chat', reply: `Tarefa criada: ${cleanQuery(match[2])}.`, write: { store: 'tasks', item: { id: Date.now().toString(), text: cleanQuery(match[2]), done: false, at: new Date().toISOString() } } };
   if (/^(listar tarefas|mostrar tarefas|minhas tarefas|ver tarefas)/.test(text)) {
     return { intent: 'chat', reply: 'Aqui estão suas tarefas.', data: { type: 'tasksList' } };

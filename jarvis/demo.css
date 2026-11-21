@@ -1,4 +1,4 @@
-/* Ajustes da demo web: responsivo e com controles de toque. */
+/* Ajustes da demo web: responsivo, acessível e com controles de toque. */
 :root {
   --fundo: #06080b;
   --texto: #f5e9d6;
@@ -7,10 +7,12 @@
   --vermelho: #f25454;
 }
 
-html, body {
-  width: 100% !important;
-  height: 100% !important;
-  background: var(--fundo) !important;
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  background: var(--fundo);
   overflow-x: hidden;
   overflow-y: auto;
   color: var(--texto);
@@ -18,7 +20,6 @@ html, body {
 }
 
 body {
-  min-height: 100%;
   background:
     radial-gradient(circle at 50% 22%, rgba(255, 138, 43, 0.08), transparent 45%),
     var(--fundo);
@@ -46,7 +47,7 @@ body {
 .demo__marca {
   font-size: 11px;
   letter-spacing: 2px;
-  color: rgba(255, 184, 77, 0.75);
+  color: rgba(255, 184, 77, 0.85);
 }
 
 .demo__selo {
@@ -60,17 +61,20 @@ body {
 }
 
 .demo__voltar {
-  font-size: 11px;
-  color: rgba(255, 214, 160, 0.65);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 12px;
+  color: rgba(255, 214, 160, 0.8);
   text-decoration: none;
-  border-bottom: 1px solid rgba(255, 214, 160, 0.25);
+  border-bottom: 1px solid rgba(255, 214, 160, 0.3);
 }
 .demo__voltar:hover,
 .demo__voltar:focus-visible { color: var(--amber); }
 
 .holo-wrap {
   width: 100%;
-  height: 340px;
+  height: clamp(240px, 42svh, 380px);
   display: grid;
   place-items: center;
 }
@@ -85,7 +89,7 @@ body {
   text-align: center;
   font-size: 12px;
   line-height: 1.5;
-  color: rgba(255, 214, 160, 0.82);
+  color: rgba(255, 214, 160, 0.88);
 }
 
 .mic {
@@ -110,13 +114,14 @@ body {
   box-shadow: 0 0 34px rgba(103, 232, 249, 0.45);
   animation: micPulso 1.2s ease-in-out infinite;
 }
+.mic:disabled { cursor: not-allowed; }
 @keyframes micPulso { 50% { transform: scale(1.08); } }
 
 .mic__legenda {
   margin-top: -8px;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 1.5px;
-  color: rgba(255, 214, 160, 0.5);
+  color: rgba(255, 214, 160, 0.78);
   text-transform: uppercase;
 }
 
@@ -128,19 +133,22 @@ body {
 .forma input {
   flex: 1;
   min-width: 0;
+  min-height: 46px;
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 184, 77, 0.28);
+  border: 1px solid rgba(255, 184, 77, 0.3);
   background: rgba(255, 255, 255, 0.035);
   color: var(--texto);
   font: 14px 'Consolas', 'Courier New', monospace;
 }
-.forma input::placeholder { color: rgba(255, 214, 160, 0.38); }
-.forma input:focus {
-  outline: none;
+.forma input::placeholder { color: rgba(255, 214, 160, 0.55); }
+.forma input:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
   border-color: rgba(255, 184, 77, 0.75);
 }
 .forma button {
+  min-height: 46px;
   padding: 0 18px;
   border: 1px solid rgba(255, 184, 77, 0.55);
   border-radius: 10px;
@@ -150,6 +158,12 @@ body {
   cursor: pointer;
 }
 .forma button:hover { background: rgba(255, 138, 43, 0.28); }
+.forma button:focus-visible,
+.dica:focus-visible,
+.mic:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
 
 .dicas {
   display: flex;
@@ -158,12 +172,13 @@ body {
   justify-content: center;
 }
 .dica {
-  padding: 7px 11px;
+  min-height: 44px;
+  padding: 7px 12px;
   border-radius: 999px;
-  border: 1px dashed rgba(255, 184, 77, 0.32);
+  border: 1px dashed rgba(255, 184, 77, 0.4);
   background: transparent;
-  color: rgba(255, 214, 160, 0.75);
-  font: 11px 'Consolas', 'Courier New', monospace;
+  color: rgba(255, 214, 160, 0.85);
+  font: 12px 'Consolas', 'Courier New', monospace;
   cursor: pointer;
 }
 .dica:hover { border-color: var(--amber); color: var(--amber); }
@@ -182,19 +197,31 @@ body {
 .nota {
   max-width: 460px;
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.6;
-  color: rgba(255, 214, 160, 0.52);
+  color: rgba(255, 214, 160, 0.76);
 }
 
 @media (max-width: 600px) {
-  .holo-wrap { height: 285px; }
   .holo-wrap .hologram { transform: scale(1.25); }
   .mic { width: 68px; height: 68px; font-size: 26px; }
   .demo { gap: 14px; padding-bottom: 32px; }
 }
 
 @media (max-width: 400px) {
-  .holo-wrap { height: 245px; }
   .holo-wrap .hologram { transform: scale(1.05); }
+}
+
+/* Celular deitado: o holograma não pode dominar a viewport. */
+@media (max-height: 520px) and (orientation: landscape) {
+  .holo-wrap { height: 200px; }
+  .holo-wrap .hologram { transform: scale(0.85); }
+  .demo { padding-top: 12px; gap: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mic.ouvindo { animation: none; }
+  .mic,
+  .forma button,
+  a.projeto__link--demo { transition: none; }
 }
