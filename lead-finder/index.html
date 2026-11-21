@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  LEADFINDER — prospecção de empresas sem site
+  ------------------------------------------------------------
+  Projeto separado, independente do portfólio.
+  Base real de estabelecimentos brasileiros + mapa mundial Leaflet/OSM.
+
+  Como abrir: basta dar duplo clique neste arquivo.
+  (O mapa precisa de internet para carregar os tiles e o Leaflet.)
+  ============================================================
+-->
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ferramenta de prospecção: encontre empresas que ainda não têm site, com WhatsApp, e-mail, Instagram, afiliado e localização no mapa mundial.">
+  <meta name="theme-color" content="#0a0607">
+  <meta name="robots" content="noindex, nofollow">
+  <title>LeadFinder — empresas sem site, com contato e mapa</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+
+  <!-- CSS do Leaflet (mapa) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <!-- ==================== CABEÇALHO ==================== -->
+  <header class="topo">
+    <div class="container topo__interno">
+      <a class="logo" href="#conteudo" aria-label="LeadFinder — voltar ao topo">
+        <span class="logo__marca" aria-hidden="true">◈</span>
+        <span>Lead<span class="logo__acento">Finder</span></span>
+      </a>
+
+      <div class="topo__acoes">
+        <span class="chip chip--demo">25 leads reais</span>
+        <button class="botao botao--primario botao--pequeno" type="button" id="btn-adicionar">
+          <span aria-hidden="true">＋</span> Adicionar lead
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo">
+
+    <!-- ==================== HERO ==================== -->
+    <section class="hero">
+      <div class="container hero__interno">
+        <p class="hero__kicker">Prospecção de clientes</p>
+        <h1>Encontre negócios que <span>ainda não têm site</span>.</h1>
+        <p class="hero__descricao">
+          Uma lista de empresas com WhatsApp, e-mail, Instagram, afiliado
+          responsável e localização no mapa. Filtre, priorize e exporte os
+          leads mais quentes para abordar.
+        </p>
+        <p class="hero__aviso">
+          ⚠ Estabelecimentos <strong>reais</strong>, com contato tirado de perfis
+          públicos. "Sem site" é o que foi detectado na pesquisa — confirme antes
+          de abordar. Cada card traz o link da fonte.
+        </p>
+
+        <div class="stats" id="stats" aria-label="Resumo dos leads"></div>
+      </div>
+    </section>
+
+    <!-- ==================== FILTROS ==================== -->
+    <section class="container secao-filtros" aria-labelledby="titulo-filtros">
+      <h2 class="visivel-para-leitores" id="titulo-filtros">Filtros de busca</h2>
+
+      <form class="filtros card" id="form-filtros" novalidate>
+        <div class="filtros__linha">
+          <label class="campo campo--busca">
+            <span class="campo__rotulo">Buscar</span>
+            <span class="campo__com-icone">
+              <span id="icone-busca" aria-hidden="true"></span>
+              <input type="search" id="f-busca" placeholder="Nome, cidade, categoria, afiliado..." autocomplete="off">
+            </span>
+          </label>
+
+          <label class="campo">
+            <span class="campo__rotulo">Categoria</span>
+            <select id="f-categoria"><option value="">Todas</option></select>
+          </label>
+
+          <label class="campo">
+            <span class="campo__rotulo">País</span>
+            <select id="f-pais"><option value="">Todos</option></select>
+          </label>
+
+          <label class="campo">
+            <span class="campo__rotulo">Afiliado</span>
+            <select id="f-afiliado"><option value="">Todos</option></select>
+          </label>
+
+          <label class="campo">
+            <span class="campo__rotulo">Site</span>
+            <select id="f-site">
+              <option value="">Todos</option>
+              <option value="sem">Sem site</option>
+              <option value="com">Com site</option>
+            </select>
+          </label>
+
+          <label class="campo">
+            <span class="campo__rotulo">Status</span>
+            <select id="f-status">
+              <option value="">Todos</option>
+              <option value="novo">Novo</option>
+              <option value="contatado">Contatado</option>
+              <option value="interessado">Interessado</option>
+              <option value="fechado">Fechado</option>
+              <option value="descartado">Descartado</option>
+            </select>
+          </label>
+
+          <label class="campo">
+            <span class="campo__rotulo">Prioridade</span>
+            <select id="f-prioridade">
+              <option value="">Todas</option>
+              <option value="alta">Alta</option>
+              <option value="media">Média</option>
+              <option value="baixa">Baixa</option>
+            </select>
+          </label>
+
+          <label class="campo">
+            <span class="campo__rotulo">Ordenar por</span>
+            <select id="f-ordem">
+              <option value="score">Maior pontuação</option>
+              <option value="nome">Nome (A–Z)</option>
+              <option value="cidade">Cidade (A–Z)</option>
+              <option value="afiliado">Afiliado (A–Z)</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="filtros__rodape">
+          <fieldset class="canais">
+            <legend>Canais disponíveis</legend>
+            <label class="check"><input type="checkbox" data-canal="whatsapp"> WhatsApp</label>
+            <label class="check"><input type="checkbox" data-canal="email"> E-mail</label>
+            <label class="check"><input type="checkbox" data-canal="instagram"> Instagram</label>
+          </fieldset>
+
+          <div class="filtros__botoes">
+            <button type="button" class="botao botao--fantasma botao--pequeno" id="btn-limpar">Limpar filtros</button>
+            <button type="button" class="botao botao--secundario botao--pequeno" id="btn-exportar">Exportar CSV</button>
+            <button type="button" class="botao botao--secundario botao--pequeno" id="btn-importar">Importar JSON</button>
+            <input type="file" id="arquivo-json" accept="application/json,.json" hidden>
+            <button type="button" class="botao botao--fantasma botao--pequeno" id="btn-resetar">Restaurar base</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- ==================== MAPA + LISTA ==================== -->
+    <section class="container workspace" aria-labelledby="titulo-resultados">
+      <div class="workspace__cabecalho">
+        <h2 id="titulo-resultados">Leads encontrados <span id="contador" aria-live="polite"></span></h2>
+      </div>
+
+      <div class="workspace__grade">
+        <div class="mapa-wrap card">
+          <div id="mapa" role="application" aria-label="Mapa mundial com a localização dos leads"></div>
+          <div class="mapa__legenda" aria-hidden="true">
+            <span><i class="bolinha bolinha--alta"></i> Alta</span>
+            <span><i class="bolinha bolinha--media"></i> Média</span>
+            <span><i class="bolinha bolinha--baixa"></i> Baixa</span>
+          </div>
+          <p class="mapa__dica">Clique em um pin para ver os detalhes</p>
+        </div>
+
+        <div class="resultados">
+          <div class="resultados__lista" id="lista"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape__interno">
+      <p>LeadFinder · prospecção de empresas sem site</p>
+      <p>Dados reais de perfis públicos · mapa por OpenStreetMap/CARTO · salvo neste navegador</p>
+    </div>
+  </footer>
+
+  <!-- ==================== MODAL DE CADASTRO ==================== -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal__cartao" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+      <div class="modal__topo">
+        <div>
+          <h2 id="modal-titulo">Adicionar lead</h2>
+          <p id="modal-subtitulo">Preencha os dados da empresa que você encontrou.</p>
+        </div>
+        <button type="button" class="modal__fechar" id="modal-fechar" aria-label="Fechar">×</button>
+      </div>
+
+      <form class="formulario" id="form-lead" novalidate>
+        <label class="campo campo--inteira">
+          <span class="campo__rotulo">Nome da empresa *</span>
+          <input type="text" id="c-nome" required maxlength="80" placeholder="Ex.: Bistro da Vila">
+        </label>
+
+        <label class="campo">
+          <span class="campo__rotulo">Categoria</span>
+          <input type="text" id="c-categoria" list="lista-categorias" maxlength="50" placeholder="Ex.: Restaurante">
+        </label>
+
+        <label class="campo">
+          <span class="campo__rotulo">Afiliado</span>
+          <input type="text" id="c-afiliado" list="lista-afiliados" maxlength="60" placeholder="Quem captou o lead">
+        </label>
+
+        <label class="campo">
+          <span class="campo__rotulo">Status da prospecção</span>
+          <select id="c-status">
+            <option value="novo">Novo</option>
+            <option value="contatado">Contatado</option>
+            <option value="interessado">Interessado</option>
+            <option value="fechado">Fechado</option>
+            <option value="descartado">Descartado</option>
+          </select>
+        </label>
+
+        <label class="campo">
+          <span class="campo__rotulo">Cidade</span>
+          <input type="text" id="c-cidade" maxlength="60" placeholder="Ex.: São Paulo">
+        </label>
+
+        <label class="campo">
+          <span class="campo__rotulo">País</span>
+          <input type="text" id="c-pais" list="lista-paises" maxlength="60" placeholder="Ex.: Brasil">
+        </label>
+
+        <label class="campo">
+          <span class="campo__rotulo">Latitude</span>
+          <input type="number" id="c-lat" step="any" placeholder="-23.5505">
+        </label>
+
+        <label class="campo">
+          <span class="campo__rotulo">Longitude</span>
+          <input type="number" id="c-lng" step="any" placeholder="-46.6333">
+        </label>
+
+        <div class="campo campo--inteira">
+          <div class="campo__linha">
+            <span class="campo__rotulo">Não sabe as coordenadas?</span>
+            <button type="button" class="campo__acao" id="btn-geocode">Buscar pela cidade →</button>
+          </div>
+        </div>
+
+        <label class="campo">
+          <span class="campo__rotulo">WhatsApp</span>
+          <input type="text" id="c-whatsapp" maxlength="30" placeholder="+55 11 94000-0000">
+        </label>
+
+        <label class="campo">
+          <span class="campo__rotulo">E-mail</span>
+          <input type="email" id="c-email" maxlength="100" placeholder="contato@empresa.com">
+        </label>
+
+        <label class="campo">
+          <span class="campo__rotulo">Instagram</span>
+          <input type="text" id="c-instagram" maxlength="60" placeholder="@empresa">
+        </label>
+
+        <label class="campo">
+          <span class="campo__rotulo">Site (deixe vazio se não tiver)</span>
+          <input type="text" id="c-site" maxlength="120" placeholder="https://...">
+        </label>
+
+        <label class="campo campo--inteira">
+          <span class="campo__rotulo">Observação</span>
+          <textarea id="c-obs" maxlength="300" placeholder="Ex.: agendamento só por WhatsApp"></textarea>
+        </label>
+
+        <datalist id="lista-categorias"></datalist>
+        <datalist id="lista-paises"></datalist>
+        <datalist id="lista-afiliados"></datalist>
+
+        <div class="campo campo--inteira modal__aviso">
+          Os dados ficam salvos apenas neste navegador (localStorage). Use
+          <strong>Exportar CSV</strong> para guardar uma cópia ou
+          <strong>Importar JSON</strong> para trazer de outro dispositivo.
+        </div>
+
+        <div class="campo--inteira modal__acoes">
+          <button type="button" class="botao botao--fantasma" id="btn-cancelar">Cancelar</button>
+          <button type="submit" class="botao botao--primario" id="btn-salvar">Salvar lead</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- Ordem importa: dados → utilitários → mapa → aplicação -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

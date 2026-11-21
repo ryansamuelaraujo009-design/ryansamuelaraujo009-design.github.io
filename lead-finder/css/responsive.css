@@ -1,0 +1,122 @@
+/* ====================================================================
+   RESPONSIVE.CSS — ajustes para tablet e celular (sempre por último)
+   ==================================================================== */
+
+@media (max-width: 1100px) {
+  .filtros__linha {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .campo--busca {
+    grid-column: 1 / -1;
+  }
+
+  .workspace__grade {
+    grid-template-columns: 1fr;
+  }
+
+  .mapa-wrap {
+    position: static;
+    height: 440px;
+    min-height: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  :root {
+    --topo-altura: 62px;
+  }
+
+  .container {
+    width: min(100% - 1.2rem, 1380px);
+  }
+
+  .logo {
+    font-size: 1rem;
+  }
+
+  .logo__marca {
+    width: 30px;
+    height: 30px;
+  }
+
+  .chip--demo {
+    display: none;
+  }
+
+  .topo__acoes .botao {
+    padding-inline: 0.65rem;
+  }
+
+  .hero {
+    padding-top: 2.6rem;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat__valor {
+    font-size: 1.5rem;
+  }
+
+  .filtros__linha {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filtros__rodape {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .canais legend {
+    float: none;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .filtros__botoes .botao {
+    flex: 1 1 auto;
+  }
+
+  .mapa-wrap {
+    height: 360px;
+  }
+
+  .mapa__legenda {
+    gap: 0.45rem;
+    font-size: 0.68rem;
+  }
+
+  .mapa__dica {
+    display: none;
+  }
+
+  .formulario {
+    grid-template-columns: 1fr;
+  }
+
+  .modal__acoes {
+    flex-direction: column-reverse;
+  }
+
+  .modal__acoes .botao {
+    width: 100%;
+  }
+
+  .toasts {
+    left: 1rem;
+  }
+
+  .toast {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
