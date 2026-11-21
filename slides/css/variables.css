@@ -1,0 +1,28 @@
+:root {
+  --cor-fundo: #0a0607;
+  --cor-fundo-alt: #100a0b;
+  --cor-superficie: #150e0f;
+  --cor-superficie-alta: #1d1314;
+  --cor-superficie-2: #1a1112;
+  --cor-borda: rgba(255, 255, 255, 0.08);
+  --cor-borda-forte: rgba(255, 255, 255, 0.14);
+  --cor-vermelho: #b30f0f;
+  --cor-vermelho-claro: #eb4040;
+  --cor-vermelho-escuro: #7a0000;
+  --cor-brilho: rgba(179, 15, 15, 0.16);
+  --cor-brilho-card: rgba(179, 15, 15, 0.28);
+  --cor-texto: #f4eeee;
+  --cor-texto-suave: #b9aeae;
+  --cor-texto-apagado: #9b9090;
+  --cor-sucesso: #3dd68c;
+  --cor-aviso: #f5b301;
+  --fonte: 'Space Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --fonte-mono: 'JetBrains Mono', 'Consolas', monospace;
+  --raio: 12px;
+  --raio-sm: 8px;
+  --raio-xs: 6px;
+  --transicao: 200ms ease;
+  --sidebar-largura: 260px;
+  --sombra: 0 18px 40px -18px rgba(0,0,0,.55);
+  color-scheme: dark;
+}

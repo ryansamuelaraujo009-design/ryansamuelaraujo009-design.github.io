@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SlideForge — crie apresentações do zero ou comece com modelos prontos. Editor de slides bonito, rápido e útil.">
+  <meta name="theme-color" content="#0a0607">
+  <title>SlideForge — Crie slides incríveis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <div class="app" id="app">
+    <!-- SIDEBAR ESQUERDA -->
+    <aside class="sidebar" aria-label="Menu principal">
+      <a class="brand" href="#inicio" data-view="home" aria-label="SlideForge — início">
+        <span class="brand__mark" aria-hidden="true">
+          <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="28" height="28" rx="8" fill="url(#g1)"/>
+            <path d="M10 11.5C10 10.6716 10.6716 10 11.5 10H22.5C23.3284 10 24 10.6716 24 11.5V19.5C24 20.3284 23.3284 21 22.5 21H11.5C10.6716 21 10 20.3284 10 19.5V11.5Z" stroke="white" stroke-width="1.8"/>
+            <path d="M13 24H21" stroke="rgba(255,255,255,.7)" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M13.5 13.5H20.5M13.5 16.5H18" stroke="rgba(255,255,255,.85)" stroke-width="1.6" stroke-linecap="round"/>
+            <defs><linearGradient id="g1" x1="3" y1="3" x2="31" y2="31" gradientUnits="userSpaceOnUse"><stop stop-color="#EB4040"/><stop offset="1" stop-color="#7A0000"/></linearGradient></defs>
+          </svg>
+        </span>
+        <span class="brand__text">
+          <span class="brand__name">SlideForge</span>
+          <span class="brand__sub">por DEV.programier</span>
+        </span>
+      </a>
+
+      <nav class="sidebar__nav" aria-label="Navegação">
+        <p class="sidebar__label">Menu</p>
+        <button class="nav-item is-active" data-view="home" type="button">
+          <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+          <span>Início</span>
+        </button>
+        <button class="nav-item" data-view="templates" type="button">
+          <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>
+          <span>Modelos</span>
+        </button>
+        <button class="nav-item" data-view="editor" type="button">
+          <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          <span>Editor</span>
+        </button>
+        <button class="nav-item" data-view="projects" type="button">
+          <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          <span>Meus slides</span>
+        </button>
+        <button class="nav-item" data-view="ai" type="button">
+          <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.9 4.6L18.5 8.5l-4.6 1.9L12 15l-1.9-4.6L5.5 8.5l4.6-1.9L12 2z"/><path d="M19 15l.9 2.1 2.1.9-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z"/><path d="M5 15l.9 2.1 2.1.9-2.1.9L5 21l-.9-2.1L2 18l2.1-.9L5 15z"/></svg>
+          <span>Criar com IA</span>
+        </button>
+      </nav>
+
+      <div class="sidebar__cta">
+        <p class="sidebar__label">Ação rápida</p>
+        <button class="btn btn--primary btn--full" id="btn-new-blank" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          <span>Criar do zero</span>
+        </button>
+      </div>
+
+      <div class="sidebar__footer">
+        <div class="sidebar__tip">
+          <span class="sidebar__tip-dot" aria-hidden="true"></span>
+          <p><strong>Dica:</strong> use <kbd>Ctrl</kbd>+<kbd>S</kbd> para salvar.</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="shell">
+      <header class="topbar">
+        <button class="mobile-menu-btn" id="mobile-menu-btn" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="sidebar-mobile">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="topbar__title-wrap">
+          <p class="topbar__eyebrow" id="topbar-eyebrow">Área de trabalho</p>
+          <h1 class="topbar__title" id="topbar-title">Crie apresentações com impacto</h1>
+        </div>
+        <div class="topbar__actions">
+          <button class="btn btn--ghost" id="btn-present" type="button" title="Apresentar (F5)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>Apresentar</span>
+          </button>
+          <button class="btn btn--ghost" id="btn-export" type="button" title="Exportar ou imprimir">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Exportar</span>
+          </button>
+          <button class="btn btn--primary" id="btn-save" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            <span>Salvar</span>
+          </button>
+        </div>
+      </header>
+
+      <main id="conteudo" class="main">
+        <!-- HOME VIEW -->
+        <section class="view is-visible" id="view-home" aria-label="Início">
+          <div class="hero-banner">
+            <div class="hero-banner__content">
+              <p class="kicker">Crie. Personalize. Apresente.</p>
+              <h2 class="hero-banner__title">Seu próximo slide <span class="text-accent">começa aqui</span>.</h2>
+              <p class="hero-banner__desc">Monte apresentações do zero com um editor visual ou acelere com modelos prontos. Tudo no estilo DEV.programier — escuro, elegante e focado no conteúdo.</p>
+              <div class="hero-banner__actions">
+                <button class="btn btn--primary" id="home-create" type="button">Criar slide do zero</button>
+                <button class="btn btn--secondary" data-view="ai" type="button">Criar com IA</button>
+                <button class="btn btn--ghost" data-view="templates" type="button">Explorar modelos</button>
+              </div>
+              <div class="hero-banner__stats">
+                <div class="stat"><span class="stat__value" id="stat-projects">0</span><span class="stat__label">Projetos salvos</span></div>
+                <div class="stat"><span class="stat__value" id="stat-templates">6</span><span class="stat__label">Modelos prontos</span></div>
+                <div class="stat"><span class="stat__value">100%</span><span class="stat__label">Editável</span></div>
+              </div>
+            </div>
+            <div class="hero-banner__visual" aria-hidden="true">
+              <div class="preview-stack">
+                <div class="preview-card preview-card--back"></div>
+                <div class="preview-card preview-card--mid"></div>
+                <div class="preview-card preview-card--front">
+                  <div class="pc-kicker">DEV.programier</div>
+                  <div class="pc-title">Apresentação<br><span>Profissional</span></div>
+                  <div class="pc-lines"><span></span><span></span><span style="width:55%"></span></div>
+                  <div class="pc-bar"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-head">
+            <div>
+              <p class="kicker">Modelos prontos</p>
+              <h2 class="section-title">Comece com um modelo</h2>
+            </div>
+            <button class="btn btn--ghost" data-view="templates" type="button">Ver todos</button>
+          </div>
+          <div class="template-grid" id="home-templates"></div>
+
+          <div class="section-head">
+            <div>
+              <p class="kicker">Recentes</p>
+              <h2 class="section-title">Seus projetos</h2>
+            </div>
+            <button class="btn btn--ghost" data-view="projects" type="button">Ver todos</button>
+          </div>
+          <div class="projects-grid" id="home-projects"></div>
+        </section>
+
+        <!-- TEMPLATES VIEW -->
+        <section class="view" id="view-templates" aria-label="Modelos">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Biblioteca</p>
+              <h2 class="section-title">Modelos prontos</h2>
+              <p class="section-desc">Modelos pensados para escola e trabalho, com animações, layouts prontos e tudo editável.</p>
+            </div>
+          </div>
+          <div class="filters" id="template-filters">
+            <button class="filter is-active" data-filter="all" type="button">Todos</button>
+            <button class="filter" data-filter="educacao" type="button">Escola</button>
+            <button class="filter" data-filter="negocios" type="button">Trabalho</button>
+            <button class="filter" data-filter="criativo" type="button">Criativo</button>
+          </div>
+          <div class="template-grid" id="templates-grid"></div>
+        </section>
+
+        <!-- EDITOR VIEW -->
+        <section class="view view--editor" id="view-editor" aria-label="Editor">
+          <div class="editor-layout">
+            <div class="editor-slides-panel">
+              <div class="panel-head">
+                <span class="panel-head__title">Slides</span>
+                <button class="icon-btn" id="btn-add-slide" type="button" title="Adicionar slide" aria-label="Adicionar slide">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+              </div>
+              <div class="slides-list" id="slides-list" aria-label="Lista de slides"></div>
+            </div>
+
+            <div class="editor-canvas-wrap">
+              <div class="canvas-toolbar">
+                <div class="canvas-toolbar__left">
+                  <span class="canvas-info" id="canvas-info">Slide 1 de 1</span>
+                </div>
+                <div class="canvas-toolbar__right">
+                  <button class="icon-btn" id="btn-dup-slide" type="button" title="Duplicar slide" aria-label="Duplicar slide"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+                  <button class="icon-btn" id="btn-move-up" type="button" title="Mover para cima" aria-label="Mover slide para cima"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></button>
+                  <button class="icon-btn" id="btn-move-down" type="button" title="Mover para baixo" aria-label="Mover slide para baixo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+                  <button class="icon-btn icon-btn--danger" id="btn-delete-slide" type="button" title="Excluir slide" aria-label="Excluir slide"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+                </div>
+              </div>
+              <div class="canvas-stage" id="canvas-stage">
+                <div class="slide-canvas" id="slide-canvas" aria-label="Slide atual">
+                  <div class="slide-canvas__bg" id="canvas-bg"></div>
+                  <div class="slide-canvas__content" id="canvas-content"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="editor-props-panel">
+              <div class="panel-head">
+                <span class="panel-head__title">Propriedades</span>
+              </div>
+              <div class="props-body" id="props-body">
+                <div class="prop-group">
+                  <label class="prop-label" for="prop-project-name">Nome do projeto</label>
+                  <input class="prop-input" id="prop-project-name" type="text" maxlength="80" placeholder="Nome da apresentação">
+                </div>
+                <div class="prop-divider"></div>
+                <div class="prop-group">
+                  <label class="prop-label" for="prop-title">Título</label>
+                  <input class="prop-input" id="prop-title" type="text" maxlength="120" placeholder="Título do slide">
+                </div>
+                <div class="prop-group">
+                  <label class="prop-label" for="prop-subtitle">Subtítulo / Texto</label>
+                  <textarea class="prop-input prop-textarea" id="prop-subtitle" rows="4" maxlength="400" placeholder="Texto de apoio"></textarea>
+                </div>
+                <div class="prop-group">
+                  <label class="prop-label" for="prop-bullets">Tópicos (um por linha)</label>
+                  <textarea class="prop-input prop-textarea" id="prop-bullets" rows="5" maxlength="600" placeholder="Tópico 1&#10;Tópico 2&#10;Tópico 3"></textarea>
+                </div>
+                <div class="prop-group">
+                  <label class="prop-label" for="prop-note">Nota do apresentador</label>
+                  <textarea class="prop-input prop-textarea" id="prop-note" rows="3" maxlength="400" placeholder="Notas privadas..."></textarea>
+                </div>
+                <div class="prop-divider"></div>
+                <div class="prop-group">
+                  <label class="prop-label" for="prop-image">Imagem do slide (URL)</label>
+                  <input class="prop-input" id="prop-image" type="url" placeholder="https://...">
+                  <div style="display:grid;grid-template-columns:1fr auto;gap:.5rem;margin-top:.5rem;">
+                    <input class="prop-input" id="prop-image-caption" type="text" maxlength="120" placeholder="Legenda da imagem (opcional)">
+                    <button class="btn btn--ghost btn--sm" id="btn-clear-image" type="button">Remover</button>
+                  </div>
+                  <input class="prop-input" id="prop-image-alt" type="text" maxlength="140" placeholder="Texto alternativo (acessibilidade)" style="margin-top:.5rem;">
+                  <p class="ai-hint" style="margin-top:.45rem;">A IA tenta adicionar imagens relacionadas ao tema automaticamente. Você pode trocar a URL quando quiser.</p>
+                </div>
+                <div class="prop-group">
+                  <label class="prop-label" for="prop-bg-image">Imagem de fundo (URL)</label>
+                  <div style="display:grid;grid-template-columns:1fr auto;gap:.5rem;">
+                    <input class="prop-input" id="prop-bg-image" type="url" placeholder="https://...">
+                    <button class="btn btn--ghost btn--sm" id="btn-clear-bg-image" type="button">Remover</button>
+                  </div>
+                  <p class="ai-hint" style="margin-top:.45rem;">A IA também aplica um fundo temático. Use este campo para personalizar.</p>
+                </div>
+                <div class="prop-divider"></div>
+                <div class="prop-group">
+                  <span class="prop-label">Disposição</span>
+                  <div class="layout-options" id="layout-options">
+                    <button class="layout-opt" data-layout="hero" type="button" title="Capa"><span class="lo lo--hero"></span><small>Capa</small></button>
+                    <button class="layout-opt" data-layout="content" type="button" title="Conteúdo"><span class="lo lo--content"></span><small>Conteúdo</small></button>
+                    <button class="layout-opt" data-layout="split" type="button" title="Dividido"><span class="lo lo--split"></span><small>Dividido</small></button>
+                    <button class="layout-opt" data-layout="cards" type="button" title="Cartões"><span class="lo lo--cards"></span><small>Cartões</small></button>
+                    <button class="layout-opt" data-layout="timeline" type="button" title="Linha do tempo"><span class="lo lo--timeline"></span><small>Linha</small></button>
+                    <button class="layout-opt" data-layout="stats" type="button" title="Números"><span class="lo lo--stats"></span><small>Números</small></button>
+                    <button class="layout-opt" data-layout="quote" type="button" title="Citação"><span class="lo lo--quote"></span><small>Citação</small></button>
+                  </div>
+                </div>
+                <div class="prop-group">
+                  <span class="prop-label">Cor de fundo</span>
+                  <div class="color-options" id="bg-options">
+                    <button class="color-swatch is-active" data-bg="dark" type="button" title="Escuro" style="--sw:#0a0607"></button>
+                    <button class="color-swatch" data-bg="red" type="button" title="Vermelho" style="--sw:linear-gradient(135deg,#b30f0f,#5a0000)"></button>
+                    <button class="color-swatch" data-bg="wine" type="button" title="Vinho" style="--sw:linear-gradient(135deg,#2a1012,#100606)"></button>
+                    <button class="color-swatch" data-bg="graphite" type="button" title="Grafite" style="--sw:linear-gradient(135deg,#1f1b1c,#0d0b0b)"></button>
+                    <button class="color-swatch" data-bg="ember" type="button" title="Brasa" style="--sw:linear-gradient(135deg,#1a0a0a,#3d0e0e,#0a0607)"></button>
+                  </div>
+                </div>
+                <div class="prop-group">
+                  <span class="prop-label">Cor de destaque</span>
+                  <div class="color-options" id="accent-options">
+                    <button class="color-swatch is-active" data-accent="#eb4040" type="button" title="Vermelho" style="--sw:#eb4040"></button>
+                    <button class="color-swatch" data-accent="#ff6b6b" type="button" title="Coral" style="--sw:#ff6b6b"></button>
+                    <button class="color-swatch" data-accent="#f5b301" type="button" title="Âmbar" style="--sw:#f5b301"></button>
+                    <button class="color-swatch" data-accent="#f4eeee" type="button" title="Branco" style="--sw:#f4eeee"></button>
+                  </div>
+                </div>
+                <div class="prop-group">
+                  <span class="prop-label">Efeito animado</span>
+                  <div class="effect-options" id="effect-options">
+                    <button class="effect-opt is-active" data-effect="none" type="button">Sem</button>
+                    <button class="effect-opt" data-effect="aurora" type="button">Aurora</button>
+                    <button class="effect-opt" data-effect="float" type="button">Flutuar</button>
+                    <button class="effect-opt" data-effect="shine" type="button">Brilho</button>
+                    <button class="effect-opt" data-effect="grid" type="button">Grade</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- AI VIEW -->
+        <section class="view" id="view-ai" aria-label="Criar com IA">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Criar apresentação automaticamente</h2>
+              <p class="section-desc">Digite um tema e o SlideForge busca informações na web para montar slides com texto em formato de redação, imagens e fundo relacionados ao tema.</p>
+            </div>
+          </div>
+
+          <div class="ai-layout">
+            <form class="ai-form card-like" id="ai-form">
+              <div class="prop-group">
+                <label class="prop-label" for="ai-topic">Tema da apresentação</label>
+                <input class="prop-input" id="ai-topic" type="text" maxlength="120" placeholder="Ex.: Sistema Solar, Revolução Francesa, Marketing Digital" required>
+              </div>
+              <div class="ai-grid">
+                <div class="prop-group">
+                  <label class="prop-label" for="ai-audience">Tipo</label>
+                  <select class="prop-input" id="ai-audience">
+                    <option value="escola">Escola / Trabalho escolar</option>
+                    <option value="trabalho">Trabalho / Profissional</option>
+                    <option value="geral">Geral</option>
+                  </select>
+                </div>
+                <div class="prop-group">
+                  <label class="prop-label" for="ai-slides">Quantidade de slides</label>
+                  <select class="prop-input" id="ai-slides">
+                    <option value="5">5 slides</option>
+                    <option value="6" selected>6 slides</option>
+                    <option value="8">8 slides</option>
+                  </select>
+                </div>
+              </div>
+              <div class="ai-grid">
+                <div class="prop-group">
+                  <label class="prop-label" for="ai-tone">Estilo</label>
+                  <select class="prop-input" id="ai-tone">
+                    <option value="simples">Simples e didático</option>
+                    <option value="profissional">Profissional</option>
+                    <option value="criativo">Criativo</option>
+                  </select>
+                </div>
+                <div class="prop-group">
+                  <label class="prop-label" for="ai-effect">Efeito visual</label>
+                  <select class="prop-input" id="ai-effect">
+                    <option value="aurora">Aurora</option>
+                    <option value="float">Flutuar</option>
+                    <option value="shine">Brilho</option>
+                    <option value="grid">Grade</option>
+                    <option value="none">Sem efeito</option>
+                  </select>
+                </div>
+              </div>
+              <div class="prop-group">
+                <label class="prop-label" for="ai-extra">Detalhes extras (opcional)</label>
+                <textarea class="prop-input prop-textarea" id="ai-extra" rows="3" maxlength="300" placeholder="Ex.: focar em causas e consequências, incluir exemplos práticos, turma do 9º ano..."></textarea>
+              </div>
+              <div class="ai-actions">
+                <button class="btn btn--primary" id="ai-generate" type="submit">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l1.9 4.6L18.5 8.5l-4.6 1.9L12 15l-1.9-4.6L5.5 8.5l4.6-1.9L12 2z"/><path d="M19 15l.9 2.1 2.1.9-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z"/></svg>
+                  Gerar apresentação
+                </button>
+                <p class="ai-hint">A busca usa informações públicas da web. Revise o conteúdo antes de apresentar.</p>
+              </div>
+              <div class="ai-status" id="ai-status" aria-live="polite"></div>
+            </form>
+
+            <div class="ai-preview card-like">
+              <div class="ai-preview__head">
+                <p class="prop-label">Como funciona</p>
+                <h3 class="ai-preview__title">Do tema aos slides em segundos</h3>
+              </div>
+              <ol class="ai-steps">
+                <li><span class="ai-step-n">1</span><div><strong>Você informa o tema</strong><span>Diga o assunto e se é para escola ou trabalho.</span></div></li>
+                <li><span class="ai-step-n">2</span><div><strong>Buscamos na web</strong><span>O app coleta resumo, tópicos e imagens relacionadas ao tema.</span></div></li>
+                <li><span class="ai-step-n">3</span><div><strong>Montamos os slides</strong><span>Geramos slides com texto explicativo em formato de redação, imagens e fundo temático automaticamente.</span></div></li>
+                <li><span class="ai-step-n">4</span><div><strong>Você edita e apresenta</strong><span>O resultado abre no editor para personalizar do seu jeito.</span></div></li>
+              </ol>
+              <div class="ai-sources" id="ai-sources"></div>
+            </div>
+          </div>
+        </section>
+        <!-- PROJECTS VIEW -->
+        <section class="view" id="view-projects" aria-label="Meus slides">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Biblioteca pessoal</p>
+              <h2 class="section-title">Meus slides</h2>
+              <p class="section-desc">Projetos salvos neste navegador. Você pode abrir, duplicar ou excluir.</p>
+            </div>
+            <button class="btn btn--primary" id="projects-new" type="button">Novo projeto</button>
+          </div>
+          <div class="projects-grid" id="projects-grid"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- PRESENTATION OVERLAY -->
+  <div class="presenter" id="presenter" aria-hidden="true">
+    <div class="presenter__stage">
+      <div class="slide-canvas slide-canvas--present" id="present-canvas">
+        <div class="slide-canvas__bg" id="present-bg"></div>
+        <div class="slide-canvas__content" id="present-content"></div>
+      </div>
+    </div>
+    <div class="presenter__hud">
+      <span id="present-counter">1 / 1</span>
+      <div class="presenter__controls">
+        <button class="icon-btn" id="present-prev" type="button" aria-label="Slide anterior"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="icon-btn" id="present-next" type="button" aria-label="Próximo slide"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 6 15 12 9 18"/></svg></button>
+        <button class="icon-btn" id="present-close" type="button" aria-label="Sair da apresentação"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

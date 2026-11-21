@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1011"/>
+      <stop offset="100%" stop-color="#0b0607"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eb4040"/>
+      <stop offset="100%" stop-color="#b30f0f"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect x="80" y="110" width="520" height="320" rx="14" fill="#171112" stroke="rgba(255,255,255,.08)"/>
+  <rect x="104" y="134" width="472" height="272" rx="8" fill="url(#red)" opacity=".18"/>
+  <text x="140" y="210" fill="#f4eeee" font-size="44" font-family="Arial, sans-serif" font-weight="700">SlideForge</text>
+  <text x="140" y="250" fill="#b9a7a9" font-size="22" font-family="Arial, sans-serif">Crie slides com IA</text>
+  <rect x="140" y="290" width="160" height="34" rx="6" fill="#b30f0f"/>
+  <text x="160" y="313" fill="#fff" font-size="16" font-family="Arial, sans-serif">Gerar slides</text>
+  <rect x="650" y="160" width="230" height="130" rx="10" fill="#171112" stroke="rgba(255,255,255,.08)"/>
+  <rect x="910" y="160" width="230" height="130" rx="10" fill="#171112" stroke="rgba(255,255,255,.08)"/>
+  <rect x="650" y="320" width="230" height="130" rx="10" fill="#171112" stroke="rgba(255,255,255,.08)"/>
+  <rect x="910" y="320" width="230" height="130" rx="10" fill="#171112" stroke="rgba(255,255,255,.08)"/>
+  <text x="80" y="560" fill="#eb4040" font-size="20" font-family="Arial, sans-serif">EDITOR DE APRESENTAÇÕES</text>
+  <text x="80" y="610" fill="#f4eeee" font-size="34" font-family="Arial, sans-serif">Modelos, IA, imagens e fundo por tema</text>
+</svg>
