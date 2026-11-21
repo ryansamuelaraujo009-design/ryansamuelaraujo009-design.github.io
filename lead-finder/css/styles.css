@@ -243,6 +243,22 @@ body {
   padding: clamp(3rem, 8vw, 5.5rem) 0 2.5rem;
 }
 
+.hero__capa {
+  margin: 0 0 clamp(2rem, 5vw, 3.5rem);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-pequeno);
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.hero__capa img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
 .hero__interno {
   max-width: 850px;
 }
