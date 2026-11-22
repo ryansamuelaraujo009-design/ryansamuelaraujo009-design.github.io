@@ -96,7 +96,7 @@ const HEROES = [
 ];
 const HERO_MODEL_PROFILES = {
   rin:   { scale: 1.03, tint: 0.35, emissive: 0.22, idle: ['idle'], run: ['run','walk'], attack: ['sneak_pose','agree','idle'], attackSpeed: 1.9, attackDur: 0.30 },
-  siren: { scale: 1.02, tint: 0.20, emissive: 0.22, idle: ['Idle'], run: ['Run','Walk'], attack: ['Run','Walk','Idle'], attackSpeed: 2.4, attackDur: 0.36 },
+  siren: { scale: 1.02, tint: 0.20, emissive: 0.22, idle: ['Idle'], run: ['Run','Walk'], attack: ['Run','Walk','Idle'], attackSpeed: 2.4, attackDur: 0.36, modelRotY: Math.PI },
   firon: { scale: 1.03, tint: 0.42, emissive: 0.38, idle: ['idle','sad_pose'], run: ['run','walk'], attack: ['sneak_pose','agree','headShake'], attackSpeed: 1.8, attackDur: 0.30 },
   pyren: { scale: 1.03, tint: 0.28, emissive: 0.32, idle: ['idle','sad_pose'], run: ['walk','run'], attack: ['agree','headShake','idle'], attackSpeed: 1.6, attackDur: 0.32 },
 };
@@ -258,7 +258,7 @@ class Game {
         const profile = HERO_MODEL_PROFILES[this.heroDef.id] || HERO_MODEL_PROFILES.rin;
         const model = cloneSkinned(gltf.scene);
         model.scale.setScalar(profile.scale);
-        model.rotation.y = profile.rotY || 0;
+        model.rotation.y = profile.modelRotY || 0;
         model.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; const mats = Array.isArray(o.material) ? o.material : [o.material]; const mapped = mats.map(m => { if(!m) return m; m=m.clone(); if (m.color) m.color.lerp(c, profile.tint); if ('emissive' in m) { m.emissive = c.clone().multiplyScalar(0.2); m.emissiveIntensity = profile.emissive; } return m; }); o.material = mapped.length===1 ? mapped[0] : mapped; } });
         this.playerGroup.add(model);
         this.playerModel = model;
@@ -444,8 +444,10 @@ class Game {
     if (act && this.mixer) {
       const sp = profile.attackSpeed || 1.4;
       if (this.activeAction && this.activeAction !== act) this.activeAction.fadeOut(0.06);
-      act.reset().fadeIn(0.06).play();
-      act.timeScale = sp;
+      act.reset();
+      act.setEffectiveTimeScale(sp);
+      act.setEffectiveWeight(1);
+      act.fadeIn(0.06).play();
       this.activeAction = act;
       this._attackAction = act;
     }
@@ -614,8 +616,20 @@ class Game {
     this.moving = moving;
     if (this.mixer) {
       this.mixer.update(dt);
-      if (this.attackAnim <= 0) this.playAction(moving ? 'run' : 'idle', 0.16);
-      if (this.actions.run) this.actions.run.timeScale = sprint ? 1.35 : 1;
+      if (this.attackAnim <= 0) {
+        const next = moving ? 'run' : 'idle';
+        if (this.actions[next]) this.playAction(next, 0.16);
+      } else {
+        // keep attack action playing; if something else took over, restore it
+        const atkAct = this.actions.attack || this.actions.run || this.actions.idle;
+        if (atkAct && this.activeAction !== atkAct) {
+          this.activeAction?.fadeOut(0.06);
+          atkAct.reset().fadeIn(0.06).play();
+          this.activeAction = atkAct;
+        }
+        if (this.activeAction) this.activeAction.setEffectiveTimeScale(HERO_MODEL_PROFILES[this.heroDef.id]?.attackSpeed || 1.4);
+      }
+      if (this.actions.run && this.attackAnim <= 0) this.actions.run.timeScale = sprint ? 1.35 : 1;
       if (this.attackAnim > 0 && this.playerModel) {
         const p = this.attackAnim / (HERO_MODEL_PROFILES[this.heroDef.id]?.attackDur || 0.32);
         const atk = Math.sin((1-p) * Math.PI);
