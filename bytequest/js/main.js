@@ -354,11 +354,10 @@ class Game {
       if (e.code === 'KeyC') { this.cameraLocked = !this.cameraLocked; this.toastMsg(this.cameraLocked ? 'Câmera travada' : 'Câmera livre'); this.updateHUD(); }
     });
     document.addEventListener('keyup', e => { this.keys[e.code] = false; });
-    this.canvas.addEventListener('click', () => {
-      if (this.paused || this.over) return;
-      if (!this.pointerLocked) { this.canvas.requestPointerLock?.(); return; }
-      this.attack();
-    });
+    const tryAttack = () => { if (this.paused || this.over) return; if (!this.pointerLocked) { this.canvas.requestPointerLock?.(); } this.attack(); };
+    this.canvas.addEventListener('pointerdown', (e) => { if (e.button !== 0) return; this.mouseDown = true; tryAttack(); });
+    window.addEventListener('pointerup', (e) => { if (e.button === 0) this.mouseDown = false; });
+    this.canvas.addEventListener('click', () => { if (!this.pointerLocked && !this.paused && !this.over) this.canvas.requestPointerLock?.(); });
     document.addEventListener('pointerlockchange', () => {
       this.pointerLocked = document.pointerLockElement === this.canvas;
       $('#crosshair').classList.toggle('hidden', !this.pointerLocked || this.paused || this.over);
@@ -370,8 +369,6 @@ class Game {
       this.pitch -= e.movementY * 0.002;
       this.pitch = clamp(this.pitch, -0.6, 1.1);
     });
-    document.addEventListener('mousedown', e => { if (e.button !== 0) return; this.mouseDown = true; if (this.pointerLocked && !this.paused && !this.over) this.attack(); });
-    document.addEventListener('mouseup', e => { if (e.button === 0) this.mouseDown = false; });
   }
   onResize() { this.camera.aspect = innerWidth / innerHeight; this.camera.updateProjectionMatrix(); this.renderer.setSize(innerWidth, innerHeight); }
 
@@ -442,16 +439,20 @@ class Game {
     const dir = new THREE.Vector3(Math.sin(this.playerGroup.rotation.y), 0, Math.cos(this.playerGroup.rotation.y));
     if (this.heroDef.id === 'firon') {
       this.spawnProjectile(this.player.pos.clone().add(new THREE.Vector3(0, 1.25, 0)), dir, this.player.atk);
+      this.swingEffect();
       return;
     }
-    const range = this.heroDef.id === 'siren' ? 3.2 : 2.7;
+    const range = this.heroDef.id === 'siren' ? 3.8 : 3.2;
+    let hitAny = false;
     for (const e of this.enemies) {
       if (e.dead) continue;
       const to = e.pos.clone().sub(this.player.pos); to.y = 0; const dist = to.length(); if (dist > range) continue;
-      to.normalize(); if (to.dot(dir) < 0.45) continue;
+      to.normalize(); if (to.dot(dir) < 0.2) continue;
       this.damageEnemy(e, this.player.atk + rand(-2, 3), false);
+      hitAny = true;
     }
     this.swingEffect();
+    if (!hitAny) this.burstEffect(this.player.pos.clone().addScaledVector(dir, 1.2).add(new THREE.Vector3(0,1,0)), this.heroDef.color, 4);
   }
 
   useSkill() {
