@@ -181,30 +181,93 @@ class Game {
     this.playerGroup = new THREE.Group();
     const c = new THREE.Color(this.heroDef.color);
     const mat = new THREE.MeshStandardMaterial({ color: 0x2a3448, roughness: 0.6, metalness: 0.3 });
+    const darkMat = new THREE.MeshStandardMaterial({ color: 0x1b2433, roughness: 0.7, metalness: 0.25 });
     const glowMat = new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 1.2 });
+    const skinMat = new THREE.MeshStandardMaterial({ color: 0xe4ccb5, roughness: 0.8 });
 
-    // body
-    const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.45, 0.8, 4, 8), mat);
-    body.position.y = 1.1; body.castShadow = true; this.playerGroup.add(body);
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.32, 12, 12), new THREE.MeshStandardMaterial({ color: 0xe4ccb5, roughness: 0.8 }));
-    head.position.y = 1.95; head.castShadow = true; this.playerGroup.add(head);
-    const visor = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.08, 0.15), glowMat);
-    visor.position.set(0, 1.97, 0.25); this.playerGroup.add(visor);
+    // torso
+    const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.38, 0.72, 4, 8), mat);
+    body.position.y = 1.25; body.castShadow = true; this.playerGroup.add(body);
+    // hips
+    const hips = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.25, 0.35), darkMat);
+    hips.position.y = 0.82; hips.castShadow = true; this.playerGroup.add(hips);
+    // head
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 14, 14), skinMat);
+    head.position.y = 1.98; head.castShadow = true; this.playerGroup.add(head);
+    const visor = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.07, 0.12), glowMat);
+    visor.position.set(0, 2.0, 0.24); this.playerGroup.add(visor);
     // core
-    const core = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), glowMat);
-    core.position.set(0, 1.2, 0.42); this.playerGroup.add(core);
-    // weapon indicator
-    const weap = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 1.2), glowMat);
-    weap.position.set(0.45, 1.1, 0.4); weap.rotation.x = Math.PI / 4;
-    this.playerGroup.add(weap);
+    const core = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), glowMat);
+    core.position.set(0, 1.3, 0.34); this.playerGroup.add(core);
+    // back accent
+    const back = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.45, 0.08), darkMat);
+    back.position.set(0, 1.35, -0.28); this.playerGroup.add(back);
+
+    const limbGeo = new THREE.CapsuleGeometry(0.09, 0.52, 4, 8);
+    const legGeo = new THREE.CapsuleGeometry(0.11, 0.62, 4, 8);
+    const makeLimb = (geo, x, y, z, px=0, py=-0.31) => {
+      const pivot = new THREE.Group();
+      pivot.position.set(x, y, z);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(px, py, 0);
+      mesh.castShadow = true;
+      pivot.add(mesh);
+      this.playerGroup.add(pivot);
+      return { pivot, mesh };
+    };
+    this.limbs = {
+      leftArm: makeLimb(limbGeo, -0.48, 1.55, 0),
+      rightArm: makeLimb(limbGeo, 0.48, 1.55, 0),
+      leftLeg: makeLimb(legGeo, -0.16, 0.72, 0, 0, -0.36),
+      rightLeg: makeLimb(legGeo, 0.16, 0.72, 0, 0, -0.36),
+    };
+
+    // weapon / accessory
+    this.weaponGroup = new THREE.Group();
+    this.weaponGroup.position.set(0, -0.58, 0.15);
+    this.limbs.rightArm.pivot.add(this.weaponGroup);
+    this.buildWeapon(glowMat, mat, darkMat);
+
     // ring
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.7, 0.03, 8, 32), glowMat);
-    ring.rotation.x = Math.PI / 2; ring.position.y = 0.05; this.playerGroup.add(ring);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.03, 8, 32), glowMat);
+    ring.rotation.x = Math.PI / 2; ring.position.y = 0.04; this.playerGroup.add(ring);
 
     this.playerGroup.position.copy(this.player.pos);
     this.scene.add(this.playerGroup);
-    this.playerLight = new THREE.PointLight(c, 1.2, 12);
+    this.playerLight = new THREE.PointLight(c, 1.4, 14);
     this.playerLight.position.y = 2; this.playerGroup.add(this.playerLight);
+    this.animTime = 0;
+    this.attackAnim = 0;
+  }
+
+  buildWeapon(glowMat, mat, darkMat) {
+    const id = this.heroDef.id;
+    if (id === 'rin') {
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.15, 0.16), glowMat);
+      blade.position.set(0, -0.35, 0.55); blade.rotation.x = Math.PI / 2.2; blade.castShadow = true;
+      this.weaponGroup.add(blade);
+      const hilt = new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.28,8), darkMat);
+      hilt.position.set(0, -0.35, -0.08); hilt.rotation.x = Math.PI/2; this.weaponGroup.add(hilt);
+    } else if (id === 'siren') {
+      const shield = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.7, 0.12), new THREE.MeshStandardMaterial({ color: 0x7ab0ff, emissive: 0x7ab0ff, emissiveIntensity: 0.35, transparent:true, opacity:0.7, metalness:0.4, roughness:0.3 }));
+      shield.position.set(-0.75, 0.15, 0.25); this.limbs.leftArm.pivot.add(shield);
+      const hammer = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.22, 0.22), mat);
+      hammer.position.set(0, -0.35, 0.55); hammer.castShadow = true; this.weaponGroup.add(hammer);
+      const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.9,8), darkMat);
+      handle.position.set(0, -0.35, 0.1); handle.rotation.x=Math.PI/2; this.weaponGroup.add(handle);
+    } else if (id === 'firon') {
+      const staff = new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,1.7,8), darkMat);
+      staff.position.set(0, -0.45, 0.35); staff.rotation.x = Math.PI/2.4; staff.castShadow=true; this.weaponGroup.add(staff);
+      const orb = new THREE.Mesh(new THREE.SphereGeometry(0.14,12,12), glowMat);
+      orb.position.set(0, -0.9, 1.05); this.weaponGroup.add(orb);
+    } else if (id === 'pyren') {
+      const staff = new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,1.6,8), darkMat);
+      staff.position.set(0, -0.4, 0.35); staff.rotation.x = Math.PI/2.4; staff.castShadow=true; this.weaponGroup.add(staff);
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.16,0.03,8,20), glowMat);
+      ring.position.set(0, -0.85, 1.0); this.weaponGroup.add(ring);
+      const core = new THREE.Mesh(new THREE.SphereGeometry(0.07,10,10), new THREE.MeshStandardMaterial({color:0xffe08a, emissive:0xffe08a, emissiveIntensity:1.2}));
+      core.position.set(0, -0.85, 1.0); this.weaponGroup.add(core);
+    }
   }
 
   bindEvents() {
@@ -246,7 +309,8 @@ class Game {
   attack() {
     if (this.attackCd > 0 || !this.player.alive || this.over) return;
     this.attackCd = this.heroDef.id === 'rin' ? 0.35 : this.heroDef.id === 'siren' ? 0.7 : 0.55;
-    const dir = new THREE.Vector3(Math.sin(this.yaw), 0, Math.cos(this.yaw));
+    this.attackAnim = 0.28;
+    const dir = new THREE.Vector3(-Math.sin(this.yaw), 0, -Math.cos(this.yaw));
     if (this.heroDef.id === 'firon') {
       // ranged projectile
       this.spawnProjectile(this.player.pos.clone().add(new THREE.Vector3(0, 1.2, 0)), dir, this.player.atk, false);
@@ -271,7 +335,8 @@ class Game {
     if (this.player.mp < this.heroDef.skillCost) { this.toastMsg('MP insuficiente'); return; }
     this.player.mp -= this.heroDef.skillCost;
     this.skillCdLeft = this.heroDef.skillCd;
-    const dir = new THREE.Vector3(Math.sin(this.yaw), 0, Math.cos(this.yaw));
+    this.attackAnim = 0.45;
+    const dir = new THREE.Vector3(-Math.sin(this.yaw), 0, -Math.cos(this.yaw));
     const h = this.heroDef.id;
     if (h === 'rin') {
       // Patch Strike: dash + heavy hit
@@ -352,7 +417,7 @@ class Game {
     }
   }
   swingEffect() {
-    const dir = new THREE.Vector3(Math.sin(this.yaw), 0, Math.cos(this.yaw));
+    const dir = new THREE.Vector3(-Math.sin(this.yaw), 0, -Math.cos(this.yaw));
     const pos = this.player.pos.clone().addScaledVector(dir, 1.5); pos.y += 1;
     this.burstEffect(pos, this.heroDef.color, 6);
   }
@@ -413,6 +478,22 @@ class Game {
     $('#gameover').classList.remove('hidden');
   }
 
+
+  updatePlayerAnim(dt, moving, sprint) {
+    this.animTime += dt * (moving ? (sprint ? 11 : 7.5) : 2.2);
+    this.attackAnim = Math.max(0, this.attackAnim - dt);
+    const walk = moving ? Math.sin(this.animTime) * (sprint ? 0.7 : 0.5) : 0;
+    const idle = moving ? 0 : Math.sin(this.animTime) * 0.03;
+    const atk = this.attackAnim > 0 ? Math.sin((1 - this.attackAnim / 0.45) * Math.PI) : 0;
+
+    this.limbs.leftArm.pivot.rotation.x = walk * 0.8 + atk * -0.4;
+    this.limbs.rightArm.pivot.rotation.x = -walk * 0.8 + atk * -1.6;
+    this.limbs.leftArm.pivot.rotation.z = 0.08 + idle;
+    this.limbs.rightArm.pivot.rotation.z = -0.08 - idle;
+    this.limbs.leftLeg.pivot.rotation.x = -walk;
+    this.limbs.rightLeg.pivot.rotation.x = walk;
+    this.playerGroup.position.y = this.player.pos.y + (moving ? Math.abs(Math.sin(this.animTime)) * 0.04 : Math.sin(this.animTime) * 0.015);
+  }
   update(dt) {
     if (this.paused || this.over) return;
     this.time += dt;
@@ -423,7 +504,8 @@ class Game {
 
     // movement
     const move = new THREE.Vector3();
-    const fwd = new THREE.Vector3(Math.sin(this.yaw), 0, Math.cos(this.yaw));
+    // camera-relative movement: yaw=0 looks toward -Z
+    const fwd = new THREE.Vector3(-Math.sin(this.yaw), 0, -Math.cos(this.yaw));
     const right = new THREE.Vector3(Math.cos(this.yaw), 0, -Math.sin(this.yaw));
     if (this.keys['KeyW']) move.add(fwd);
     if (this.keys['KeyS']) move.sub(fwd);
@@ -448,14 +530,15 @@ class Game {
 
     this.player.pos.y = this.getHeight(this.player.pos.x, this.player.pos.z);
     this.playerGroup.position.copy(this.player.pos);
-    this.playerGroup.rotation.y = this.yaw + Math.PI;
+    this.playerGroup.rotation.y = this.yaw;
+    this.updatePlayerAnim(dt, move.lengthSq() > 0, sprint);
 
-    // camera
-    const camOff = new THREE.Vector3(0, 3.2, -this.camDist).applyAxisAngle(new THREE.Vector3(0,1,0), this.yaw);
-    camOff.y += this.pitch * 4;
-    const camTarget = this.player.pos.clone().add(new THREE.Vector3(0, 1.8, 0));
-    this.camera.position.lerp(camTarget.clone().add(camOff), 0.1);
-    this.camera.lookAt(camTarget.clone().add(new THREE.Vector3(0, 0.8, 0)));
+    // camera (third-person behind player)
+    const camOff = new THREE.Vector3(0, 3.4, this.camDist).applyAxisAngle(new THREE.Vector3(0,1,0), this.yaw);
+    camOff.y += this.pitch * 3.5;
+    const camTarget = this.player.pos.clone().add(new THREE.Vector3(0, 1.7, 0));
+    this.camera.position.lerp(camTarget.clone().add(camOff), 0.12);
+    this.camera.lookAt(camTarget.clone().add(new THREE.Vector3(0, 0.5, 0)));
 
     // core anim
     this.coreOrb.rotation.y += dt * 0.8; this.coreOrb.position.y = 3.5 + Math.sin(this.time * 1.5) * 0.3;
