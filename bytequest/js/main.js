@@ -5,6 +5,52 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const rand = (a, b) => a + Math.random() * (b - a);
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
+const TEX = {};
+function makeTex(key, draw, size = 128) {
+  if (TEX[key]) return TEX[key];
+  const c = document.createElement('canvas'); c.width = c.height = size;
+  const ctx = c.getContext('2d');
+  draw(ctx, size);
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  TEX[key] = t;
+  return t;
+}
+function texGrid(color = '#63eaff', bg = '#1a2230') {
+  return makeTex(`grid:${color}:${bg}`, (ctx, s) => {
+    ctx.fillStyle = bg; ctx.fillRect(0,0,s,s);
+    ctx.strokeStyle = color; ctx.globalAlpha = 0.18; ctx.lineWidth = 2;
+    for (let i = 0; i <= s; i += 32) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,s); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(s,i); ctx.stroke(); }
+    ctx.globalAlpha = 0.08; for (let i=0;i<40;i++){ctx.fillStyle=color;ctx.fillRect(Math.random()*s,Math.random()*s,2,2);}
+  });
+}
+function texCircuit(color = '#63eaff', bg = '#232d40') {
+  return makeTex(`cir:${color}:${bg}`, (ctx, s) => {
+    ctx.fillStyle = bg; ctx.fillRect(0,0,s,s);
+    ctx.strokeStyle = color; ctx.globalAlpha = 0.22; ctx.lineWidth = 3;
+    for (let i=0;i<8;i++){const x=Math.random()*s,y=Math.random()*s;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+rand(-40,40),y);ctx.lineTo(x+rand(-40,40),y+rand(-40,40));ctx.stroke();ctx.fillStyle=color;ctx.globalAlpha=0.5;ctx.fillRect(x-2,y-2,4,4);ctx.globalAlpha=0.22;}
+    ctx.globalAlpha = 0.12; ctx.strokeStyle = '#ffffff'; ctx.strokeRect(8,8,s-16,s-16);
+  });
+}
+function texArmor(color = '#63eaff') {
+  return makeTex(`arm:${color}`, (ctx, s) => {
+    ctx.fillStyle = '#253149'; ctx.fillRect(0,0,s,s);
+    const g = ctx.createLinearGradient(0,0,s,s); g.addColorStop(0,'rgba(255,255,255,0.08)'); g.addColorStop(1,'rgba(0,0,0,0.15)');
+    ctx.fillStyle = g; ctx.fillRect(0,0,s,s);
+    ctx.strokeStyle = color; ctx.globalAlpha = 0.35; ctx.lineWidth = 4;
+    ctx.strokeRect(10,10,s-20,s-20); ctx.beginPath(); ctx.moveTo(s/2,10); ctx.lineTo(s/2,s-10); ctx.stroke();
+    ctx.globalAlpha = 0.2; ctx.fillStyle=color; ctx.fillRect(s/2-8,s/2-8,16,16);
+  });
+}
+function texEnemy(color = '#ff6464') {
+  return makeTex(`enm:${color}`, (ctx, s) => {
+    ctx.fillStyle = '#1a1320'; ctx.fillRect(0,0,s,s);
+    ctx.strokeStyle = color; ctx.globalAlpha = 0.25; ctx.lineWidth = 2;
+    for(let y=0;y<s;y+=16){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(s,y+8);ctx.stroke();}
+    ctx.globalAlpha = 0.15; ctx.fillStyle=color; for(let i=0;i<30;i++) ctx.fillRect(Math.random()*s,Math.random()*s,3,3);
+  });
+}
+
 const HEROES = [
   { id: 'rin', name: 'Rin', role: 'Duelista', color: '#63eaff', hp: 110, mp: 60, atk: 18, def: 6, speed: 8.5, skill: 'Patch Strike', skillCost: 20, skillCd: 3.5, desc: 'Ataque rápido e alta mobilidade. Ideal para quem gosta de combos e esquiva.', stats: { dano: 85, defesa: 45, magia: 40, vel: 90 } },
   { id: 'siren', name: 'Siren', role: 'Tanque', color: '#7ab0ff', hp: 170, mp: 50, atk: 14, def: 14, speed: 6.5, skill: 'Barreira', skillCost: 25, skillCd: 8, desc: 'Alta resistência e controle de campo. Aguenta dano e protege o avanço.', stats: { dano: 55, defesa: 95, magia: 35, vel: 45 } },
@@ -122,7 +168,8 @@ class Game {
       pos.setZ(i, h * 0.35);
     }
     groundGeo.computeVertexNormals();
-    const groundMat = new THREE.MeshStandardMaterial({ color: 0x1a2230, roughness: 0.95, metalness: 0.05 });
+    const gTex = texGrid('#63eaff','#151d2b'); gTex.repeat.set(24,24);
+    const groundMat = new THREE.MeshStandardMaterial({ color: 0xffffff, map: gTex, roughness: 0.92, metalness: 0.08 });
     this.ground = new THREE.Mesh(groundGeo, groundMat);
     this.ground.rotation.x = -Math.PI / 2;
     this.ground.receiveShadow = true;
@@ -135,21 +182,22 @@ class Game {
 
     // structures/obstacles
     this.obstacles = [];
-    const boxMat = new THREE.MeshStandardMaterial({ color: 0x263246, roughness: 0.7, metalness: 0.2 });
-    const glowMat = new THREE.MeshStandardMaterial({ color: 0x63eaff, emissive: 0x63eaff, emissiveIntensity: 0.8 });
+    const bTex = texCircuit('#63eaff','#232d40'); bTex.repeat.set(1,1);
+    const boxMat = new THREE.MeshStandardMaterial({ color: 0xdde4ef, map: bTex, roughness: 0.65, metalness: 0.25 });
+    const glowMat = new THREE.MeshStandardMaterial({ color: 0x63eaff, emissive: 0x63eaff, emissiveIntensity: 0.9 });
     const placements = [
       [12,0,12,4,6,4],[ -15,0,8,3,4,3],[20,0,-18,5,8,5],[-25,0,-20,4,5,4],[0,0,-30,6,3,6],
       [35,0,5,3,10,3],[-35,0,15,3,7,3],[8,0,35,4,4,4],[-18,0,32,5,6,5],[30,0,30,3,5,3],
       [-8,0,-10,2,3,2],[45,0,-35,6,4,6],[-45,0,-40,5,9,5],[50,0,40,4,6,4],[-40,0,45,4,5,4]
     ];
     for (const [x, y, z, w, h, d] of placements) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), boxMat.clone());
+      const bm = boxMat.clone(); bm.map = texCircuit(pick(['#63eaff','#7ab0ff','#ff6464']), '#232d40'); bm.map.repeat.set(Math.max(1,w/2), Math.max(1,h/2));
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), bm);
       m.position.set(x, h / 2 + this.getHeight(x, z), z);
       m.castShadow = true; m.receiveShadow = true;
       m.userData.box = new THREE.Box3().setFromObject(m);
       this.scene.add(m); this.obstacles.push(m);
-      // edge glow
-      const edge = new THREE.Mesh(new THREE.BoxGeometry(w * 0.6, 0.08, 0.08), glowMat);
+      const edge = new THREE.Mesh(new THREE.BoxGeometry(w * 0.6, 0.08, 0.08), glowMat.clone());
       edge.position.set(x, h + this.getHeight(x, z) + 0.1, z + d / 2 + 0.01);
       this.scene.add(edge);
     }
@@ -180,10 +228,12 @@ class Game {
   buildPlayer() {
     this.playerGroup = new THREE.Group();
     const c = new THREE.Color(this.heroDef.color);
-    const mat = new THREE.MeshStandardMaterial({ color: 0x2a3448, roughness: 0.6, metalness: 0.3 });
-    const darkMat = new THREE.MeshStandardMaterial({ color: 0x1b2433, roughness: 0.7, metalness: 0.25 });
-    const glowMat = new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 1.2 });
-    const skinMat = new THREE.MeshStandardMaterial({ color: 0xe4ccb5, roughness: 0.8 });
+    const armorTex = texArmor(this.heroDef.color); armorTex.repeat.set(1,1);
+    const cirTex = texCircuit(this.heroDef.color, '#1f2a3d'); cirTex.repeat.set(1,1);
+    const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, map: armorTex, roughness: 0.55, metalness: 0.35 });
+    const darkMat = new THREE.MeshStandardMaterial({ color: 0xbfc9d8, map: cirTex, roughness: 0.65, metalness: 0.25 });
+    const glowMat = new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 1.4 });
+    const skinMat = new THREE.MeshStandardMaterial({ color: 0xe4ccb5, roughness: 0.75 });
 
     // torso
     const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.38, 0.72, 4, 8), mat);
@@ -197,11 +247,13 @@ class Game {
     const visor = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.07, 0.12), glowMat);
     visor.position.set(0, 2.0, 0.24); this.playerGroup.add(visor);
     // core
-    const core = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), glowMat);
-    core.position.set(0, 1.3, 0.34); this.playerGroup.add(core);
+    this.playerCore = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), glowMat.clone());
+    this.playerCore.position.set(0, 1.3, 0.34); this.playerGroup.add(this.playerCore);
     // back accent
     const back = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.45, 0.08), darkMat);
     back.position.set(0, 1.35, -0.28); this.playerGroup.add(back);
+    // shoulder pads
+    for (const sx of [-0.52, 0.52]) { const sp = new THREE.Mesh(new THREE.BoxGeometry(0.22,0.14,0.22), mat); sp.position.set(sx,1.58,0); sp.castShadow=true; this.playerGroup.add(sp); }
 
     const limbGeo = new THREE.CapsuleGeometry(0.09, 0.52, 4, 8);
     const legGeo = new THREE.CapsuleGeometry(0.11, 0.62, 4, 8);
@@ -242,31 +294,45 @@ class Game {
 
   buildWeapon(glowMat, mat, darkMat) {
     const id = this.heroDef.id;
+    this.weaponFx = {};
     if (id === 'rin') {
-      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.15, 0.16), glowMat);
-      blade.position.set(0, -0.35, 0.55); blade.rotation.x = Math.PI / 2.2; blade.castShadow = true;
+      const bladeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: new THREE.Color(this.heroDef.color), emissiveIntensity: 1.6, metalness: 0.6, roughness: 0.15 });
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.07, 1.25, 0.18), bladeMat);
+      blade.position.set(0, -0.35, 0.62); blade.rotation.x = Math.PI / 2.2; blade.castShadow = true;
       this.weaponGroup.add(blade);
-      const hilt = new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.28,8), darkMat);
+      const edge = new THREE.Mesh(new THREE.BoxGeometry(0.01, 1.1, 0.05), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+      edge.position.set(0, -0.36, 0.62); edge.rotation.x = Math.PI / 2.2; this.weaponGroup.add(edge);
+      const hilt = new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.3,8), darkMat);
       hilt.position.set(0, -0.35, -0.08); hilt.rotation.x = Math.PI/2; this.weaponGroup.add(hilt);
+      const guard = new THREE.Mesh(new THREE.BoxGeometry(0.28,0.05,0.08), mat); guard.position.set(0,-0.35,0.02); guard.rotation.x=Math.PI/2; this.weaponGroup.add(guard);
+      this.weaponFx.blade = bladeMat;
     } else if (id === 'siren') {
-      const shield = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.7, 0.12), new THREE.MeshStandardMaterial({ color: 0x7ab0ff, emissive: 0x7ab0ff, emissiveIntensity: 0.35, transparent:true, opacity:0.7, metalness:0.4, roughness:0.3 }));
-      shield.position.set(-0.75, 0.15, 0.25); this.limbs.leftArm.pivot.add(shield);
-      const hammer = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.22, 0.22), mat);
+      const shieldMat = new THREE.MeshStandardMaterial({ color: 0x7ab0ff, emissive: 0x7ab0ff, emissiveIntensity: 0.45, transparent:true, opacity:0.72, metalness:0.5, roughness:0.25 });
+      const shield = new THREE.Mesh(new THREE.CylinderGeometry(0.38,0.45,0.1,6), shieldMat);
+      shield.rotation.z = Math.PI/2; shield.rotation.y = Math.PI/2; shield.position.set(-0.72, 0.15, 0.28);
+      this.limbs.leftArm.pivot.add(shield); this.weaponFx.shield = shieldMat;
+      const hammer = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.24, 0.24), mat);
       hammer.position.set(0, -0.35, 0.55); hammer.castShadow = true; this.weaponGroup.add(hammer);
-      const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,0.9,8), darkMat);
-      handle.position.set(0, -0.35, 0.1); handle.rotation.x=Math.PI/2; this.weaponGroup.add(handle);
+      const hammerGlow = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.06,0.26), glowMat.clone());
+      hammerGlow.position.set(0,-0.35,0.55); this.weaponGroup.add(hammerGlow); this.weaponFx.hammerGlow = hammerGlow.material;
+      const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,1.0,8), darkMat);
+      handle.position.set(0, -0.35, 0.05); handle.rotation.x=Math.PI/2; this.weaponGroup.add(handle);
     } else if (id === 'firon') {
-      const staff = new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,1.7,8), darkMat);
+      const staff = new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,1.8,8), darkMat);
       staff.position.set(0, -0.45, 0.35); staff.rotation.x = Math.PI/2.4; staff.castShadow=true; this.weaponGroup.add(staff);
-      const orb = new THREE.Mesh(new THREE.SphereGeometry(0.14,12,12), glowMat);
-      orb.position.set(0, -0.9, 1.05); this.weaponGroup.add(orb);
+      const orbMat = new THREE.MeshStandardMaterial({ color: 0xff9a5a, emissive: 0xff9a5a, emissiveIntensity: 2.2 });
+      const orb = new THREE.Mesh(new THREE.SphereGeometry(0.16,14,14), orbMat);
+      orb.position.set(0, -0.95, 1.1); this.weaponGroup.add(orb); this.weaponFx.orb = orb; this.weaponFx.orbMat = orbMat;
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.24,0.02,8,24), glowMat.clone());
+      ring.position.copy(orb.position); ring.rotation.x = Math.PI/2; this.weaponGroup.add(ring); this.weaponFx.ring = ring;
     } else if (id === 'pyren') {
-      const staff = new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,1.6,8), darkMat);
+      const staff = new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,1.65,8), darkMat);
       staff.position.set(0, -0.4, 0.35); staff.rotation.x = Math.PI/2.4; staff.castShadow=true; this.weaponGroup.add(staff);
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.16,0.03,8,20), glowMat);
-      ring.position.set(0, -0.85, 1.0); this.weaponGroup.add(ring);
-      const core = new THREE.Mesh(new THREE.SphereGeometry(0.07,10,10), new THREE.MeshStandardMaterial({color:0xffe08a, emissive:0xffe08a, emissiveIntensity:1.2}));
-      core.position.set(0, -0.85, 1.0); this.weaponGroup.add(core);
+      const haloMat = new THREE.MeshStandardMaterial({ color: 0x7fe0b0, emissive: 0x7fe0b0, emissiveIntensity: 1.8 });
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.17,0.03,8,24), haloMat);
+      ring.position.set(0, -0.85, 1.0); this.weaponGroup.add(ring); this.weaponFx.ring = ring;
+      const core = new THREE.Mesh(new THREE.SphereGeometry(0.075,12,12), new THREE.MeshStandardMaterial({color:0xffe08a, emissive:0xffe08a, emissiveIntensity:1.8}));
+      core.position.set(0, -0.85, 1.0); this.weaponGroup.add(core); this.weaponFx.core = core;
     }
   }
 
@@ -296,14 +362,32 @@ class Game {
     };
     const d = defs[type];
     const g = new THREE.Group();
-    const mat = new THREE.MeshStandardMaterial({ color: d.color, emissive: d.color, emissiveIntensity: 0.35, roughness: 0.5, metalness: 0.3 });
-    const body = new THREE.Mesh(new THREE.OctahedronGeometry(0.7 * d.scale, 0), mat);
-    body.position.y = 0.9 * d.scale; body.castShadow = true; g.add(body);
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.15 * d.scale, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-    eye.position.set(0, 0.95 * d.scale, 0.5 * d.scale); g.add(eye);
+    const cHex = '#' + d.color.toString(16).padStart(6,'0');
+    const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, map: texEnemy(cHex), emissive: d.color, emissiveIntensity: 0.45, roughness: 0.45, metalness: 0.35 });
+    const glow = new THREE.MeshStandardMaterial({ color: d.color, emissive: d.color, emissiveIntensity: 1.6 });
+
+    // body
+    const body = new THREE.Mesh(new THREE.OctahedronGeometry(0.55 * d.scale, 0), mat);
+    body.position.y = 1.0 * d.scale; body.castShadow = true; g.add(body);
+    const core = new THREE.Mesh(new THREE.SphereGeometry(0.18*d.scale,10,10), glow.clone());
+    core.position.y = 1.0 * d.scale; g.add(core);
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.1 * d.scale, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+    eye.position.set(0, 1.05 * d.scale, 0.42 * d.scale); g.add(eye);
+
+    // limbs
+    const limbGeo = new THREE.CylinderGeometry(0.06*d.scale, 0.04*d.scale, 0.55*d.scale, 6);
+    const armL = new THREE.Group(); armL.position.set(-0.45*d.scale, 1.0*d.scale, 0);
+    const armR = new THREE.Group(); armR.position.set(0.45*d.scale, 1.0*d.scale, 0);
+    const legL = new THREE.Group(); legL.position.set(-0.18*d.scale, 0.55*d.scale, 0);
+    const legR = new THREE.Group(); legR.position.set(0.18*d.scale, 0.55*d.scale, 0);
+    const mk = (p) => { const m = new THREE.Mesh(limbGeo, mat); m.position.y = -0.27*d.scale; m.castShadow=true; p.add(m); g.add(p); return p; };
+    mk(armL); mk(armR); mk(legL); mk(legR);
+    // spikes
+    for (let i=0;i<3;i++){ const sp=new THREE.Mesh(new THREE.ConeGeometry(0.06*d.scale,0.25*d.scale,5), glow.clone()); sp.position.set((i-1)*0.2*d.scale,1.45*d.scale,-0.1*d.scale); g.add(sp); }
+
     g.position.set(x, this.getHeight(x, z), z);
     this.scene.add(g);
-    this.enemies.push({ mesh: g, ...d, maxHp: d.hp, pos: g.position, radius: 0.7 * d.scale, cd: rand(0.5, 1.5), dead: false, hitFlash: 0 });
+    this.enemies.push({ mesh: g, body, core, armL, armR, legL, legR, ...d, maxHp: d.hp, pos: g.position, radius: 0.7 * d.scale, cd: rand(0.5, 1.5), dead: false, hitFlash: 0, anim: Math.random()*Math.PI*2 });
   }
 
   attack() {
@@ -341,38 +425,46 @@ class Game {
     if (h === 'rin') {
       // Patch Strike: dash + heavy hit
       this.player.pos.addScaledVector(dir, 5);
+      this.skillWave(this.player.pos, this.heroDef.color, 2.2);
       for (const e of this.enemies) {
         if (e.dead) continue;
         if (e.pos.distanceTo(this.player.pos) < 3.5) this.damageEnemy(e, this.player.atk * 2.2, true);
       }
-      this.burstEffect(this.player.pos, this.heroDef.color, 20);
+      this.burstEffect(this.player.pos, this.heroDef.color, 28);
     } else if (h === 'siren') {
       this.player.shield = 6; this.player.invuln = 1.5;
-      this.burstEffect(this.player.pos, this.heroDef.color, 18);
+      this.skillWave(this.player.pos, this.heroDef.color, 2.8);
+      this.burstEffect(this.player.pos, this.heroDef.color, 24);
       this.toastMsg('Barreira ativada!');
     } else if (h === 'firon') {
       // Glitch Storm: AoE projectiles
-      for (let i = 0; i < 8; i++) {
-        const a = (i / 8) * Math.PI * 2;
+      for (let i = 0; i < 10; i++) {
+        const a = (i / 10) * Math.PI * 2;
         const d = new THREE.Vector3(Math.cos(a), 0, Math.sin(a));
         this.spawnProjectile(this.player.pos.clone().add(new THREE.Vector3(0, 1.2, 0)), d, this.player.atk * 1.1, true);
       }
-      this.burstEffect(this.player.pos, this.heroDef.color, 24);
+      this.skillWave(this.player.pos, this.heroDef.color, 3.2);
+      this.burstEffect(this.player.pos, this.heroDef.color, 30);
     } else if (h === 'pyren') {
       const heal = Math.floor(this.player.maxHp * 0.35);
       this.player.hp = Math.min(this.player.maxHp, this.player.hp + heal);
       this.spawnDmgText(this.player.pos, `+${heal}`, 'heal');
-      this.burstEffect(this.player.pos, this.heroDef.color, 20);
+      this.skillWave(this.player.pos, '#7fe0b0', 3.0);
+      this.burstEffect(this.player.pos, '#ffe08a', 24);
     }
     this.updateHUD();
   }
 
   spawnProjectile(origin, dir, dmg, isSkill) {
     const c = new THREE.Color(this.heroDef.color);
-    const mesh = new THREE.Mesh(new THREE.SphereGeometry(isSkill ? 0.28 : 0.22, 8, 8), new THREE.MeshBasicMaterial({ color: c }));
-    mesh.position.copy(origin);
-    this.scene.add(mesh);
-    this.projectiles.push({ mesh, dir: dir.clone().normalize(), speed: 22, dmg, life: 2.5, owner: 'player' });
+    const group = new THREE.Group();
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(isSkill ? 0.28 : 0.22, 10, 10), new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 2 }));
+    group.add(mesh);
+    const glow = new THREE.Mesh(new THREE.SphereGeometry(isSkill ? 0.42 : 0.34, 10, 10), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.25 }));
+    group.add(glow);
+    group.position.copy(origin);
+    this.scene.add(group);
+    this.projectiles.push({ mesh: group, core: mesh, glow, dir: dir.clone().normalize(), speed: 22, dmg, life: 2.5, owner: 'player' });
   }
 
   damageEnemy(e, dmg, crit) {
@@ -407,6 +499,13 @@ class Game {
     this.scene.add(mesh); this.pickups.push({ mesh, life: 20, baseY: mesh.position.y });
   }
 
+  skillWave(pos, color, maxScale=3) {
+    const c = new THREE.Color(color);
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.4,0.6,32), new THREE.MeshBasicMaterial({ color:c, transparent:true, opacity:0.9, side:THREE.DoubleSide }));
+    ring.rotation.x = -Math.PI/2; ring.position.copy(pos); ring.position.y = this.getHeight(pos.x,pos.z)+0.15;
+    this.scene.add(ring);
+    this.particles.push({ mesh:ring, vel:new THREE.Vector3(), life:0.8, wave:true, maxScale });
+  }
   burstEffect(pos, color, count) {
     const c = new THREE.Color(color);
     for (let i = 0; i < count; i++) {
@@ -487,12 +586,22 @@ class Game {
     const atk = this.attackAnim > 0 ? Math.sin((1 - this.attackAnim / 0.45) * Math.PI) : 0;
 
     this.limbs.leftArm.pivot.rotation.x = walk * 0.8 + atk * -0.4;
-    this.limbs.rightArm.pivot.rotation.x = -walk * 0.8 + atk * -1.6;
+    this.limbs.rightArm.pivot.rotation.x = -walk * 0.8 + atk * -1.8;
+    this.limbs.rightArm.pivot.rotation.z = -0.08 - idle - atk * 0.4;
     this.limbs.leftArm.pivot.rotation.z = 0.08 + idle;
-    this.limbs.rightArm.pivot.rotation.z = -0.08 - idle;
     this.limbs.leftLeg.pivot.rotation.x = -walk;
     this.limbs.rightLeg.pivot.rotation.x = walk;
     this.playerGroup.position.y = this.player.pos.y + (moving ? Math.abs(Math.sin(this.animTime)) * 0.04 : Math.sin(this.animTime) * 0.015);
+
+    if (this.playerCore) this.playerCore.material.emissiveIntensity = 1.2 + Math.sin(this.time * 3) * 0.4 + atk * 1.5;
+    const fx = this.weaponFx || {};
+    if (fx.blade) fx.blade.emissiveIntensity = 1.4 + Math.sin(this.time * 4) * 0.3 + atk * 2;
+    if (fx.orbMat) fx.orbMat.emissiveIntensity = 1.8 + Math.sin(this.time * 5) * 0.8;
+    if (fx.orb) fx.orb.position.y = -0.95 + Math.sin(this.time * 2.5) * 0.05;
+    if (fx.ring) { fx.ring.rotation.z += dt * 2; fx.ring.rotation.x += dt * 0.8; }
+    if (fx.core) fx.core.material.emissiveIntensity = 1.5 + Math.sin(this.time * 3.5) * 0.6;
+    if (fx.shield) fx.shield.emissiveIntensity = 0.35 + (this.player.shield > 0 ? 1.2 : 0) + Math.sin(this.time*2)*0.1;
+    if (fx.hammerGlow) fx.hammerGlow.emissiveIntensity = 0.8 + atk * 2;
   }
   update(dt) {
     if (this.paused || this.over) return;
@@ -546,27 +655,38 @@ class Game {
     // enemies
     for (const e of this.enemies) {
       if (e.dead) continue;
+      e.anim += dt * (2.5 + e.speed);
       e.hitFlash = Math.max(0, e.hitFlash - dt);
-      e.mesh.children[0].material.emissiveIntensity = e.hitFlash > 0 ? 2 : 0.35;
+      const moving = true;
       const toP = this.player.pos.clone().sub(e.pos); toP.y = 0;
       const dist = toP.length();
       if (dist > 1.5) { toP.normalize(); e.pos.addScaledVector(toP, e.speed * dt); e.mesh.rotation.y = Math.atan2(toP.x, toP.z); }
       e.pos.y = this.getHeight(e.pos.x, e.pos.z);
       e.mesh.position.copy(e.pos);
-      e.mesh.children[0].rotation.y += dt * 1.5;
+      // anim
+      const walk = Math.sin(e.anim) * 0.6;
+      e.armL.rotation.x = walk; e.armR.rotation.x = -walk;
+      e.legL.rotation.x = -walk; e.legR.rotation.x = walk;
+      e.body.rotation.y += dt * 1.2;
+      e.body.position.y = 1.0 * e.scale + Math.sin(e.anim*1.5)*0.06*e.scale;
+      e.core.position.y = e.body.position.y;
+      e.core.material.emissiveIntensity = (e.hitFlash > 0 ? 3 : 1.2) + Math.sin(e.anim*2)*0.3;
+      e.body.material.emissiveIntensity = e.hitFlash > 0 ? 1.2 : 0.45;
       e.cd -= dt;
-      if (dist < 1.8 && e.cd <= 0) { e.cd = 1.2; this.damagePlayer(e.atk); }
+      if (dist < 1.8 && e.cd <= 0) { e.cd = 1.2; this.damagePlayer(e.atk); e.armL.rotation.x = -1.2; e.armR.rotation.x = -1.2; }
     }
 
     // projectiles
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
       const p = this.projectiles[i]; p.life -= dt;
       p.mesh.position.addScaledVector(p.dir, p.speed * dt);
+      if (p.glow) p.glow.material.opacity = 0.15 + Math.sin(this.time*18+i)*0.1;
+      if (p.core) p.core.rotation.y += dt * 8;
       let hit = false;
       for (const e of this.enemies) {
         if (e.dead) continue;
         if (p.mesh.position.distanceTo(e.pos.clone().add(new THREE.Vector3(0,1,0))) < e.radius + 0.4) {
-          this.damageEnemy(e, p.dmg, false); hit = true; break;
+          this.damageEnemy(e, p.dmg, false); this.burstEffect(p.mesh.position, this.heroDef.color, 8); hit = true; break;
         }
       }
       if (hit || p.life <= 0) { this.scene.remove(p.mesh); this.projectiles.splice(i, 1); }
@@ -574,7 +694,16 @@ class Game {
 
     // particles
     for (let i = this.particles.length - 1; i >= 0; i--) {
-      const p = this.particles[i]; p.life -= dt; p.vel.y -= 12 * dt;
+      const p = this.particles[i]; p.life -= dt;
+      if (p.wave) {
+        const t = 1 - p.life / 0.8;
+        const s = 1 + t * p.maxScale;
+        p.mesh.scale.set(s,s,s);
+        p.mesh.material.opacity = (1-t) * 0.8;
+        if (p.life <= 0) { this.scene.remove(p.mesh); this.particles.splice(i,1); }
+        continue;
+      }
+      p.vel.y -= 12 * dt;
       p.mesh.position.addScaledVector(p.vel, dt);
       p.mesh.rotation.x += dt * 4;
       if (p.life <= 0) { this.scene.remove(p.mesh); this.particles.splice(i, 1); }
