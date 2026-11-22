@@ -1,5 +1,5 @@
 :root{
-  --bg:#0a0d14;--panel:rgba(14,19,30,0.72);--panel-solid:#121926;--line:rgba(255,255,255,0.08);--line2:rgba(255,255,255,0.16);
+  --bg:#0a0d14;--panel:rgba(14,19,30,0.74);--line:rgba(255,255,255,0.08);--line2:rgba(255,255,255,0.16);
   --text:#f0f3f7;--muted:#93a0b4;--cyan:#63eaff;--red:#ff6464;--green:#66dda0;--amber:#ffbf5a;
   --font:'Space Grotesk',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;
 }
@@ -10,7 +10,6 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 canvas#game{display:block;width:100%;height:100%;outline:none}
 .hidden{display:none !important}
 
-/* Select */
 .screen--select{position:absolute;inset:0;z-index:20;overflow:auto;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(99,234,255,0.12),transparent 60%),#0a0d14}
 .select-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(99,234,255,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(99,234,255,0.035) 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
 .select-wrap{position:relative;max-width:1400px;margin:0 auto;padding:3rem 1.5rem 2rem}
@@ -43,7 +42,6 @@ canvas#game{display:block;width:100%;height:100%;outline:none}
 .btn--ghost{background:rgba(255,255,255,0.04);border-color:var(--line2);color:var(--text)}
 .btn--ghost:hover{background:rgba(255,255,255,0.08)}
 
-/* HUD */
 .hud{position:absolute;inset:0;pointer-events:none;z-index:10;padding:1rem 1.25rem;display:flex;justify-content:space-between;align-items:flex-start}
 .hud>*{pointer-events:auto}
 .player-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:.85rem 1rem;backdrop-filter:blur(10px);min-width:260px}
@@ -65,19 +63,17 @@ canvas#game{display:block;width:100%;height:100%;outline:none}
 .skill-key{font-family:var(--mono);font-size:.68rem;padding:.15rem .4rem;background:rgba(255,255,255,0.1);border-radius:4px;color:var(--cyan)}
 .skill-cd{color:var(--amber);font-family:var(--mono);font-size:.72rem}
 
-/* Crosshair */
 .crosshair{position:absolute;top:50%;left:50%;width:24px;height:24px;transform:translate(-50%,-50%);z-index:5;pointer-events:none}
-.crosshair span{position:absolute;background:rgba(255,255,255,0.8)}
+.crosshair span{position:absolute;background:rgba(255,255,255,0.85)}
 .crosshair span:first-child{width:2px;height:100%;left:11px;top:0}
 .crosshair span:last-child{height:2px;width:100%;top:11px;left:0}
+.lock-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:6;background:var(--panel);border:1px solid var(--line);padding:.6rem 1rem;border-radius:10px;font-size:.85rem;color:var(--muted);backdrop-filter:blur(8px)}
 
-/* Damage numbers */
 .damage-layer{position:absolute;inset:0;pointer-events:none;z-index:6;overflow:hidden}
 .dmg{position:absolute;font-weight:800;font-size:1.1rem;text-shadow:0 2px 8px rgba(0,0,0,.7);animation:dmgFloat 1s ease-out forwards;white-space:nowrap}
 .dmg--heal{color:var(--green)}.dmg--hit{color:#fff}.dmg--crit{color:var(--amber);font-size:1.4rem}
 @keyframes dmgFloat{0%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-60px) scale(.8)}}
 
-/* Overlay */
 .overlay{position:absolute;inset:0;z-index:30;background:rgba(5,8,14,0.6);backdrop-filter:blur(6px);display:grid;place-items:center}
 .overlay__card{background:rgba(18,25,38,0.95);border:1px solid var(--line2);border-radius:20px;padding:2rem;text-align:center;max-width:480px;width:calc(100% - 2rem)}
 .overlay__card h2{font-size:2rem;margin-bottom:.5rem;letter-spacing:-.02em}
@@ -85,9 +81,5 @@ canvas#game{display:block;width:100%;height:100%;outline:none}
 .overlay__actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
 
 @media (max-width:1100px){.roster{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:640px){
-  .roster{grid-template-columns:1fr}.select-wrap{padding:2rem 1rem}
-  .hud{padding:.75rem}.player-card{min-width:200px}.quest{font-size:.75rem;padding:.5rem .7rem}
-  .hud-right{display:none}
-}
+@media (max-width:640px){.roster{grid-template-columns:1fr}.select-wrap{padding:2rem 1rem}.hud{padding:.75rem}.player-card{min-width:200px}.quest{font-size:.75rem;padding:.5rem .7rem}.hud-right{display:none}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms !important;animation-duration:.01ms !important}}

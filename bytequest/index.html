@@ -13,25 +13,23 @@
 </head>
 <body>
   <div id="app">
-    <!-- SELECT SCREEN -->
     <section id="select-screen" class="screen screen--select">
       <div class="select-bg" aria-hidden="true"></div>
       <div class="select-wrap">
         <header class="select-head">
           <p class="kicker">BYTEQUEST</p>
           <h1>Crônicas do Núcleo</h1>
-          <p class="sub">RPG 3D de mundo aberto. Escolha seu personagem inicial e restaure o Núcleo.</p>
+          <p class="sub">RPG 3D de mundo aberto. Escolha seu personagem, derrote os bugs corrompidos e restaure o Núcleo.</p>
         </header>
         <div class="roster" id="roster"></div>
         <div class="select-actions">
           <p class="selected-name" id="selected-name">Selecione um personagem</p>
           <button class="btn btn--primary" id="start-btn" disabled>Entrar no mundo</button>
         </div>
-        <p class="controls-hint">WASD mover · Mouse olhar · Clique atacar · Shift correr · E habilidade · Esc pausar</p>
+        <p class="controls-hint">WASD mover · Mouse olhar · Clique atacar · Shift correr · E habilidade · C travar câmera · Esc pausar</p>
       </div>
     </section>
 
-    <!-- GAME HUD -->
     <div id="hud" class="hud hidden">
       <div class="hud-left">
         <div class="player-card">
@@ -46,24 +44,19 @@
         </div>
       </div>
       <div class="hud-center">
-        <div class="quest" id="hud-quest">Missão: Derrote os bugs corrompidos (0/5)</div>
+        <div class="quest" id="hud-quest">Missão: Derrote os bugs corrompidos (0/8)</div>
       </div>
       <div class="hud-right">
-        <div class="skill-box">
-          <span class="skill-key">Clique</span><span id="hud-atk">Ataque</span>
-        </div>
-        <div class="skill-box">
-          <span class="skill-key">E</span><span id="hud-skill">Habilidade</span>
-          <span class="skill-cd" id="hud-cd"></span>
-                <div class="skill-box"><span class="skill-key">C</span><span id="hud-cam">C?mera livre</span></div>
-        </div>
+        <div class="skill-box"><span class="skill-key">Clique</span><span id="hud-atk">Ataque</span></div>
+        <div class="skill-box"><span class="skill-key">E</span><span id="hud-skill">Habilidade</span><span class="skill-cd" id="hud-cd"></span></div>
+        <div class="skill-box"><span class="skill-key">C</span><span id="hud-cam">Câmera livre</span></div>
       </div>
     </div>
 
     <div id="damage-layer" class="damage-layer"></div>
     <div id="crosshair" class="crosshair hidden"><span></span><span></span></div>
+    <div id="lock-hint" class="lock-hint hidden">Clique para controlar</div>
 
-    <!-- PAUSE -->
     <div id="pause" class="overlay hidden">
       <div class="overlay__card">
         <h2>Pausado</h2>
@@ -75,7 +68,6 @@
       </div>
     </div>
 
-    <!-- GAME OVER / WIN -->
     <div id="gameover" class="overlay hidden">
       <div class="overlay__card">
         <h2 id="go-title">Sistema corrompido</h2>
