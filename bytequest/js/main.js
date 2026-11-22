@@ -106,6 +106,8 @@ class Game {
     this.pointerLocked = false;
     this.yaw = 0; this.pitch = 0.35;
     this.camDist = 9;
+    this.cameraLocked = false;
+    this.playerFacing = 0;
     this.skillCdLeft = 0;
     this.attackCd = 0;
     this.kills = 0;
@@ -114,7 +116,6 @@ class Game {
     this.projectiles = [];
     this.particles = [];
     this.pickups = [];
-    this.dmgTexts = [];
     this.spawnTimer = 0;
     this.time = 0;
 
@@ -135,7 +136,10 @@ class Game {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.setClearColor(0x0a0d14);
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0x0a1018, 0.012);
+    this.scene.fog = new THREE.FogExp2(0x0a1018, 0.011);
+    const skyGeo = new THREE.SphereGeometry(220, 24, 16);
+    const skyMat = new THREE.ShaderMaterial({ side: THREE.BackSide, uniforms: { top:{value:new THREE.Color(0x10243a)}, bottom:{value:new THREE.Color(0x070b12)} }, vertexShader:`varying vec3 vP; void main(){vP=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`, fragmentShader:`uniform vec3 top; uniform vec3 bottom; varying vec3 vP; void main(){ float h = normalize(vP).y*0.5+0.5; gl_FragColor=vec4(mix(bottom,top,smoothstep(0.0,1.0,h)),1.0); }` });
+    this.scene.add(new THREE.Mesh(skyGeo, skyMat));
 
     this.camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 300);
     this.scene.add(this.camera);
@@ -212,12 +216,34 @@ class Game {
     const coreLight = new THREE.PointLight(0x63eaff, 2, 25);
     coreLight.position.copy(this.coreOrb.position); this.scene.add(coreLight);
 
+    // crystals
+    for (let i=0;i<28;i++){
+      const x=rand(-90,90), z=rand(-90,90);
+      const h=this.getHeight(x,z);
+      const col = pick([0x63eaff,0x7ab0ff,0xff6464,0x7fe0b0,0xbf7aff]);
+      const cry = new THREE.Mesh(new THREE.OctahedronGeometry(rand(0.4,1.1),0), new THREE.MeshStandardMaterial({ color:col, emissive:col, emissiveIntensity:1.1, roughness:0.2, metalness:0.4 }));
+      cry.position.set(x,h+rand(0.6,1.6),z); cry.rotation.y=rand(0,Math.PI); cry.castShadow=true;
+      cry.userData.baseY=cry.position.y; cry.userData.phase=rand(0,Math.PI*2);
+      this.scene.add(cry); (this.crystals ||= []).push(cry);
+    }
+    // pillars / trees
+    for (let i=0;i<35;i++){
+      const x=rand(-95,95), z=rand(-95,95); if (Math.abs(x)<12 && Math.abs(z+8)<12) continue;
+      const h=this.getHeight(x,z);
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.25,0.35,rand(2.5,5),6), new THREE.MeshStandardMaterial({color:0x2b3448, roughness:0.9}));
+      trunk.position.set(x,h+trunk.geometry.parameters.height/2,z); trunk.castShadow=true; trunk.receiveShadow=true;
+      this.scene.add(trunk);
+      const topC = pick([0x1f5f66,0x2a4f7a,0x4a2f66]);
+      const top = new THREE.Mesh(new THREE.ConeGeometry(rand(0.8,1.4),rand(1.8,3.2),7), new THREE.MeshStandardMaterial({color:topC, emissive:topC, emissiveIntensity:0.25, roughness:0.8}));
+      top.position.set(x,h+trunk.geometry.parameters.height+top.geometry.parameters.height/2-0.3,z); top.castShadow=true;
+      this.scene.add(top);
+    }
     // ambient particles (simple points)
     const pGeo = new THREE.BufferGeometry();
-    const pCount = 500; const pArr = new Float32Array(pCount * 3);
-    for (let i = 0; i < pCount; i++) { pArr[i*3]=(Math.random()-0.5)*180; pArr[i*3+1]=Math.random()*20+1; pArr[i*3+2]=(Math.random()-0.5)*180; }
+    const pCount = 700; const pArr = new Float32Array(pCount * 3);
+    for (let i = 0; i < pCount; i++) { pArr[i*3]=(Math.random()-0.5)*220; pArr[i*3+1]=Math.random()*28+1; pArr[i*3+2]=(Math.random()-0.5)*220; }
     pGeo.setAttribute('position', new THREE.BufferAttribute(pArr, 3));
-    this.ambientPts = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0x63eaff, size: 0.12, transparent: true, opacity: 0.45 }));
+    this.ambientPts = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0x63eaff, size: 0.13, transparent: true, opacity: 0.5 }));
     this.scene.add(this.ambientPts);
   }
 
@@ -283,6 +309,8 @@ class Game {
     // ring
     const ring = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.03, 8, 32), glowMat);
     ring.rotation.x = Math.PI / 2; ring.position.y = 0.04; this.playerGroup.add(ring);
+    const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.7, 20), new THREE.MeshBasicMaterial({ color:0x000000, transparent:true, opacity:0.28 }));
+    shadow.rotation.x = -Math.PI/2; shadow.position.y = 0.03; this.playerGroup.add(shadow);
 
     this.playerGroup.position.copy(this.player.pos);
     this.scene.add(this.playerGroup);
@@ -338,15 +366,37 @@ class Game {
 
   bindEvents() {
     window.addEventListener('resize', () => this.onResize());
-    document.addEventListener('keydown', e => { this.keys[e.code] = true; if (e.code === 'Escape') this.togglePause(); if (e.code === 'KeyE') this.useSkill(); });
+    document.addEventListener('keydown', e => {
+      this.keys[e.code] = true;
+      if (e.code === 'Escape') this.togglePause();
+      if (e.code === 'KeyE') this.useSkill();
+      if (e.code === 'KeyC') { this.cameraLocked = !this.cameraLocked; this.toastMsg(this.cameraLocked ? 'C?mera travada' : 'C?mera livre'); }
+    });
     document.addEventListener('keyup', e => this.keys[e.code] = false);
-    this.canvas.addEventListener('click', () => { if (!this.paused && !this.over && !this.pointerLocked) this.canvas.requestPointerLock?.(); else if (this.pointerLocked) this.attack(); });
-    document.addEventListener('pointerlockchange', () => { this.pointerLocked = document.pointerLockElement === this.canvas; $('#crosshair').classList.toggle('hidden', !this.pointerLocked); });
-    document.addEventListener('mousemove', e => { if (!this.pointerLocked) return; this.yaw -= e.movementX * 0.0025; this.pitch -= e.movementY * 0.002; this.pitch = clamp(this.pitch, -0.6, 1.2); });
-    document.addEventListener('mousedown', e => { if (e.button === 0) this.mouseDown = true; });
+    this.canvas.addEventListener('click', () => {
+      if (this.paused || this.over) return;
+      if (!this.pointerLocked) { this.canvas.requestPointerLock?.(); return; }
+      this.attack();
+    });
+    document.addEventListener('pointerlockchange', () => {
+      this.pointerLocked = document.pointerLockElement === this.canvas;
+      $('#crosshair').classList.toggle('hidden', !this.pointerLocked);
+    });
+    document.addEventListener('mousemove', e => {
+      if (!this.pointerLocked || this.cameraLocked) return;
+      this.yaw -= e.movementX * 0.0025;
+      this.pitch -= e.movementY * 0.002;
+      this.pitch = clamp(this.pitch, -0.6, 1.2);
+    });
+    document.addEventListener('mousedown', e => {
+      if (e.button !== 0) return;
+      this.mouseDown = true;
+      if (this.pointerLocked && !this.paused && !this.over) this.attack();
+    });
     document.addEventListener('mouseup', e => { if (e.button === 0) this.mouseDown = false; });
   }
   onResize() { this.camera.aspect = innerWidth / innerHeight; this.camera.updateProjectionMatrix(); this.renderer.setSize(innerWidth, innerHeight); }
+  lerpAngle(a,b,t){ let d=(b-a+Math.PI)%(Math.PI*2)-Math.PI; if(d<-Math.PI) d+=Math.PI*2; return a+d*t; }
 
   // ---- GAMEPLAY ----
   spawnEnemy() {
@@ -385,16 +435,18 @@ class Game {
     // spikes
     for (let i=0;i<3;i++){ const sp=new THREE.Mesh(new THREE.ConeGeometry(0.06*d.scale,0.25*d.scale,5), glow.clone()); sp.position.set((i-1)*0.2*d.scale,1.45*d.scale,-0.1*d.scale); g.add(sp); }
 
+    const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.55*d.scale,16), new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.22}));
+    shadow.rotation.x=-Math.PI/2; shadow.position.y=0.03; g.add(shadow);
     g.position.set(x, this.getHeight(x, z), z);
     this.scene.add(g);
-    this.enemies.push({ mesh: g, body, core, armL, armR, legL, legR, ...d, maxHp: d.hp, pos: g.position, radius: 0.7 * d.scale, cd: rand(0.5, 1.5), dead: false, hitFlash: 0, anim: Math.random()*Math.PI*2 });
+    this.enemies.push({ mesh: g, body, core, armL, armR, legL, legR, shadow, ...d, maxHp: d.hp, pos: g.position, radius: 0.7 * d.scale, cd: rand(0.5, 1.5), dead: false, hitFlash: 0, anim: Math.random()*Math.PI*2, dying:0 });
   }
 
   attack() {
     if (this.attackCd > 0 || !this.player.alive || this.over) return;
     this.attackCd = this.heroDef.id === 'rin' ? 0.35 : this.heroDef.id === 'siren' ? 0.7 : 0.55;
     this.attackAnim = 0.28;
-    const dir = new THREE.Vector3(-Math.sin(this.yaw), 0, -Math.cos(this.yaw));
+    const dir = new THREE.Vector3(Math.sin(this.playerGroup.rotation.y), 0, Math.cos(this.playerGroup.rotation.y));
     if (this.heroDef.id === 'firon') {
       // ranged projectile
       this.spawnProjectile(this.player.pos.clone().add(new THREE.Vector3(0, 1.2, 0)), dir, this.player.atk, false);
@@ -420,7 +472,7 @@ class Game {
     this.player.mp -= this.heroDef.skillCost;
     this.skillCdLeft = this.heroDef.skillCd;
     this.attackAnim = 0.45;
-    const dir = new THREE.Vector3(-Math.sin(this.yaw), 0, -Math.cos(this.yaw));
+    const dir = new THREE.Vector3(Math.sin(this.playerGroup.rotation.y), 0, Math.cos(this.playerGroup.rotation.y));
     const h = this.heroDef.id;
     if (h === 'rin') {
       // Patch Strike: dash + heavy hit
@@ -475,10 +527,11 @@ class Game {
     if (e.hp <= 0) this.killEnemy(e);
   }
   killEnemy(e) {
-    e.dead = true; this.scene.remove(e.mesh);
+    if (e.dying) return;
+    e.dying = 0.35; e.dead = true;
     this.kills++;
     this.player.xp += e.xp;
-    this.burstEffect(e.pos, '#' + e.color.toString(16).padStart(6, '0'), 12);
+    this.burstEffect(e.pos, '#' + e.color.toString(16).padStart(6, '0'), 16);
     if (Math.random() < 0.3) this.spawnPickup(e.pos.clone());
     while (this.player.xp >= this.player.xpNext) {
       this.player.xp -= this.player.xpNext; this.player.lvl++;
@@ -516,7 +569,7 @@ class Game {
     }
   }
   swingEffect() {
-    const dir = new THREE.Vector3(-Math.sin(this.yaw), 0, -Math.cos(this.yaw));
+    const dir = new THREE.Vector3(Math.sin(this.playerGroup.rotation.y), 0, Math.cos(this.playerGroup.rotation.y));
     const pos = this.player.pos.clone().addScaledVector(dir, 1.5); pos.y += 1;
     this.burstEffect(pos, this.heroDef.color, 6);
   }
@@ -556,6 +609,7 @@ class Game {
     $('#hud-atk').textContent = h.id === 'firon' ? 'Projétil' : 'Ataque';
     $('#hud-skill').textContent = h.skill;
     $('#hud-cd').textContent = this.skillCdLeft > 0 ? this.skillCdLeft.toFixed(1) + 's' : '';
+    const camEl=$('#hud-cam'); if(camEl) camEl.textContent = this.cameraLocked ? 'C?mera travada' : 'C?mera livre';
   }
 
   togglePause() {
@@ -620,12 +674,14 @@ class Game {
     if (this.keys['KeyS']) move.sub(fwd);
     if (this.keys['KeyD']) move.add(right);
     if (this.keys['KeyA']) move.sub(right);
-    if (move.lengthSq() > 0) move.normalize();
+    const moving = move.lengthSq() > 0;
+    if (moving) move.normalize();
     const sprint = this.keys['ShiftLeft'] || this.keys['ShiftRight'];
     const speed = this.player.speed * (sprint ? 1.55 : 1);
     this.player.pos.addScaledVector(move, speed * dt);
     this.player.pos.x = clamp(this.player.pos.x, -95, 95);
     this.player.pos.z = clamp(this.player.pos.z, -95, 95);
+    if (moving) this.playerFacing = Math.atan2(move.x, move.z);
 
     // obstacle collision simple
     for (const o of this.obstacles) {
@@ -639,8 +695,10 @@ class Game {
 
     this.player.pos.y = this.getHeight(this.player.pos.x, this.player.pos.z);
     this.playerGroup.position.copy(this.player.pos);
-    this.playerGroup.rotation.y = this.yaw;
-    this.updatePlayerAnim(dt, move.lengthSq() > 0, sprint);
+    // face movement direction; when idle face camera direction
+    const targetFacing = moving ? this.playerFacing : this.yaw;
+    this.playerGroup.rotation.y = this.lerpAngle(this.playerGroup.rotation.y, targetFacing, 0.18);
+    this.updatePlayerAnim(dt, moving, sprint);
 
     // camera (third-person behind player)
     const camOff = new THREE.Vector3(0, 3.4, this.camDist).applyAxisAngle(new THREE.Vector3(0,1,0), this.yaw);
@@ -651,19 +709,20 @@ class Game {
 
     // core anim
     this.coreOrb.rotation.y += dt * 0.8; this.coreOrb.position.y = 3.5 + Math.sin(this.time * 1.5) * 0.3;
+    if (this.crystals) for (const c of this.crystals) { c.rotation.y += dt*0.6; c.position.y = c.userData.baseY + Math.sin(this.time*1.6+c.userData.phase)*0.2; }
 
     // enemies
-    for (const e of this.enemies) {
+    for (let i=this.enemies.length-1;i>=0;i--) {
+      const e = this.enemies[i];
+      if (e.dying) { e.dying -= dt; e.mesh.scale.multiplyScalar(0.92); e.mesh.position.y -= dt*0.5; if (e.dying<=0){ this.scene.remove(e.mesh); this.enemies.splice(i,1);} continue; }
       if (e.dead) continue;
       e.anim += dt * (2.5 + e.speed);
       e.hitFlash = Math.max(0, e.hitFlash - dt);
-      const moving = true;
       const toP = this.player.pos.clone().sub(e.pos); toP.y = 0;
       const dist = toP.length();
       if (dist > 1.5) { toP.normalize(); e.pos.addScaledVector(toP, e.speed * dt); e.mesh.rotation.y = Math.atan2(toP.x, toP.z); }
       e.pos.y = this.getHeight(e.pos.x, e.pos.z);
       e.mesh.position.copy(e.pos);
-      // anim
       const walk = Math.sin(e.anim) * 0.6;
       e.armL.rotation.x = walk; e.armR.rotation.x = -walk;
       e.legL.rotation.x = -walk; e.legR.rotation.x = walk;
@@ -728,9 +787,7 @@ class Game {
       this.spawnEnemy(); this.spawnTimer = rand(2.5, 5);
     }
 
-    // auto attack for held mouse on melee
-    if (this.mouseDown && this.pointerLocked && this.heroDef.id !== 'firon') this.attack();
-    if (this.mouseDown && this.pointerLocked && this.heroDef.id === 'firon') this.attack();
+    if (this.mouseDown && this.pointerLocked) this.attack();
 
     this.updateHUD();
   }
