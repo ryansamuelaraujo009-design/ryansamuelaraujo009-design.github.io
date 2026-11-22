@@ -95,10 +95,10 @@ const HEROES = [
   { id: 'pyren', name: 'Pyren', role: 'Sacerdote', color: '#7fe0b0', hp: 105, mp: 110, atk: 12, def: 8, speed: 7, skill: 'Heal Pulse', skillCost: 35, skillCd: 7, desc: 'Suporte e cura. Mantém o sistema estável.', stats: { dano: 45, defesa: 60, magia: 85, vel: 60 } },
 ];
 const HERO_MODEL_PROFILES = {
-  rin:   { scale: 1.03, tint: 0.35, emissive: 0.22, idle: ['idle'], run: ['run','walk'], attack: ['sneak_pose','agree','idle'], attackSpeed: 1.8, attackDur: 0.32 },
-  siren: { scale: 1.0,  tint: 0.18, emissive: 0.20, idle: ['Idle'], run: ['Run','Walk'], attack: ['Run','Walk','Idle'], attackSpeed: 2.2, attackDur: 0.38, modelRotY: 0 },
-  firon: { scale: 1.03, tint: 0.40, emissive: 0.35, idle: ['idle','sad_pose'], run: ['run','walk'], attack: ['sneak_pose','agree','headShake'], attackSpeed: 1.7, attackDur: 0.32, modelRotY: 0 },
-  pyren: { scale: 1.03, tint: 0.30, emissive: 0.30, idle: ['idle','sad_pose'], run: ['walk','run'], attack: ['agree','headShake','idle'], attackSpeed: 1.5, attackDur: 0.34 },
+  rin:   { scale: 1.03, tint: 0.35, emissive: 0.22, idle: ['idle'], run: ['run','walk'], attack: ['sneak_pose','agree','idle'], attackSpeed: 1.9, attackDur: 0.30 },
+  siren: { scale: 1.02, tint: 0.20, emissive: 0.22, idle: ['Idle'], run: ['Run','Walk'], attack: ['Run','Walk','Idle'], attackSpeed: 2.4, attackDur: 0.36 },
+  firon: { scale: 1.03, tint: 0.42, emissive: 0.38, idle: ['idle','sad_pose'], run: ['run','walk'], attack: ['sneak_pose','agree','headShake'], attackSpeed: 1.8, attackDur: 0.30 },
+  pyren: { scale: 1.03, tint: 0.28, emissive: 0.32, idle: ['idle','sad_pose'], run: ['walk','run'], attack: ['agree','headShake','idle'], attackSpeed: 1.6, attackDur: 0.32 },
 };
 
 function heroIcon(id) {
@@ -437,14 +437,14 @@ class Game {
   attack() {
     if (this.attackCd > 0 || !this.player.alive || this.over || this.paused) return;
     const profile = HERO_MODEL_PROFILES[this.heroDef.id] || HERO_MODEL_PROFILES.rin;
-    this.attackCd = this.heroDef.id === 'rin' ? 0.35 : this.heroDef.id === 'siren' ? 0.7 : 0.55;
+    this.attackCd = this.heroDef.id === 'rin' ? 0.33 : this.heroDef.id === 'siren' ? 0.65 : this.heroDef.id === 'firon' ? 0.5 : 0.55;
     this.attackAnim = profile.attackDur || 0.32;
     this._attackLunge = 0.12;
     const act = this.actions.attack || this.actions.run || this.actions.idle;
     if (act && this.mixer) {
       const sp = profile.attackSpeed || 1.4;
-      if (this.activeAction && this.activeAction !== act) this.activeAction.fadeOut(0.08);
-      act.reset().fadeIn(0.08).play();
+      if (this.activeAction && this.activeAction !== act) this.activeAction.fadeOut(0.06);
+      act.reset().fadeIn(0.06).play();
       act.timeScale = sp;
       this.activeAction = act;
       this._attackAction = act;
@@ -455,13 +455,15 @@ class Game {
       this.swingEffect();
       return;
     }
-    const range = this.heroDef.id === 'siren' ? 3.8 : 3.2;
+    const range = this.heroDef.id === 'siren' ? 3.9 : 3.3;
     let hitAny = false;
     for (const e of this.enemies) {
       if (e.dead) continue;
       const to = e.pos.clone().sub(this.player.pos); to.y = 0; const dist = to.length(); if (dist > range) continue;
-      to.normalize(); if (to.dot(dir) < 0.2) continue;
+      to.normalize(); if (to.dot(dir) < 0.15) continue;
       this.damageEnemy(e, this.player.atk + rand(-2, 3), false);
+      // knockback pequeno
+      e.pos.addScaledVector(to, 0.35);
       hitAny = true;
     }
     this.swingEffect();
@@ -612,13 +614,18 @@ class Game {
     this.moving = moving;
     if (this.mixer) {
       this.mixer.update(dt);
-      if (this.attackAnim <= 0) this.playAction(moving ? 'run' : 'idle', 0.18);
+      if (this.attackAnim <= 0) this.playAction(moving ? 'run' : 'idle', 0.16);
       if (this.actions.run) this.actions.run.timeScale = sprint ? 1.35 : 1;
       if (this.attackAnim > 0 && this.playerModel) {
         const p = this.attackAnim / (HERO_MODEL_PROFILES[this.heroDef.id]?.attackDur || 0.32);
-        this.playerModel.position.z = Math.sin((1-p) * Math.PI) * 0.08;
-        this.playerModel.rotation.x = Math.sin((1-p) * Math.PI) * -0.06;
-      } else if (this.playerModel) { this.playerModel.position.z = 0; this.playerModel.rotation.x = 0; }
+        const atk = Math.sin((1-p) * Math.PI);
+        this.playerModel.position.z = atk * 0.09;
+        this.playerModel.rotation.x = atk * -0.05;
+        this.playerModel.rotation.y = (HERO_MODEL_PROFILES[this.heroDef.id]?.modelRotY || 0) + atk * 0.08;
+      } else if (this.playerModel) {
+        this.playerModel.position.z = 0; this.playerModel.rotation.x = 0;
+        this.playerModel.rotation.y = HERO_MODEL_PROFILES[this.heroDef.id]?.modelRotY || 0;
+      }
     } else if (this.limbs) {
       const walk = moving ? Math.sin(this.animTime) * (sprint ? 0.7 : 0.5) : 0;
       const idle = moving ? 0 : Math.sin(this.animTime) * 0.03;
