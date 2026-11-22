@@ -95,10 +95,10 @@ const HEROES = [
   { id: 'pyren', name: 'Pyren', role: 'Sacerdote', color: '#7fe0b0', hp: 105, mp: 110, atk: 12, def: 8, speed: 7, skill: 'Heal Pulse', skillCost: 35, skillCd: 7, desc: 'Suporte e cura. Mantém o sistema estável.', stats: { dano: 45, defesa: 60, magia: 85, vel: 60 } },
 ];
 const HERO_MODEL_PROFILES = {
-  rin:   { scale: 1.03, tint: 0.35, emissive: 0.22, idle: ['idle'], run: ['run','walk'], attack: ['agree','headShake','run'] },
-  siren: { scale: 1.02, tint: 0.30, emissive: 0.18, idle: ['Idle'], run: ['Run','Walk'], attack: ['Walk','Run','Idle'] },
-  firon: { scale: 0.48, tint: 0.45, emissive: 0.35, idle: ['Idle','Standing'], run: ['Running','Walking'], attack: ['Punch','Wave','Dance'] },
-  pyren: { scale: 1.03, tint: 0.30, emissive: 0.28, idle: ['idle'], run: ['walk','run'], attack: ['agree','headShake','idle'] },
+  rin:   { scale: 1.03, tint: 0.35, emissive: 0.22, idle: ['idle'], run: ['run','walk'], attack: ['sneak_pose','agree','idle'], attackSpeed: 1.8 },
+  siren: { scale: 1.02, tint: 0.28, emissive: 0.18, idle: ['Idle'], run: ['Run','Walk'], attack: ['Run','Walk','Idle'], attackSpeed: 1.4 },
+  firon: { scale: 0.48, tint: 0.45, emissive: 0.35, idle: ['Idle','Standing'], run: ['Running','Walking'], attack: ['Punch','Wave','Dance'], attackSpeed: 1.2 },
+  pyren: { scale: 1.03, tint: 0.30, emissive: 0.28, idle: ['idle','sad_pose'], run: ['walk','run'], attack: ['agree','headShake','idle'], attackSpeed: 1.3 },
 };
 
 function heroIcon(id) {
@@ -290,24 +290,30 @@ class Game {
 
   attachWeaponToModel(model, c) {
     this.weaponFx = {};
-    const rightHand = model.getObjectByName('mixamorigRightHand') || model.getObjectByName('RightHand');
-    const leftHand = model.getObjectByName('mixamorigLeftHand') || model.getObjectByName('LeftHand');
+    const findNode = (...names) => { for (const n of names) { const o = model.getObjectByName(n); if (o) return o; } return null; };
+    const rightHand = findNode('mixamorigRightHand','mixamorig:RightHand','RightHand','Hand.R','hand_r','RightHandBone');
+    const leftHand = findNode('mixamorigLeftHand','mixamorig:LeftHand','LeftHand','Hand.L','hand_l','LeftHandBone');
     const glowMat = new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 1.8 });
     const darkMat = new THREE.MeshStandardMaterial({ color: 0x222b3d, roughness: 0.7, metalness: 0.3 });
     const id = this.heroDef.id;
+    const isRobot = !!model.getObjectByName('Hand.R');
     if (id === 'rin' && rightHand) {
-      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.9, 0.12), glowMat.clone()); blade.position.set(0, 0.35, 0.02); blade.rotation.x = Math.PI/2; rightHand.add(blade); this.weaponFx.blade = blade.material;
-      const hilt = new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.2,8), darkMat); hilt.position.set(0,-0.05,0.02); hilt.rotation.x=Math.PI/2; rightHand.add(hilt);
+      const s = isRobot ? 2.2 : 1;
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.04*s,0.9*s,0.12*s), glowMat.clone()); blade.position.set(0,0.35*s,0.02*s); blade.rotation.x=Math.PI/2; rightHand.add(blade); this.weaponFx.blade=blade.material;
+      const hilt = new THREE.Mesh(new THREE.CylinderGeometry(0.025*s,0.025*s,0.2*s,8), darkMat); hilt.position.set(0,-0.05*s,0.02*s); hilt.rotation.x=Math.PI/2; rightHand.add(hilt);
     } else if (id === 'siren') {
-      if (rightHand) { const hammer = new THREE.Mesh(new THREE.BoxGeometry(0.22,0.16,0.16), darkMat); hammer.position.set(0,0.25,0); rightHand.add(hammer); const hg = new THREE.Mesh(new THREE.BoxGeometry(0.24,0.04,0.18), glowMat.clone()); hg.position.set(0,0.25,0); rightHand.add(hg); this.weaponFx.hammerGlow=hg.material; }
-      if (leftHand) { const shield = new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.26,0.06,6), new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:0.5,transparent:true,opacity:0.7})); shield.rotation.z=Math.PI/2; leftHand.add(shield); this.weaponFx.shield=shield.material; }
+      const s = isRobot ? 2.2 : 1;
+      if (rightHand) { const hammer = new THREE.Mesh(new THREE.BoxGeometry(0.22*s,0.16*s,0.16*s), darkMat); hammer.position.set(0,0.25*s,0); rightHand.add(hammer); const hg = new THREE.Mesh(new THREE.BoxGeometry(0.24*s,0.04*s,0.18*s), glowMat.clone()); hg.position.set(0,0.25*s,0); rightHand.add(hg); this.weaponFx.hammerGlow=hg.material; }
+      if (leftHand) { const shield = new THREE.Mesh(new THREE.CylinderGeometry(0.22*s,0.26*s,0.06*s,6), new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:0.5,transparent:true,opacity:0.7})); shield.rotation.z=Math.PI/2; leftHand.add(shield); this.weaponFx.shield=shield.material; }
     } else if (id === 'firon' && rightHand) {
-      const staff = new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,1.2,8), darkMat); staff.position.set(0,0.35,0); staff.rotation.x=Math.PI/2; rightHand.add(staff);
-      const orb = new THREE.Mesh(new THREE.SphereGeometry(0.1,12,12), glowMat.clone()); orb.position.set(0,0.95,0); rightHand.add(orb); this.weaponFx.orb=orb; this.weaponFx.orbMat=orb.material;
+      const s = isRobot ? 2.2 : 1;
+      const staff = new THREE.Mesh(new THREE.CylinderGeometry(0.02*s,0.02*s,1.2*s,8), darkMat); staff.position.set(0,0.35*s,0); staff.rotation.x=Math.PI/2; rightHand.add(staff);
+      const orb = new THREE.Mesh(new THREE.SphereGeometry(0.1*s,12,12), glowMat.clone()); orb.position.set(0,0.95*s,0); rightHand.add(orb); this.weaponFx.orb=orb; this.weaponFx.orbMat=orb.material;
     } else if (id === 'pyren' && rightHand) {
-      const staff = new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,1.1,8), darkMat); staff.position.set(0,0.3,0); staff.rotation.x=Math.PI/2; rightHand.add(staff);
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.1,0.02,8,20), glowMat.clone()); ring.position.set(0,0.85,0); rightHand.add(ring); this.weaponFx.ring=ring;
-      const core = new THREE.Mesh(new THREE.SphereGeometry(0.05,10,10), new THREE.MeshStandardMaterial({color:0xffe08a,emissive:0xffe08a,emissiveIntensity:1.8})); core.position.set(0,0.85,0); rightHand.add(core); this.weaponFx.core=core;
+      const s = isRobot ? 2.2 : 1;
+      const staff = new THREE.Mesh(new THREE.CylinderGeometry(0.02*s,0.02*s,1.1*s,8), darkMat); staff.position.set(0,0.3*s,0); staff.rotation.x=Math.PI/2; rightHand.add(staff);
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.1*s,0.02*s,8,20), glowMat.clone()); ring.position.set(0,0.85*s,0); rightHand.add(ring); this.weaponFx.ring=ring;
+      const core = new THREE.Mesh(new THREE.SphereGeometry(0.05*s,10,10), new THREE.MeshStandardMaterial({color:0xffe08a,emissive:0xffe08a,emissiveIntensity:1.8})); core.position.set(0,0.85*s,0); rightHand.add(core); this.weaponFx.core=core;
     }
   }
 
@@ -432,7 +438,7 @@ class Game {
     if (this.attackCd > 0 || !this.player.alive || this.over || this.paused) return;
     this.attackCd = this.heroDef.id === 'rin' ? 0.35 : this.heroDef.id === 'siren' ? 0.7 : 0.55;
     this.attackAnim = 0.32;
-    if (this.actions.attack) { this.playAction('attack', 0.08); this.actions.attack.timeScale = 1.4; }
+    if (this.actions.attack) { const sp = (HERO_MODEL_PROFILES[this.heroDef.id]?.attackSpeed) || 1.4; this.playAction('attack', 0.08); this.actions.attack.timeScale = sp; }
     const dir = new THREE.Vector3(Math.sin(this.playerGroup.rotation.y), 0, Math.cos(this.playerGroup.rotation.y));
     if (this.heroDef.id === 'firon') {
       this.spawnProjectile(this.player.pos.clone().add(new THREE.Vector3(0, 1.25, 0)), dir, this.player.atk);
