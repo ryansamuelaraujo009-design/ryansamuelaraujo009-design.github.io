@@ -96,7 +96,7 @@ const HEROES = [
 ];
 const HERO_MODEL_PROFILES = {
   rin:   { scale: 1.03, tint: 0.35, emissive: 0.22, idle: ['idle'], run: ['run','walk'], attack: ['sneak_pose','agree','idle'], attackSpeed: 1.9, attackDur: 0.30 },
-  siren: { scale: 1.02, tint: 0.20, emissive: 0.22, idle: ['Idle'], run: ['Run','Walk'], attack: ['Run','Walk','Idle'], attackSpeed: 2.4, attackDur: 0.36, modelRotY: Math.PI },
+  siren: { scale: 1.02, tint: 0.20, emissive: 0.22, idle: ['Idle'], run: ['Run','Walk'], attack: ['Run','Walk','Idle'], attackSpeed: 2.4, attackDur: 0.36, modelRotY: 0 },
   firon: { scale: 1.03, tint: 0.42, emissive: 0.38, idle: ['idle','sad_pose'], run: ['run','walk'], attack: ['sneak_pose','agree','headShake'], attackSpeed: 1.8, attackDur: 0.30 },
   pyren: { scale: 1.03, tint: 0.28, emissive: 0.32, idle: ['idle','sad_pose'], run: ['walk','run'], attack: ['agree','headShake','idle'], attackSpeed: 1.6, attackDur: 0.32 },
 };
@@ -469,7 +469,7 @@ class Game {
       hitAny = true;
     }
     this.swingEffect();
-    if (!hitAny) this.burstEffect(this.player.pos.clone().addScaledVector(dir, 1.2).add(new THREE.Vector3(0,1,0)), this.heroDef.color, 4);
+    this.burstEffect(this.player.pos.clone().addScaledVector(dir, 1.4).add(new THREE.Vector3(0,1.0,0)), this.heroDef.color, hitAny ? 10 : 5);
   }
 
   useSkill() {
@@ -631,11 +631,12 @@ class Game {
       }
       if (this.actions.run && this.attackAnim <= 0) this.actions.run.timeScale = sprint ? 1.35 : 1;
       if (this.attackAnim > 0 && this.playerModel) {
-        const p = this.attackAnim / (HERO_MODEL_PROFILES[this.heroDef.id]?.attackDur || 0.32);
-        const atk = Math.sin((1-p) * Math.PI);
-        this.playerModel.position.z = atk * 0.09;
-        this.playerModel.rotation.x = atk * -0.05;
-        this.playerModel.rotation.y = (HERO_MODEL_PROFILES[this.heroDef.id]?.modelRotY || 0) + atk * 0.08;
+        const dur = HERO_MODEL_PROFILES[this.heroDef.id]?.attackDur || 0.32;
+        const p = 1 - (this.attackAnim / dur);
+        const atk = Math.sin(p * Math.PI);
+        this.playerModel.position.z = atk * 0.12;
+        this.playerModel.rotation.x = atk * -0.06;
+        this.playerModel.rotation.y = (HERO_MODEL_PROFILES[this.heroDef.id]?.modelRotY || 0) + Math.sin(p * Math.PI * 2) * 0.10;
       } else if (this.playerModel) {
         this.playerModel.position.z = 0; this.playerModel.rotation.x = 0;
         this.playerModel.rotation.y = HERO_MODEL_PROFILES[this.heroDef.id]?.modelRotY || 0;
