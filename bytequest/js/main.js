@@ -51,10 +51,13 @@ function texEnemy(color = '#ff6464') {
   });
 }
 
-const MODELS = { player: null, enemy: null };
+const MODELS = {};
 const MODEL_URLS = {
-  player: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/models/gltf/Xbot.glb',
-  enemy: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/models/gltf/RobotExpressive/RobotExpressive.glb',
+  rin: './assets/models/Xbot.glb',
+  siren: './assets/models/Soldier.glb',
+  firon: './assets/models/RobotExpressive.glb',
+  pyren: './assets/models/Xbot.glb',
+  enemy: './assets/models/RobotExpressive.glb',
 };
 function loadGLTF(url) {
   return new Promise((resolve, reject) => new GLTFLoader().load(url, resolve, undefined, reject));
@@ -63,6 +66,7 @@ async function preloadModels(onProgress) {
   const entries = Object.entries(MODEL_URLS);
   let done = 0;
   await Promise.all(entries.map(async ([k, url]) => {
+    if (MODELS[k]) { done++; onProgress?.(done, entries.length); return; }
     try { MODELS[k] = await loadGLTF(url); } catch (e) { console.warn('Model load failed', k, e); MODELS[k] = null; }
     done++; onProgress?.(done, entries.length);
   }));
@@ -90,6 +94,12 @@ const HEROES = [
   { id: 'firon', name: 'Firon', role: 'Maga', color: '#ff9a5a', hp: 90, mp: 120, atk: 24, def: 4, speed: 7.3, skill: 'Glitch Storm', skillCost: 30, skillCd: 5, desc: 'Dano mágico em área. Frágil, mas devastadora.', stats: { dano: 95, defesa: 30, magia: 100, vel: 65 } },
   { id: 'pyren', name: 'Pyren', role: 'Sacerdote', color: '#7fe0b0', hp: 105, mp: 110, atk: 12, def: 8, speed: 7, skill: 'Heal Pulse', skillCost: 35, skillCd: 7, desc: 'Suporte e cura. Mantém o sistema estável.', stats: { dano: 45, defesa: 60, magia: 85, vel: 60 } },
 ];
+const HERO_MODEL_PROFILES = {
+  rin:   { scale: 1.03, tint: 0.35, emissive: 0.22, idle: ['idle'], run: ['run','walk'], attack: ['agree','headShake','run'] },
+  siren: { scale: 1.02, tint: 0.30, emissive: 0.18, idle: ['Idle'], run: ['Run','Walk'], attack: ['Walk','Run','Idle'] },
+  firon: { scale: 0.48, tint: 0.45, emissive: 0.35, idle: ['Idle','Standing'], run: ['Running','Walking'], attack: ['Punch','Wave','Dance'] },
+  pyren: { scale: 1.03, tint: 0.30, emissive: 0.28, idle: ['idle'], run: ['walk','run'], attack: ['agree','headShake','idle'] },
+};
 
 function heroIcon(id) {
   const icons = {
@@ -242,18 +252,21 @@ class Game {
     const c = new THREE.Color(this.heroDef.color);
 
     let gltfOk = false;
-    if (MODELS.player) {
+    const gltf = MODELS[this.heroDef.id];
+    if (gltf) {
       try {
-        const model = cloneSkinned(MODELS.player.scene);
-        model.scale.setScalar(1.05);
-        model.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; const mats = Array.isArray(o.material) ? o.material : [o.material]; o.material = mats.map(m => { if(!m) return m; m=m.clone(); if (m.color) m.color.lerp(c, 0.35); if ('emissive' in m) { m.emissive = c.clone().multiplyScalar(0.25); m.emissiveIntensity = 0.2; } return m; }); if (!Array.isArray(o.material)) o.material = o.material; if (mats.length===1) o.material = o.material[0]; } });
+        const profile = HERO_MODEL_PROFILES[this.heroDef.id] || HERO_MODEL_PROFILES.rin;
+        const model = cloneSkinned(gltf.scene);
+        model.scale.setScalar(profile.scale);
+        model.rotation.y = profile.rotY || 0;
+        model.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; const mats = Array.isArray(o.material) ? o.material : [o.material]; const mapped = mats.map(m => { if(!m) return m; m=m.clone(); if (m.color) m.color.lerp(c, profile.tint); if ('emissive' in m) { m.emissive = c.clone().multiplyScalar(0.2); m.emissiveIntensity = profile.emissive; } return m; }); o.material = mapped.length===1 ? mapped[0] : mapped; } });
         this.playerGroup.add(model);
         this.playerModel = model;
         this.mixer = new THREE.AnimationMixer(model);
-        const clips = MODELS.player.animations || [];
-        const idle = findClip(clips, ['idle']);
-        const run = findClip(clips, ['run', 'walk']);
-        const attack = findClip(clips, ['punch', 'attack', 'hit']);
+        const clips = gltf.animations || [];
+        const idle = findClip(clips, profile.idle);
+        const run = findClip(clips, profile.run);
+        const attack = findClip(clips, profile.attack);
         if (idle) this.actions.idle = this.mixer.clipAction(idle);
         if (run) this.actions.run = this.mixer.clipAction(run);
         if (attack) { this.actions.attack = this.mixer.clipAction(attack); this.actions.attack.setLoop(THREE.LoopOnce, 1); this.actions.attack.clampWhenFinished = true; }
@@ -373,7 +386,7 @@ class Game {
 
     if (MODELS.enemy) {
       const model = cloneSkinned(MODELS.enemy.scene);
-      model.scale.setScalar(0.45 * d.scale);
+      model.scale.setScalar(0.50 * d.scale);
       tintModel(model, '#' + d.color.toString(16).padStart(6,'0'), 0.25);
       g.add(model);
       mixer = new THREE.AnimationMixer(model);
@@ -738,7 +751,7 @@ $('#start-btn').addEventListener('click', async () => {
   if (!selectedHero) return;
   const btn = $('#start-btn'); btn.disabled = true; btn.textContent = 'Carregando modelos...';
   $('#loading-msg').classList.remove('hidden');
-  if (!MODELS.player && !MODELS.enemy) await preloadModels((d,t)=>{ $('#loading-msg').textContent = `Carregando modelos 3D... ${d}/${t}`; });
+  if (!MODELS.rin || !MODELS.enemy) await preloadModels((d,t)=>{ $('#loading-msg').textContent = `Carregando modelos 3D... ${d}/${t}`; });
   $('#select-screen').classList.add('hidden');
   $('#hud').classList.remove('hidden');
   $('#lock-hint').classList.remove('hidden');
