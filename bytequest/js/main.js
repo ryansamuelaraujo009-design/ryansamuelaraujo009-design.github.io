@@ -266,10 +266,15 @@ class Game {
         const clips = gltf.animations || [];
         const idle = findClip(clips, profile.idle);
         const run = findClip(clips, profile.run);
-        const attack = findClip(clips, profile.attack);
+        let attack = findClip(clips, profile.attack);
         if (idle) this.actions.idle = this.mixer.clipAction(idle);
         if (run) this.actions.run = this.mixer.clipAction(run);
-        if (attack) { this.actions.attack = this.mixer.clipAction(attack); this.actions.attack.setLoop(THREE.LoopOnce, 1); this.actions.attack.clampWhenFinished = true; }
+        if (attack) {
+          if (attack === idle || attack === run) attack = attack.clone();
+          this.actions.attack = this.mixer.clipAction(attack);
+          this.actions.attack.setLoop(THREE.LoopOnce, 1);
+          this.actions.attack.clampWhenFinished = true;
+        }
         if (this.actions.idle) { this.actions.idle.play(); this.activeAction = this.actions.idle; }
         this.mixer.addEventListener('finished', (e) => { if (e.action === this.actions.attack) this.playAction(this.moving ? 'run' : 'idle', 0.15); });
         this.attachWeaponToModel(model, c);
