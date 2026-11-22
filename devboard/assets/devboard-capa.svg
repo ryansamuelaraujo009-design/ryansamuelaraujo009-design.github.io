@@ -1,21 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f6f4f1"/><stop offset="100%" stop-color="#e9e3dd"/></linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#17121b"/><stop offset="100%" stop-color="#0d0b10"/></linearGradient>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff5a5a"/><stop offset="1%" stop-color="#ff8a7a"/></linearGradient>
   </defs>
   <rect width="1280" height="720" fill="url(#bg)"/>
-  <text x="80" y="92" fill="#1f1b19" font-size="30" font-family="Arial" font-weight="700">DevBoard</text>
-  <text x="80" y="128" fill="#746c67" font-size="22" font-family="Arial">Kanban simples para organizar projetos</text>
-  <rect x="80" y="180" width="340" height="430" rx="18" fill="#fff" stroke="#e0d8d1"/>
-  <rect x="470" y="180" width="340" height="430" rx="18" fill="#fff" stroke="#e0d8d1"/>
-  <rect x="860" y="180" width="340" height="430" rx="18" fill="#fff" stroke="#e0d8d1"/>
-  <text x="110" y="225" fill="#1f1b19" font-size="22" font-family="Arial" font-weight="700">A fazer</text>
-  <text x="500" y="225" fill="#1f1b19" font-size="22" font-family="Arial" font-weight="700">Fazendo</text>
-  <text x="890" y="225" fill="#1f1b19" font-size="22" font-family="Arial" font-weight="700">Concluído</text>
-  <rect x="110" y="255" width="280" height="88" rx="12" fill="#fbfaf8" stroke="#ece6e1"/>
-  <rect x="110" y="360" width="280" height="88" rx="12" fill="#fbfaf8" stroke="#ece6e1"/>
-  <rect x="500" y="255" width="280" height="88" rx="12" fill="#fbfaf8" stroke="#ece6e1"/>
-  <rect x="890" y="255" width="280" height="88" rx="12" fill="#fbfaf8" stroke="#ece6e1"/>
-  <rect x="125" y="315" width="58" height="18" rx="9" fill="#fdeaea"/><rect x="190" y="315" width="64" height="18" rx="9" fill="#f1ece8"/>
-  <rect x="515" y="315" width="58" height="18" rx="9" fill="#fff3df"/><rect x="580" y="315" width="64" height="18" rx="9" fill="#f1ece8"/>
-  <rect x="905" y="315" width="58" height="18" rx="9" fill="#eef5ef"/><rect x="970" y="315" width="64" height="18" rx="9" fill="#f1ece8"/>
+  <g fill="rgba(255,90,90,0.12)" font-family="monospace" font-size="18">
+    <text x="60" y="80">&lt;/&gt;</text><text x="220" y="140">const</text><text x="1050" y="90">=&gt;</text><text x="900" y="640">{}</text><text x="160" y="620">async</text>
+  </g>
+  <text x="80" y="95" fill="#ff7a7a" font-size="26" font-family="Arial" font-weight="700">DevBoard</text>
+  <text x="80" y="132" fill="#a89ca3" font-size="22" font-family="Arial">Kanban com visual dev e animação de código</text>
+  <rect x="80" y="185" width="340" height="430" rx="18" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+  <rect x="470" y="185" width="340" height="430" rx="18" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+  <rect x="860" y="185" width="340" height="430" rx="18" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+  <circle cx="112" cy="225" r="5" fill="#ff8a7a"/><text x="126" y="230" fill="#f3eff2" font-size="20" font-family="Arial" font-weight="700">A fazer</text>
+  <circle cx="502" cy="225" r="5" fill="#ffbf47"/><text x="516" y="230" fill="#f3eff2" font-size="20" font-family="Arial" font-weight="700">Fazendo</text>
+  <circle cx="892" cy="225" r="5" fill="#57d38c"/><text x="906" y="230" fill="#f3eff2" font-size="20" font-family="Arial" font-weight="700">Concluído</text>
+  <rect x="110" y="260" width="280" height="92" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+  <rect x="110" y="370" width="280" height="92" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+  <rect x="500" y="260" width="280" height="92" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+  <rect x="890" y="260" width="280" height="92" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+  <rect x="125" y="322" width="60" height="18" rx="9" fill="rgba(255,90,90,0.18)"/><rect x="192" y="322" width="68" height="18" rx="9" fill="rgba(255,255,255,0.08)"/>
+  <rect x="515" y="322" width="60" height="18" rx="9" fill="rgba(255,191,71,0.18)"/><rect x="582" y="322" width="68" height="18" rx="9" fill="rgba(255,255,255,0.08)"/>
+  <rect x="905" y="322" width="60" height="18" rx="9" fill="rgba(87,211,140,0.18)"/><rect x="972" y="322" width="68" height="18" rx="9" fill="rgba(255,255,255,0.08)"/>
 </svg>

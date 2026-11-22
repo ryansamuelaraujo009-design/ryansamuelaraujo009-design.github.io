@@ -139,6 +139,66 @@
   function openHelp() { $('#help-card').classList.add('is-open'); $('#help-fab').setAttribute('aria-expanded', 'true'); showTip(); }
   function closeHelp() { $('#help-card').classList.remove('is-open'); $('#help-fab').setAttribute('aria-expanded', 'false'); }
 
+  // Programming background animation (subtle falling code tokens)
+  function initCodeBg() {
+    const c = document.getElementById('code-bg');
+    if (!c) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const ctx = c.getContext('2d');
+    const tokens = ['</>', '{}', 'const', '=>', 'async', 'git', 'npm', 'div', 'function', 'return', 'if()', '[]', '===', 'import', 'let', 'API', 'CSS', 'JS', '01', '/* */', '<tag>', '&&', '||', 'null'];
+    let w = 0, h = 0, dpr = 1, drops = [], raf = 0, last = 0;
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = window.innerWidth; h = window.innerHeight;
+      c.width = Math.floor(w * dpr); c.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const count = Math.max(18, Math.floor(w / 70));
+      drops = Array.from({ length: count }, () => makeDrop(true));
+    }
+    function makeDrop(randomY = false) {
+      return {
+        x: Math.random() * w,
+        y: randomY ? Math.random() * h : -20 - Math.random() * h * 0.3,
+        speed: 12 + Math.random() * 22,
+        size: 11 + Math.random() * 5,
+        alpha: 0.08 + Math.random() * 0.14,
+        text: tokens[Math.floor(Math.random() * tokens.length)]
+      };
+    }
+    function draw(ts) {
+      if (reduce) return;
+      if (!last) last = ts;
+      const dt = Math.min((ts - last) / 1000, 0.05);
+      last = ts;
+      ctx.clearRect(0, 0, w, h);
+      ctx.font = '500 12px "JetBrains Mono", monospace';
+      for (const d of drops) {
+        d.y += d.speed * dt;
+        if (d.y > h + 30) Object.assign(d, makeDrop(false), { x: Math.random() * w });
+        ctx.font = `500 ${d.size}px "JetBrains Mono", monospace`;
+        ctx.fillStyle = `rgba(255, 100, 100, ${d.alpha})`;
+        ctx.fillText(d.text, d.x, d.y);
+      }
+      raf = requestAnimationFrame(draw);
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    if (reduce) {
+      ctx.clearRect(0, 0, w, h);
+      ctx.font = '500 13px "JetBrains Mono", monospace';
+      for (const d of drops) { ctx.fillStyle = `rgba(255,100,100,${d.alpha * 0.7})`; ctx.fillText(d.text, d.x, d.y); }
+    } else {
+      raf = requestAnimationFrame(draw);
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (reduce) return;
+      if (document.hidden) { cancelAnimationFrame(raf); raf = 0; }
+      else if (!raf) { last = 0; raf = requestAnimationFrame(draw); }
+    });
+  }
+
   function bind() {
     $('#new-task-btn').onclick = () => openModal();
     $$('[data-add]').forEach(b => b.onclick = () => openModal(null, b.dataset.add));
@@ -158,5 +218,6 @@
     bindDropzones();
   }
 
+  initCodeBg();
   bind(); render(); showTip();
 })();

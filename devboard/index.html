@@ -4,17 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="DevBoard - Kanban simples para organizar projetos, tarefas e prazos.">
+  <meta name="theme-color" content="#0d0b10">
   <title>DevBoard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+  <canvas class="code-bg" id="code-bg" aria-hidden="true"></canvas>
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <span class="brand__mark">D</span>
+        <span class="brand__mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6l-4 6 4 6M16 6l4 6-4 6M14 4l-4 16"/></svg>
+        </span>
         <div>
           <p class="brand__name">DevBoard</p>
           <p class="brand__sub">Kanban para projetos</p>
@@ -26,7 +30,10 @@
           <input id="search" class="search__input" type="search" placeholder="Buscar tarefas..." aria-label="Buscar tarefas">
         </div>
         <button class="btn btn--ghost" id="clear-done" type="button">Limpar concluídas</button>
-        <button class="btn btn--primary" id="new-task-btn" type="button">Nova tarefa</button>
+        <button class="btn btn--primary" id="new-task-btn" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Nova tarefa
+        </button>
       </div>
     </header>
 
@@ -41,21 +48,21 @@
       <section class="board" aria-label="Quadro Kanban">
         <div class="column" data-col="todo">
           <div class="column__head">
-            <div><h2>A fazer</h2><span class="column__count" id="count-todo">0</span></div>
+            <div class="column__title"><span class="column__dot column__dot--todo"></span><h2>A fazer</h2><span class="column__count" id="count-todo">0</span></div>
             <button class="icon-btn" data-add="todo" aria-label="Adicionar em A fazer">+</button>
           </div>
           <div class="column__body dropzone" id="col-todo" data-col="todo"></div>
         </div>
         <div class="column" data-col="doing">
           <div class="column__head">
-            <div><h2>Fazendo</h2><span class="column__count" id="count-doing">0</span></div>
+            <div class="column__title"><span class="column__dot column__dot--doing"></span><h2>Fazendo</h2><span class="column__count" id="count-doing">0</span></div>
             <button class="icon-btn" data-add="doing" aria-label="Adicionar em Fazendo">+</button>
           </div>
           <div class="column__body dropzone" id="col-doing" data-col="doing"></div>
         </div>
         <div class="column" data-col="done">
           <div class="column__head">
-            <div><h2>Concluído</h2><span class="column__count" id="count-done">0</span></div>
+            <div class="column__title"><span class="column__dot column__dot--done"></span><h2>Concluído</h2><span class="column__count" id="count-done">0</span></div>
             <button class="icon-btn" data-add="done" aria-label="Adicionar em Concluído">+</button>
           </div>
           <div class="column__body dropzone" id="col-done" data-col="done"></div>
