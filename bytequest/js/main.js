@@ -55,7 +55,7 @@ const MODELS = {};
 const MODEL_URLS = {
   rin: './assets/models/Xbot.glb',
   siren: './assets/models/Soldier.glb',
-  firon: './assets/models/RobotExpressive.glb',
+  firon: './assets/models/Xbot.glb',
   pyren: './assets/models/Xbot.glb',
   enemy: './assets/models/RobotExpressive.glb',
 };
@@ -96,8 +96,8 @@ const HEROES = [
 ];
 const HERO_MODEL_PROFILES = {
   rin:   { scale: 1.03, tint: 0.35, emissive: 0.22, idle: ['idle'], run: ['run','walk'], attack: ['sneak_pose','agree','idle'], attackSpeed: 1.8, attackDur: 0.32 },
-  siren: { scale: 1.0,  tint: 0.22, emissive: 0.20, idle: ['Idle'], run: ['Run','Walk'], attack: ['Run','Walk','Idle'], attackSpeed: 2.2, attackDur: 0.38 },
-  firon: { scale: 0.52, tint: 0.55, emissive: 0.40, idle: ['Idle','Standing'], run: ['Running','Walking'], attack: ['Punch','Wave','ThumbsUp','Dance'], attackSpeed: 1.3, attackDur: 0.34 },
+  siren: { scale: 1.0,  tint: 0.18, emissive: 0.20, idle: ['Idle'], run: ['Run','Walk'], attack: ['Run','Walk','Idle'], attackSpeed: 2.2, attackDur: 0.38, modelRotY: 0 },
+  firon: { scale: 1.03, tint: 0.40, emissive: 0.35, idle: ['idle','sad_pose'], run: ['run','walk'], attack: ['sneak_pose','agree','headShake'], attackSpeed: 1.7, attackDur: 0.32, modelRotY: 0 },
   pyren: { scale: 1.03, tint: 0.30, emissive: 0.30, idle: ['idle','sad_pose'], run: ['walk','run'], attack: ['agree','headShake','idle'], attackSpeed: 1.5, attackDur: 0.34 },
 };
 
