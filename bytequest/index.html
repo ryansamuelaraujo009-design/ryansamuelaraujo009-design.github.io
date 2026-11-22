@@ -42,9 +42,12 @@
           <div class="bar"><div class="bar__fill bar__fill--hp" id="hud-hp" style="width:100%"></div><span class="bar__text" id="hud-hp-text">100/100</span></div>
           <div class="bar bar--sm"><div class="bar__fill bar__fill--mp" id="hud-mp" style="width:100%"></div><span class="bar__text" id="hud-mp-text">50/50</span></div>
           <div class="bar bar--sm"><div class="bar__fill bar__fill--xp" id="hud-xp" style="width:0%"></div><span class="bar__text" id="hud-xp-text">XP 0/100</span></div>
+          <div class="bar bar--sm"><div class="bar__fill bar__fill--st" id="hud-stamina" style="width:100%"></div><span class="bar__text">STA</span></div>
         </div>
       </div>
       <div class="hud-center">
+        <div id="boss-bar" class="boss-bar hidden"><span id="boss-name">Boss</span><div class="boss-bar__track"><div id="boss-hp" class="boss-bar__fill"></div></div></div>
+        <div id="combo" class="combo hidden">Combo x2</div>
         <div class="quest" id="hud-quest">MissÃ£o: Derrote os bugs corrompidos (0/8)</div>
       </div>
       <div class="hud-right">
@@ -91,6 +94,6 @@
     }
   }
   </script>
-  <script type="module" src="js/main.js?v=heroes16"></script>
+  <script type="module" src="js/main.js?v=heroes17"></script>
 </body>
 </html>

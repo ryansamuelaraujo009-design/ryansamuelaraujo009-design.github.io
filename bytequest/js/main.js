@@ -134,6 +134,26 @@ function buildRoster() {
   }));
 }
 
+function createAudio() {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  let ctx;
+  const ensure = () => { if (!ctx) ctx = new Ctx(); if (ctx.state === 'suspended') ctx.resume().catch(()=>{}); return ctx; };
+  const beep = (freq=440, dur=0.08, type='sine', gain=0.03, slide=0) => {
+    try { const c=ensure(); const o=c.createOscillator(); const g=c.createGain(); o.type=type; o.frequency.setValueAtTime(freq,c.currentTime); if(slide) o.frequency.exponentialRampToValueAtTime(Math.max(40,freq+slide), c.currentTime+dur); g.gain.setValueAtTime(gain,c.currentTime); g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+dur); o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime+dur); } catch(e){}
+  };
+  return {
+    unlock: ensure,
+    hit: ()=>{beep(220,0.05,'square',0.02,-60); beep(120,0.08,'sawtooth',0.015,-30);},
+    swing: ()=>beep(520,0.05,'triangle',0.012,180),
+    skill: ()=>{beep(420,0.12,'sine',0.03,220); setTimeout(()=>beep(660,0.12,'sine',0.02,120),40);},
+    pickup: ()=>{beep(660,0.07,'sine',0.03,120); setTimeout(()=>beep(880,0.09,'sine',0.025,80),60);},
+    level: ()=>{[523,659,784].forEach((f,i)=>setTimeout(()=>beep(f,0.12,'triangle',0.025,20),i*70));},
+    win: ()=>{[523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,0.18,'triangle',0.03,10),i*90));},
+    lose: ()=>{[220,196,174,146].forEach((f,i)=>setTimeout(()=>beep(f,0.2,'sawtooth',0.02,-10),i*100));},
+    boss: ()=>{[110,165,220].forEach((f,i)=>setTimeout(()=>beep(f,0.2,'square',0.02,10),i*80));},
+  };
+}
+
 class Game {
   constructor(heroDef) {
     this.heroDef = heroDef;
@@ -146,7 +166,9 @@ class Game {
     this.animTime = 0; this.kills = 0; this.targetKills = 8; this.time = 0;
     this.spawnTimer = 0; this.toastTimer = 0; this.toastText = '';
     this.enemies = []; this.projectiles = []; this.particles = []; this.pickups = []; this.crystals = [];
-    this.player = { hp: heroDef.hp, maxHp: heroDef.hp, mp: heroDef.mp, maxMp: heroDef.mp, xp: 0, xpNext: 100, lvl: 1, atk: heroDef.atk, def: heroDef.def, speed: heroDef.speed, pos: new THREE.Vector3(0, 0, 0), radius: 0.75, alive: true, shield: 0, invuln: 0 };
+    this.player = { hp: heroDef.hp, maxHp: heroDef.hp, mp: heroDef.mp, maxMp: heroDef.mp, xp: 0, xpNext: 100, lvl: 1, atk: heroDef.atk, def: heroDef.def, speed: heroDef.speed, pos: new THREE.Vector3(0, 0, 0), radius: 0.75, alive: true, shield: 0, invuln: 0, stamina: 100, maxStamina: 100 };
+    this.wave = 1; this.maxWaves = 3; this.waveKills = 0; this.waveTarget = 6; this.boss = null; this.bossSpawned = false; this.crystalsCollected = 0; this.crystalsTarget = 5;
+    this.combo = 0; this.comboTimer = 0; this.shake = 0; this.audio = createAudio();
     this.init();
   }
 
@@ -511,26 +533,76 @@ class Game {
   killEnemy(e) {
     if (e.dying) return;
     e.dead = true;
-    this.kills++; this.player.xp += e.xp;
-    this.burstEffect(e.pos, '#' + e.color.toString(16).padStart(6, '0'), 16);
+    this.kills++; this.waveKills += e.boss ? 0 : 1; this.player.xp += e.xp;
+    this.combo = this.comboTimer > 0 ? this.combo + 1 : 1; this.comboTimer = 2.2;
+    if (this.combo > 1 && this.combo % 5 === 0) { this.player.mp = Math.min(this.player.maxMp, this.player.mp + 10); this.toastMsg(`Combo x${this.combo}! +MP`); }
+    this.burstEffect(e.pos, '#' + e.color.toString(16).padStart(6, '0'), e.boss ? 40 : 16);
+    this.shake = Math.max(this.shake, e.boss ? 1.2 : 0.35);
+    this.audio?.hit();
     if (e.mixer && e.actions.death) {
-      e.dying = 1.2; e.activeAction?.fadeOut(0.15); e.actions.death.reset().fadeIn(0.15).play(); e.activeAction = e.actions.death;
+      e.dying = e.boss ? 2.0 : 1.2; e.activeAction?.fadeOut(0.15); e.actions.death.reset().fadeIn(0.15).play(); e.activeAction = e.actions.death;
     } else {
-      e.dying = 0.35;
+      e.dying = e.boss ? 0.8 : 0.35;
     }
-    if (Math.random() < 0.3) this.spawnPickup(e.pos.clone());
+    if (Math.random() < (e.boss ? 1 : 0.3)) this.spawnPickup(e.pos.clone(), e.boss);
     while (this.player.xp >= this.player.xpNext) {
       this.player.xp -= this.player.xpNext; this.player.lvl++; this.player.xpNext = Math.floor(this.player.xpNext * 1.35);
       this.player.maxHp += 12; this.player.hp = this.player.maxHp; this.player.maxMp += 8; this.player.mp = this.player.maxMp; this.player.atk += 3;
-      this.toastMsg(`Nível ${this.player.lvl}!`); this.burstEffect(this.player.pos, '#ffbf5a', 25);
+      this.toastMsg(`Nível ${this.player.lvl}!`); this.burstEffect(this.player.pos, '#ffbf5a', 25); this.audio?.level();
     }
     this.updateHUD();
-    if (this.kills >= this.targetKills) this.win();
   }
-  spawnPickup(pos) {
-    const mesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.25, 0), new THREE.MeshStandardMaterial({ color: 0x66dda0, emissive: 0x66dda0, emissiveIntensity: 1 }));
+  spawnPickup(pos, big=false) {
+    const kind = big ? (Math.random()<0.5?'mp':'hp') : (Math.random()<0.35?'mp':'hp');
+    const color = kind==='mp' ? 0x7ab0ff : 0x66dda0;
+    const mesh = new THREE.Mesh(new THREE.OctahedronGeometry(big?0.4:0.25, 0), new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 1.2 }));
     mesh.position.copy(pos); mesh.position.y = this.getHeight(pos.x, pos.z) + 0.6; this.scene.add(mesh);
-    this.pickups.push({ mesh, life: 20, baseY: mesh.position.y });
+    this.pickups.push({ mesh, life: 20, baseY: mesh.position.y, kind, amount: big?45:25 });
+  }
+
+  spawnBoss() {
+    this.bossSpawned = true;
+    const angle = Math.random() * Math.PI * 2; const dist = 28;
+    const x = clamp(this.player.pos.x + Math.cos(angle)*dist, -90, 90);
+    const z = clamp(this.player.pos.z + Math.sin(angle)*dist, -90, 90);
+    const d = { hp: 180 + this.wave*80, atk: 16 + this.wave*4, speed: 2.4 + this.wave*0.2, color: 0xff4d6d, scale: 1.8, xp: 120 + this.wave*40 };
+    const g = new THREE.Group();
+    let mixer=null, actions={}, activeAction=null;
+    if (MODELS.enemy) {
+      const model = cloneSkinned(MODELS.enemy.scene);
+      model.scale.setScalar(0.55 * d.scale);
+      tintModel(model, '#ff4d6d', 0.45);
+      g.add(model);
+      mixer = new THREE.AnimationMixer(model);
+      const clips = model.animations?.length ? model.animations : (MODELS.enemy.animations||[]);
+      const idle=findClip(clips,['Idle','Standing','idle']); const walk=findClip(clips,['Walking','Running','walk','run']); const attack=findClip(clips,['Punch','attack','Dance','Wave']); const death=findClip(clips,['Death','Die','death']);
+      if(idle) actions.idle=mixer.clipAction(idle);
+      if(walk) actions.walk=mixer.clipAction(walk);
+      if(attack){ actions.attack=mixer.clipAction(attack); actions.attack.setLoop(THREE.LoopOnce,1); actions.attack.clampWhenFinished=true; }
+      if(death){ actions.death=mixer.clipAction(death); actions.death.setLoop(THREE.LoopOnce,1); actions.death.clampWhenFinished=true; }
+      if(actions.idle){actions.idle.play(); activeAction=actions.idle;}
+      mixer.addEventListener('finished',(e)=>{ if(e.action===actions.attack && !e.dead) { const n=actions.walk||actions.idle; if(n){ activeAction?.fadeOut(.1); n.reset().fadeIn(.1).play(); activeAction=n; } } });
+    } else {
+      const body = new THREE.Mesh(new THREE.BoxGeometry(1.8,2.2,1.2), new THREE.MeshStandardMaterial({color:d.color,emissive:d.color,emissiveIntensity:.4}));
+      body.position.y=1.6; g.add(body);
+    }
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(1.2,0.06,8,32), new THREE.MeshStandardMaterial({color:0xffbf5a,emissive:0xffbf5a,emissiveIntensity:2}));
+    ring.rotation.x=Math.PI/2; ring.position.y=0.08; g.add(ring);
+    const light = new THREE.PointLight(0xff4d6d, 2.5, 18); light.position.y=2.5; g.add(light);
+    g.position.set(x, this.getHeight(x,z), z); this.scene.add(g);
+    const boss = { type:'boss', name:`Boss da Onda ${this.wave}`, mesh:g, pos:new THREE.Vector3(x,0,z), hp:d.hp, maxHp:d.hp, atk:d.atk, speed:d.speed, color:d.color, radius:1.4, xp:d.xp, dead:false, hitFlash:0, cd:rand(0.5,1.5), dying:0, mixer, actions, activeAction, boss:true };
+    this.enemies.push(boss); this.boss=boss; this.toastMsg(`⚠ ${boss.name} apareceu!`); this.audio?.boss(); this.shake=0.8; this.updateHUD();
+  }
+
+  onBossDefeated() {
+    this.toastMsg(`Onda ${this.wave} concluída!`);
+    this.burstEffect(this.boss.pos, '#ffbf5a', 50);
+    this.wave += 1; this.waveKills = 0; this.waveTarget = 6 + this.wave*2; this.bossSpawned = false; this.boss = null;
+    if (this.wave > this.maxWaves) { this.win(); return; }
+    this.player.hp = Math.min(this.player.maxHp, this.player.hp + Math.floor(this.player.maxHp*0.25));
+    this.player.mp = this.player.maxMp;
+    this.spawnTimer = 2.5;
+    this.updateHUD();
   }
 
   skillWave(pos, color, maxScale = 3) {
@@ -581,10 +653,14 @@ class Game {
     $('#hud-hp').style.width = (p.hp / p.maxHp * 100) + '%'; $('#hud-hp-text').textContent = `${Math.ceil(p.hp)}/${p.maxHp}`;
     $('#hud-mp').style.width = (p.mp / p.maxMp * 100) + '%'; $('#hud-mp-text').textContent = `${Math.ceil(p.mp)}/${p.maxMp}`;
     $('#hud-xp').style.width = (p.xp / p.xpNext * 100) + '%'; $('#hud-xp-text').textContent = `XP ${p.xp}/${p.xpNext}`;
-    $('#hud-quest').textContent = this.toastTimer > 0 ? this.toastText : (this.kills >= this.targetKills ? 'Núcleo restaurado! Você venceu.' : `Missão: Derrote os bugs corrompidos (${this.kills}/${this.targetKills})`);
+    const obj = this.bossSpawned && this.boss && !this.boss.dead ? `Boss: ${this.boss.name} ${Math.ceil(this.boss.hp)}/${this.boss.maxHp}` : (this.wave > this.maxWaves ? 'Núcleo restaurado! Você venceu.' : `Onda ${this.wave}/${this.maxWaves} • Bugs ${this.waveKills}/${this.waveTarget} • Cristais ${this.crystalsCollected}/${this.crystalsTarget}`);
+    $('#hud-quest').textContent = this.toastTimer > 0 ? this.toastText : obj;
     $('#hud-atk').textContent = h.id === 'firon' ? 'Projétil' : 'Ataque';
     $('#hud-skill').textContent = h.skill; $('#hud-cd').textContent = this.skillCdLeft > 0 ? this.skillCdLeft.toFixed(1) + 's' : '';
     $('#hud-cam').textContent = this.cameraLocked ? 'Câmera travada' : 'Câmera livre';
+    const bossEl = document.getElementById('boss-bar'); if (bossEl) { const show = !!(this.boss && !this.boss.dead && this.bossSpawned); bossEl.classList.toggle('hidden', !show); if(show){ $('#boss-name').textContent=this.boss.name; $('#boss-hp').style.width=(this.boss.hp/this.boss.maxHp*100)+'%'; } }
+    const comboEl = document.getElementById('combo'); if(comboEl){ comboEl.classList.toggle('hidden', this.combo<2); comboEl.textContent = `Combo x${this.combo}`; }
+    const stEl = document.getElementById('hud-stamina'); if(stEl){ stEl.style.width = (this.player.stamina/this.player.maxStamina*100)+'%'; }
   }
 
   togglePause() {
@@ -686,10 +762,15 @@ class Game {
     if (this.keys['KeyD']) move.add(right);
     if (this.keys['KeyA']) move.sub(right);
     const moving = move.lengthSq() > 0; if (moving) move.normalize();
-    const sprint = this.keys['ShiftLeft'] || this.keys['ShiftRight'];
+    const wantSprint = (this.keys['ShiftLeft'] || this.keys['ShiftRight']) && moving && this.player.stamina > 5;
+    const sprint = wantSprint;
     const speed = this.player.speed * (sprint ? 1.55 : 1);
+    if (sprint) this.player.stamina = Math.max(0, this.player.stamina - 22 * dt);
+    else this.player.stamina = Math.min(this.player.maxStamina, this.player.stamina + 14 * dt);
     this.player.pos.addScaledVector(move, speed * dt);
     this.player.pos.x = clamp(this.player.pos.x, -105, 105); this.player.pos.z = clamp(this.player.pos.z, -105, 105);
+    this.comboTimer = Math.max(0, this.comboTimer - dt); if (this.comboTimer <= 0) this.combo = 0;
+    this.shake = Math.max(0, this.shake - dt * 4);
 
     for (const o of this.obstacles) {
       const b = o.userData.box; const p = this.player.pos;
@@ -747,15 +828,17 @@ class Game {
       e.cd -= dt;
       e._atkT = Math.max(0, (e._atkT || 0) - dt);
       if (e._attacking && e._atkT <= 0) e._attacking = false;
-      if (dist < 1.8 && e.cd <= 0) {
-        e.cd = 1.4; this.damagePlayer(e.atk);
-        e._attacking = true; e._atkT = 0.55;
+      const atkRange = e.boss ? 2.8 : 1.8;
+      if (dist < atkRange && e.cd <= 0) {
+        e.cd = e.boss ? 1.8 : 1.4; this.damagePlayer(e.atk);
+        e._attacking = true; e._atkT = e.boss ? 0.8 : 0.55;
         if (e.actions && e.actions.attack) {
           if (e.activeAction && e.activeAction !== e.actions.attack) e.activeAction.fadeOut(0.1);
           e.actions.attack.reset().fadeIn(0.1).play();
-          e.actions.attack.timeScale = 1.2;
+          e.actions.attack.timeScale = e.boss ? 1.0 : 1.2;
           e.activeAction = e.actions.attack;
         } else if (e.armL) { e.armL.rotation.x = -1.2; e.armR.rotation.x = -1.2; }
+        if (e.boss) { this.shake = Math.max(this.shake, 0.6); this.skillWave(e.pos, '#ff4d6d', 2.2); }
       }
     }
 
@@ -781,14 +864,19 @@ class Game {
     for (let i = this.pickups.length - 1; i >= 0; i--) {
       const pk = this.pickups[i]; pk.life -= dt; pk.mesh.rotation.y += dt * 2; pk.mesh.position.y = pk.baseY + Math.sin(this.time * 3) * 0.15;
       if (pk.mesh.position.distanceTo(this.player.pos.clone().add(new THREE.Vector3(0, 1, 0))) < 1.6) {
-        const heal = 18; this.player.hp = Math.min(this.player.maxHp, this.player.hp + heal); this.player.mp = Math.min(this.player.maxMp, this.player.mp + 12);
-        this.spawnDmgText(this.player.pos, `+${heal}`, 'heal'); this.scene.remove(pk.mesh); this.pickups.splice(i, 1); this.updateHUD(); continue;
+        if (pk.kind === 'mp') { const v=pk.amount||20; this.player.mp=Math.min(this.player.maxMp,this.player.mp+v); this.spawnDmgText(this.player.pos, `+${v} MP`, 'heal'); }
+        else { const heal=pk.amount||18; this.player.hp = Math.min(this.player.maxHp, this.player.hp + heal); this.spawnDmgText(this.player.pos, `+${heal}`, 'heal'); }
+        this.audio?.pickup(); this.scene.remove(pk.mesh); this.pickups.splice(i, 1); this.updateHUD(); continue;
       }
       if (pk.life <= 0) { this.scene.remove(pk.mesh); this.pickups.splice(i, 1); }
     }
 
     this.spawnTimer -= dt;
-    if (this.spawnTimer <= 0 && this.enemies.filter(e => !e.dead && !e.dying).length < 10 && this.kills < this.targetKills) { this.spawnEnemy(); this.spawnTimer = rand(2.5, 5); }
+    const alive = this.enemies.filter(e => !e.dead && !e.dying).length;
+    const cap = Math.min(6 + this.wave * 2, 12);
+    if (!this.bossSpawned && this.spawnTimer <= 0 && alive < cap && this.waveKills < this.waveTarget && this.wave <= this.maxWaves) { this.spawnEnemy(); this.spawnTimer = Math.max(0.8, rand(1.2, 2.6) - this.wave*0.15); }
+    if (!this.bossSpawned && this.waveKills >= this.waveTarget && this.wave <= this.maxWaves) { this.spawnBoss(); }
+    if (this.boss && this.boss.dead && !this.boss._counted) { this.boss._counted = true; this.onBossDefeated(); }
 
     if (this.mouseDown && this.pointerLocked) this.attack();
     this.updateHUD();
@@ -798,6 +886,7 @@ class Game {
     requestAnimationFrame(() => this.loop());
     const dt = Math.min(this.clock.getDelta(), 0.05);
     this.update(dt);
+    if (this.shake > 0) { this.camera.position.x += (Math.random()-0.5)*this.shake*0.4; this.camera.position.y += (Math.random()-0.5)*this.shake*0.25; }
     this.renderer.render(this.scene, this.camera);
   }
 
