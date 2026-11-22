@@ -162,7 +162,7 @@
         y: randomY ? Math.random() * h : -20 - Math.random() * h * 0.3,
         speed: 12 + Math.random() * 22,
         size: 11 + Math.random() * 5,
-        alpha: 0.08 + Math.random() * 0.14,
+        alpha: 0.16 + Math.random() * 0.22,
         text: tokens[Math.floor(Math.random() * tokens.length)]
       };
     }
@@ -177,7 +177,7 @@
         d.y += d.speed * dt;
         if (d.y > h + 30) Object.assign(d, makeDrop(false), { x: Math.random() * w });
         ctx.font = `500 ${d.size}px "JetBrains Mono", monospace`;
-        ctx.fillStyle = `rgba(255, 100, 100, ${d.alpha})`;
+        ctx.fillStyle = `rgba(255, 110, 110, ${d.alpha})`;
         ctx.fillText(d.text, d.x, d.y);
       }
       raf = requestAnimationFrame(draw);
