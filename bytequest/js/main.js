@@ -95,10 +95,10 @@ const HEROES = [
   { id: 'pyren', name: 'Pyren', role: 'Sacerdote', color: '#7fe0b0', hp: 105, mp: 110, atk: 12, def: 8, speed: 7, skill: 'Heal Pulse', skillCost: 35, skillCd: 7, desc: 'Suporte e cura. Mantém o sistema estável.', stats: { dano: 45, defesa: 60, magia: 85, vel: 60 } },
 ];
 const HERO_MODEL_PROFILES = {
-  rin:   { scale: 1.03, tint: 0.35, emissive: 0.22, idle: ['idle'], run: ['run','walk'], attack: ['sneak_pose','agree','idle'], attackSpeed: 1.8 },
-  siren: { scale: 1.02, tint: 0.28, emissive: 0.18, idle: ['Idle'], run: ['Run','Walk'], attack: ['Run','Walk','Idle'], attackSpeed: 1.4 },
-  firon: { scale: 0.48, tint: 0.45, emissive: 0.35, idle: ['Idle','Standing'], run: ['Running','Walking'], attack: ['Punch','Wave','Dance'], attackSpeed: 1.2 },
-  pyren: { scale: 1.03, tint: 0.30, emissive: 0.28, idle: ['idle','sad_pose'], run: ['walk','run'], attack: ['agree','headShake','idle'], attackSpeed: 1.3 },
+  rin:   { scale: 1.03, tint: 0.35, emissive: 0.22, idle: ['idle'], run: ['run','walk'], attack: ['sneak_pose','agree','idle'], attackSpeed: 1.8, attackDur: 0.32 },
+  siren: { scale: 1.0,  tint: 0.22, emissive: 0.20, idle: ['Idle'], run: ['Run','Walk'], attack: ['Run','Walk','Idle'], attackSpeed: 2.2, attackDur: 0.38 },
+  firon: { scale: 0.52, tint: 0.55, emissive: 0.40, idle: ['Idle','Standing'], run: ['Running','Walking'], attack: ['Punch','Wave','ThumbsUp','Dance'], attackSpeed: 1.3, attackDur: 0.34 },
+  pyren: { scale: 1.03, tint: 0.30, emissive: 0.30, idle: ['idle','sad_pose'], run: ['walk','run'], attack: ['agree','headShake','idle'], attackSpeed: 1.5, attackDur: 0.34 },
 };
 
 function heroIcon(id) {
@@ -390,7 +390,10 @@ class Game {
     if (MODELS.enemy) {
       const model = cloneSkinned(MODELS.enemy.scene);
       model.scale.setScalar(0.50 * d.scale);
-      tintModel(model, '#' + d.color.toString(16).padStart(6,'0'), 0.25);
+      tintModel(model, '#' + d.color.toString(16).padStart(6,'0'), 0.35);
+      // add visible attack glow ring
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.55*d.scale,0.04*d.scale,8,24), new THREE.MeshStandardMaterial({color:d.color,emissive:d.color,emissiveIntensity:1.2,transparent:true,opacity:0.7}));
+      ring.rotation.x=Math.PI/2; ring.position.y=0.08; ring.name='atkRing'; ring.visible=false; g.add(ring);
       g.add(model);
       mixer = new THREE.AnimationMixer(model);
       const clips = MODELS.enemy.animations || [];
@@ -433,9 +436,19 @@ class Game {
 
   attack() {
     if (this.attackCd > 0 || !this.player.alive || this.over || this.paused) return;
+    const profile = HERO_MODEL_PROFILES[this.heroDef.id] || HERO_MODEL_PROFILES.rin;
     this.attackCd = this.heroDef.id === 'rin' ? 0.35 : this.heroDef.id === 'siren' ? 0.7 : 0.55;
-    this.attackAnim = 0.32;
-    if (this.actions.attack) { const sp = (HERO_MODEL_PROFILES[this.heroDef.id]?.attackSpeed) || 1.4; this.playAction('attack', 0.08); this.actions.attack.timeScale = sp; }
+    this.attackAnim = profile.attackDur || 0.32;
+    this._attackLunge = 0.12;
+    const act = this.actions.attack || this.actions.run || this.actions.idle;
+    if (act && this.mixer) {
+      const sp = profile.attackSpeed || 1.4;
+      if (this.activeAction && this.activeAction !== act) this.activeAction.fadeOut(0.08);
+      act.reset().fadeIn(0.08).play();
+      act.timeScale = sp;
+      this.activeAction = act;
+      this._attackAction = act;
+    }
     const dir = new THREE.Vector3(Math.sin(this.playerGroup.rotation.y), 0, Math.cos(this.playerGroup.rotation.y));
     if (this.heroDef.id === 'firon') {
       this.spawnProjectile(this.player.pos.clone().add(new THREE.Vector3(0, 1.25, 0)), dir, this.player.atk);
@@ -595,11 +608,17 @@ class Game {
   updatePlayerAnim(dt, moving, sprint) {
     this.animTime += dt * (moving ? (sprint ? 11 : 7.5) : 2.2);
     this.attackAnim = Math.max(0, this.attackAnim - dt);
+    this._attackLunge = Math.max(0, (this._attackLunge || 0) - dt);
     this.moving = moving;
     if (this.mixer) {
       this.mixer.update(dt);
-      if (this.attackAnim <= 0) this.playAction(moving ? 'run' : 'idle', 0.2);
+      if (this.attackAnim <= 0) this.playAction(moving ? 'run' : 'idle', 0.18);
       if (this.actions.run) this.actions.run.timeScale = sprint ? 1.35 : 1;
+      if (this.attackAnim > 0 && this.playerModel) {
+        const p = this.attackAnim / (HERO_MODEL_PROFILES[this.heroDef.id]?.attackDur || 0.32);
+        this.playerModel.position.z = Math.sin((1-p) * Math.PI) * 0.08;
+        this.playerModel.rotation.x = Math.sin((1-p) * Math.PI) * -0.06;
+      } else if (this.playerModel) { this.playerModel.position.z = 0; this.playerModel.rotation.x = 0; }
     } else if (this.limbs) {
       const walk = moving ? Math.sin(this.animTime) * (sprint ? 0.7 : 0.5) : 0;
       const idle = moving ? 0 : Math.sin(this.animTime) * 0.03;
@@ -615,12 +634,12 @@ class Game {
     const atkFx = this.attackAnim > 0 ? 1 : 0;
     const fx = this.weaponFx || {};
     if (fx.blade) fx.blade.emissiveIntensity = 1.4 + Math.sin(this.time * 4) * 0.3 + atkFx * 1.8;
-    if (fx.orbMat) fx.orbMat.emissiveIntensity = 1.8 + Math.sin(this.time * 5) * 0.8;
-    if (fx.orb) fx.orb.position.y = (fx.orb.position.y || 0) + Math.sin(this.time * 2.5) * 0.0005;
-    if (fx.ring) { fx.ring.rotation.z += dt * 2; fx.ring.rotation.x += dt * 0.8; }
-    if (fx.core) fx.core.material.emissiveIntensity = 1.5 + Math.sin(this.time * 3.5) * 0.6;
-    if (fx.shield) fx.shield.emissiveIntensity = 0.35 + (this.player.shield > 0 ? 1.2 : 0) + Math.sin(this.time * 2) * 0.1;
-    if (fx.hammerGlow) fx.hammerGlow.emissiveIntensity = 0.8 + atkFx * 1.8;
+    if (fx.orbMat) fx.orbMat.emissiveIntensity = 1.8 + Math.sin(this.time * 5) * 0.8 + atkFx * 1.2;
+    if (fx.orb) fx.orb.scale.setScalar(1 + atkFx * 0.15);
+    if (fx.ring) { fx.ring.rotation.z += dt * (2 + atkFx * 6); fx.ring.rotation.x += dt * 0.8; }
+    if (fx.core) fx.core.material.emissiveIntensity = 1.5 + Math.sin(this.time * 3.5) * 0.6 + atkFx * 1.5;
+    if (fx.shield) fx.shield.emissiveIntensity = 0.35 + (this.player.shield > 0 ? 1.2 : 0) + Math.sin(this.time * 2) * 0.1 + atkFx * 0.8;
+    if (fx.hammerGlow) fx.hammerGlow.emissiveIntensity = 0.8 + atkFx * 2.2;
   }
 
   update(dt) {
@@ -690,7 +709,8 @@ class Game {
           const next = chasing ? (e.actions.walk || e.actions.idle) : (e.actions.idle || e.actions.walk);
           if (next && e.activeAction !== next) { e.activeAction?.fadeOut(0.2); next.reset().fadeIn(0.2).play(); e.activeAction = next; }
         }
-        e.mesh.traverse(o=>{ if(o.isMesh && o.material && 'emissiveIntensity' in o.material) o.material.emissiveIntensity = (e.hitFlash>0?1.2:0.25); });
+        e.mesh.traverse(o=>{ if(o.isMesh && o.material && 'emissiveIntensity' in o.material && o.name!=='atkRing') o.material.emissiveIntensity = (e.hitFlash>0?1.2:0.25); });
+        const r = e.mesh.getObjectByName('atkRing'); if (r) { r.visible = !!e._attacking; if(r.visible){ r.rotation.z += dt*8; r.scale.setScalar(1 + Math.sin(this.time*18)*0.08); } }
       } else if (e.body) {
         const walk = Math.sin(e.anim) * 0.6;
         e.armL.rotation.x = walk; e.armR.rotation.x = -walk; e.legL.rotation.x = -walk; e.legR.rotation.x = walk;
@@ -698,10 +718,17 @@ class Game {
         e.core.position.y = e.body.position.y; e.core.material.emissiveIntensity = (e.hitFlash > 0 ? 3 : 1.2) + Math.sin(e.anim * 2) * 0.3; e.body.material.emissiveIntensity = e.hitFlash > 0 ? 1.2 : 0.45;
       }
       e.cd -= dt;
+      e._atkT = Math.max(0, (e._atkT || 0) - dt);
+      if (e._attacking && e._atkT <= 0) e._attacking = false;
       if (dist < 1.8 && e.cd <= 0) {
         e.cd = 1.4; this.damagePlayer(e.atk);
-        if (e.actions && e.actions.attack) { e._attacking = true; e.activeAction?.fadeOut(0.1); e.actions.attack.reset().fadeIn(0.1).play(); e.activeAction = e.actions.attack; setTimeout(()=>{e._attacking=false;}, 600); }
-        else if (e.armL) { e.armL.rotation.x = -1.2; e.armR.rotation.x = -1.2; }
+        e._attacking = true; e._atkT = 0.55;
+        if (e.actions && e.actions.attack) {
+          if (e.activeAction && e.activeAction !== e.actions.attack) e.activeAction.fadeOut(0.1);
+          e.actions.attack.reset().fadeIn(0.1).play();
+          e.actions.attack.timeScale = 1.2;
+          e.activeAction = e.actions.attack;
+        } else if (e.armL) { e.armL.rotation.x = -1.2; e.armR.rotation.x = -1.2; }
       }
     }
 
