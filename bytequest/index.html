@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ByteQuest: Crônicas do Núcleo - RPG 3D de mundo aberto no navegador.">
+  <meta name="theme-color" content="#0a0d14">
+  <title>ByteQuest: Crônicas do Núcleo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- SELECT SCREEN -->
+    <section id="select-screen" class="screen screen--select">
+      <div class="select-bg" aria-hidden="true"></div>
+      <div class="select-wrap">
+        <header class="select-head">
+          <p class="kicker">BYTEQUEST</p>
+          <h1>Crônicas do Núcleo</h1>
+          <p class="sub">RPG 3D de mundo aberto. Escolha seu personagem inicial e restaure o Núcleo.</p>
+        </header>
+        <div class="roster" id="roster"></div>
+        <div class="select-actions">
+          <p class="selected-name" id="selected-name">Selecione um personagem</p>
+          <button class="btn btn--primary" id="start-btn" disabled>Entrar no mundo</button>
+        </div>
+        <p class="controls-hint">WASD mover · Mouse olhar · Clique atacar · Shift correr · E habilidade · Esc pausar</p>
+      </div>
+    </section>
+
+    <!-- GAME HUD -->
+    <div id="hud" class="hud hidden">
+      <div class="hud-left">
+        <div class="player-card">
+          <div class="player-card__row">
+            <span class="player-card__name" id="hud-name">Rin</span>
+            <span class="player-card__class" id="hud-class">Duelista</span>
+            <span class="player-card__lvl" id="hud-lvl">Nv 1</span>
+          </div>
+          <div class="bar"><div class="bar__fill bar__fill--hp" id="hud-hp" style="width:100%"></div><span class="bar__text" id="hud-hp-text">100/100</span></div>
+          <div class="bar bar--sm"><div class="bar__fill bar__fill--mp" id="hud-mp" style="width:100%"></div><span class="bar__text" id="hud-mp-text">50/50</span></div>
+          <div class="bar bar--sm"><div class="bar__fill bar__fill--xp" id="hud-xp" style="width:0%"></div><span class="bar__text" id="hud-xp-text">XP 0/100</span></div>
+        </div>
+      </div>
+      <div class="hud-center">
+        <div class="quest" id="hud-quest">Missão: Derrote os bugs corrompidos (0/5)</div>
+      </div>
+      <div class="hud-right">
+        <div class="skill-box">
+          <span class="skill-key">Clique</span><span id="hud-atk">Ataque</span>
+        </div>
+        <div class="skill-box">
+          <span class="skill-key">E</span><span id="hud-skill">Habilidade</span>
+          <span class="skill-cd" id="hud-cd"></span>
+        </div>
+      </div>
+    </div>
+
+    <div id="damage-layer" class="damage-layer"></div>
+    <div id="crosshair" class="crosshair hidden"><span></span><span></span></div>
+
+    <!-- PAUSE -->
+    <div id="pause" class="overlay hidden">
+      <div class="overlay__card">
+        <h2>Pausado</h2>
+        <p id="pause-stats"></p>
+        <div class="overlay__actions">
+          <button class="btn btn--primary" id="resume-btn">Continuar</button>
+          <button class="btn btn--ghost" id="restart-btn">Trocar personagem</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME OVER / WIN -->
+    <div id="gameover" class="overlay hidden">
+      <div class="overlay__card">
+        <h2 id="go-title">Sistema corrompido</h2>
+        <p id="go-text"></p>
+        <div class="overlay__actions">
+          <button class="btn btn--primary" id="retry-btn">Tentar novamente</button>
+          <button class="btn btn--ghost" id="back-btn">Trocar personagem</button>
+        </div>
+      </div>
+    </div>
+
+    <canvas id="game"></canvas>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+    }
+  }
+  </script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

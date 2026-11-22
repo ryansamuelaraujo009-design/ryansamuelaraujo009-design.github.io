@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0%" stop-color="#182236"/><stop offset="55%" stop-color="#0d121d"/><stop offset="100%" stop-color="#07090f"/></linearGradient>
+    <radialGradient id="g" cx="50%" cy="45%" r="40%"><stop offset="0%" stop-color="rgba(99,234,255,0.14)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient>
+    <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M50 0H0V50" fill="none" stroke="rgba(104,240,255,0.045)"/></pattern>
+    <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#grid)"/>
+  <rect width="1600" height="900" fill="url(#g)"/>
+  <text x="800" y="95" text-anchor="middle" fill="#7af2ff" font-family="Arial,sans-serif" font-size="22" letter-spacing="8" font-weight="700">BYTEQUEST</text>
+  <text x="800" y="150" text-anchor="middle" fill="#f4eff2" font-family="Arial,sans-serif" font-size="58" font-weight="800">Crônicas do Núcleo</text>
+  <text x="800" y="190" text-anchor="middle" fill="#95a3b8" font-family="Arial,sans-serif" font-size="22">RPG 3D de Mundo Aberto · Protótipo no Navegador</text>
+  <!-- simple 4 character silhouettes -->
+  <g fill="#63eaff" opacity="0.95">
+    <g transform="translate(420,520)"><circle cx="0" cy="-120" r="28" fill="#efd5c2"/><path d="M-35 -80 L35 -80 L45 20 L30 120 L-30 120 L-45 20 Z" fill="#2f3b52"/><rect x="45" y="-60" width="10" height="130" fill="#63eaff" filter="url(#glow)"/><text x="0" y="165" text-anchor="middle" fill="#63eaff" font-family="Arial" font-size="20" font-weight="700">RIN</text><text x="0" y="188" text-anchor="middle" fill="#95a3b8" font-family="Arial" font-size="14">Duelista</text></g>
+    <g transform="translate(670,520)"><circle cx="0" cy="-120" r="30" fill="#d9b59e"/><path d="M-50 -80 L50 -80 L60 20 L40 120 L-40 120 L-60 20 Z" fill="#354158"/><path d="M-85 -70 L-55 -80 L-45 30 L-55 100 L-85 85 Z" fill="rgba(122,176,255,0.2)" stroke="#7ab0ff" stroke-width="3"/><text x="0" y="165" text-anchor="middle" fill="#7ab0ff" font-family="Arial" font-size="20" font-weight="700">SIREN</text><text x="0" y="188" text-anchor="middle" fill="#95a3b8" font-family="Arial" font-size="14">Tanque</text></g>
+    <g transform="translate(930,520)"><circle cx="0" cy="-120" r="27" fill="#efd5c2"/><path d="M-30 -80 L30 -80 L45 30 L35 120 L-35 120 L-45 30 Z" fill="#352a46"/><rect x="52" y="-150" width="8" height="270" fill="#6a5880"/><circle cx="56" cy="-155" r="14" fill="#ff9a5a" filter="url(#glow)"/><text x="0" y="165" text-anchor="middle" fill="#ff9a5a" font-family="Arial" font-size="20" font-weight="700">FIRON</text><text x="0" y="188" text-anchor="middle" fill="#95a3b8" font-family="Arial" font-size="14">Maga</text></g>
+    <g transform="translate(1180,520)"><circle cx="0" cy="-120" r="27" fill="#efd5c2"/><path d="M-30 -80 L30 -80 L45 30 L35 120 L-35 120 L-45 30 Z" fill="#2b4038"/><rect x="52" y="-145" width="8" height="265" fill="#6b8070"/><circle cx="56" cy="-150" r="14" fill="#7fe0b0" filter="url(#glow)"/><text x="0" y="165" text-anchor="middle" fill="#7fe0b0" font-family="Arial" font-size="20" font-weight="700">PYREN</text><text x="0" y="188" text-anchor="middle" fill="#95a3b8" font-family="Arial" font-size="14">Sacerdote</text></g>
+  </g>
+  <ellipse cx="800" cy="660" rx="520" ry="40" fill="rgba(99,234,255,0.06)"/>
+  <text x="800" y="820" text-anchor="middle" fill="#69778d" font-family="Arial,sans-serif" font-size="16" letter-spacing="2">THREE.JS · JAVASCRIPT · MUNDO ABERTO 3D</text>
+</svg>

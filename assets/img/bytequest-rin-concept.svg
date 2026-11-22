@@ -1,0 +1,304 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1500" viewBox="0 0 1200 1500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.25" y2="1">
+      <stop offset="0%" stop-color="#182033"/>
+      <stop offset="45%" stop-color="#0e121c"/>
+      <stop offset="100%" stop-color="#07090f"/>
+    </linearGradient>
+    <radialGradient id="heroGlow" cx="46%" cy="42%" r="38%">
+      <stop offset="0%" stop-color="rgba(89,232,255,0.18)"/>
+      <stop offset="55%" stop-color="rgba(89,232,255,0.04)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
+    <radialGradient id="redGlow" cx="70%" cy="55%" r="25%">
+      <stop offset="0%" stop-color="rgba(255,90,90,0.08)"/>
+      <stop offset="100%" stop-color="rgba(255,90,90,0)"/>
+    </radialGradient>
+    <linearGradient id="skin" x1="0.3" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#f2dccb"/>
+      <stop offset="100%" stop-color="#d4ab90"/>
+    </linearGradient>
+    <linearGradient id="skinShadow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(160,110,85,0)"/>
+      <stop offset="1%" stop-color="rgba(160,110,85,0.25)"/>
+    </linearGradient>
+    <linearGradient id="hair" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#3a455f"/>
+      <stop offset="100%" stop-color="#151c2b"/>
+    </linearGradient>
+    <linearGradient id="hairHi" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(122,242,255,0.25)"/>
+      <stop offset="1%" stop-color="rgba(122,242,255,0)"/>
+    </linearGradient>
+    <linearGradient id="armorL" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#56627f"/>
+      <stop offset="100%" stop-color="#2a3348"/>
+    </linearGradient>
+    <linearGradient id="armorM" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3d4863"/>
+      <stop offset="100%" stop-color="#1d2536"/>
+    </linearGradient>
+    <linearGradient id="armorD" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#283045"/>
+      <stop offset="100%" stop-color="#121926"/>
+    </linearGradient>
+    <linearGradient id="blade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="15%" stop-color="#ccfcff"/>
+      <stop offset="50%" stop-color="#63eaff"/>
+      <stop offset="100%" stop-color="#0098be"/>
+    </linearGradient>
+    <linearGradient id="bladeCore" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="rgba(255,255,255,0)"/>
+      <stop offset="45%" stop-color="rgba(255,255,255,0.95)"/>
+      <stop offset="55%" stop-color="rgba(255,255,255,0.95)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+    <linearGradient id="cape" x1="0.3" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#202a3d"/>
+      <stop offset="100%" stop-color="#141b29"/>
+    </linearGradient>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="10" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowM" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowS" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="drop" x="-20%" y="-10%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="24" stdDeviation="18" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+    <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
+      <path d="M56 0H0V56" fill="none" stroke="rgba(104,240,255,0.045)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- BG -->
+  <rect width="1200" height="1500" fill="url(#bg)"/>
+  <rect width="1200" height="1500" fill="url(#grid)"/>
+  <rect width="1200" height="1500" fill="url(#heroGlow)"/>
+  <rect width="1200" height="1500" fill="url(#redGlow)"/>
+
+  <!-- Ambient code particles -->
+  <g font-family="Consolas, 'Courier New', monospace" fill="rgba(104,240,255,0.11)">
+    <text x="70" y="140" font-size="24">{ }</text>
+    <text x="1030" y="130" font-size="22">&lt;/&gt;</text>
+    <text x="1050" y="560" font-size="18">0xFF</text>
+    <text x="90" y="620" font-size="18">=&gt;</text>
+    <text x="100" y="1320" font-size="20">async</text>
+    <text x="980" y="1330" font-size="20">return;</text>
+    <text x="1025" y="900" font-size="16">debug()</text>
+    <text x="70" y="900" font-size="16">class</text>
+  </g>
+  <g fill="rgba(122,242,255,0.3)">
+    <circle cx="160" cy="280" r="2"/><circle cx="1040" cy="260" r="2.5"/><circle cx="210" cy="980" r="2"/><circle cx="990" cy="1020" r="2"/>
+    <circle cx="130" cy="760" r="1.8"/><circle cx="1060" cy="760" r="1.8"/><circle cx="300" cy="180" r="1.5"/><circle cx="900" cy="180" r="1.5"/>
+  </g>
+  <!-- faint rings -->
+  <circle cx="560" cy="560" r="320" fill="none" stroke="rgba(104,240,255,0.04)" stroke-width="1"/>
+  <circle cx="560" cy="560" r="420" fill="none" stroke="rgba(104,240,255,0.025)" stroke-width="1"/>
+
+  <!-- Header -->
+  <text x="600" y="72" text-anchor="middle" fill="#7af2ff" font-family="Arial,sans-serif" font-size="20" letter-spacing="7" font-weight="700">BYTEQUEST: CRÔNICAS DO NÚCLEO</text>
+  <text x="600" y="100" text-anchor="middle" fill="#95a3b8" font-family="Arial,sans-serif" font-size="13" letter-spacing="4">CHARACTER CONCEPT ART</text>
+  <line x1="430" y1="118" x2="770" y2="118" stroke="rgba(122,242,255,0.3)" stroke-width="1"/>
+  <circle cx="430" cy="118" r="2" fill="#7af2ff"/><circle cx="770" cy="118" r="2" fill="#7af2ff"/>
+
+  <!-- Ground -->
+  <ellipse cx="570" cy="1195" rx="290" ry="44" fill="rgba(104,240,255,0.07)"/>
+  <ellipse cx="570" cy="1195" rx="170" ry="22" fill="rgba(104,240,255,0.1)"/>
+  <ellipse cx="570" cy="1195" rx="90" ry="10" fill="rgba(122,242,255,0.08)"/>
+
+  <!-- CHARACTER -->
+  <g filter="url(#drop)">
+    <!-- Cape -->
+    <path d="M500 430 C420 458,372 555,355 690 C338 820,360 940,405 1055 C432 1122,465 1175,505 1200 L635 1200 C675 1175,708 1122,735 1055 C780 940,802 820,785 690 C768 555,720 458,640 430 Z" fill="url(#cape)"/>
+    <path d="M520 455 C462 555,452 720,490 910 C512 985,538 1045,570 1095 C602 1045,628 985,650 910 C688 720,678 555,620 455 Z" fill="rgba(255,90,90,0.065)"/>
+    <path d="M450 600 C438 730,450 860,485 980" fill="none" stroke="rgba(122,242,255,0.13)" stroke-width="2.5"/>
+    <path d="M690 600 C702 730,690 860,655 980" fill="none" stroke="rgba(122,242,255,0.13)" stroke-width="2.5"/>
+    <!-- cape edge highlight -->
+    <path d="M372 700 C365 760,368 820,380 880" fill="none" stroke="rgba(122,242,255,0.08)" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Legs -->
+    <path d="M512 860 L488 1005 L472 1175 L532 1175 L548 1015 L570 920 L592 1015 L608 1175 L668 1175 L652 1005 L628 860 Z" fill="url(#armorD)"/>
+    <!-- thigh armor -->
+    <path d="M492 880 L545 874 L540 960 L498 972 Z" fill="url(#armorM)" stroke="#63728e" stroke-width="1.5"/>
+    <path d="M648 880 L595 874 L600 960 L642 972 Z" fill="url(#armorM)" stroke="#63728e" stroke-width="1.5"/>
+    <!-- knee guards -->
+    <path d="M484 1020 L533 1010 L540 1052 L490 1062 Z" fill="url(#armorL)" stroke="#7af2ff" stroke-width="1.8"/>
+    <path d="M656 1020 L607 1010 L600 1052 L650 1062 Z" fill="url(#armorL)" stroke="#7af2ff" stroke-width="1.8"/>
+    <path d="M497 1038 L522 1033" stroke="#9ff7ff" stroke-width="3" stroke-linecap="round" filter="url(#glowS)"/>
+    <path d="M643 1038 L618 1033" stroke="#9ff7ff" stroke-width="3" stroke-linecap="round" filter="url(#glowS)"/>
+    <!-- shins -->
+    <path d="M478 1065 L528 1058 L532 1168 L475 1172 Z" fill="url(#armorM)" stroke="#55627d" stroke-width="1.5"/>
+    <path d="M662 1065 L612 1058 L608 1168 L665 1172 Z" fill="url(#armorM)" stroke="#55627d" stroke-width="1.5"/>
+    <!-- boots -->
+    <path d="M462 1165 L536 1165 L545 1202 L455 1208 Z" fill="#232c40" stroke="#63728e" stroke-width="2"/>
+    <path d="M678 1165 L604 1165 L595 1202 L685 1208 Z" fill="#232c40" stroke="#63728e" stroke-width="2"/>
+    <path d="M470 1186 L532 1186" stroke="#7af2ff" stroke-width="2.5" stroke-linecap="round" filter="url(#glowS)"/>
+    <path d="M670 1186 L608 1186" stroke="#7af2ff" stroke-width="2.5" stroke-linecap="round" filter="url(#glowS)"/>
+
+    <!-- Torso -->
+    <path d="M495 465 L645 465 L678 550 L695 690 L660 870 L480 870 L445 690 L462 550 Z" fill="url(#armorM)"/>
+    <!-- chest plate -->
+    <path d="M515 485 L625 485 L645 560 L628 665 L512 665 L495 560 Z" fill="url(#armorD)" stroke="#64738f" stroke-width="2"/>
+    <!-- central detail -->
+    <path d="M570 495 L570 650" stroke="rgba(122,242,255,0.2)" stroke-width="2"/>
+    <path d="M525 525 L555 525 L555 548" fill="none" stroke="#7af2ff" stroke-width="2.2" opacity="0.85"/>
+    <path d="M615 525 L585 525 L585 548" fill="none" stroke="#7af2ff" stroke-width="2.2" opacity="0.85"/>
+    <path d="M525 635 L555 635 L555 612" fill="none" stroke="#ff6464" stroke-width="2.2" opacity="0.75"/>
+    <path d="M615 635 L585 635 L585 612" fill="none" stroke="#ff6464" stroke-width="2.2" opacity="0.75"/>
+    <!-- core -->
+    <circle cx="570" cy="575" r="30" fill="#111827" stroke="#7af2ff" stroke-width="3"/>
+    <circle cx="570" cy="575" r="22" fill="rgba(122,242,255,0.06)" stroke="rgba(122,242,255,0.35)" stroke-width="1.5"/>
+    <circle cx="570" cy="575" r="14" fill="rgba(122,242,255,0.1)" stroke="#7af2ff" stroke-width="2" filter="url(#glowS)"/>
+    <path d="M570 558 L570 592 M553 575 L587 575" stroke="#a8f9ff" stroke-width="3.5" stroke-linecap="round" filter="url(#glowS)"/>
+    <circle cx="570" cy="575" r="4.5" fill="#fff" filter="url(#glowS)"/>
+    <!-- armor highlights -->
+    <path d="M505 500 L520 490 L530 560 L515 650" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="3"/>
+    <path d="M635 500 L620 490 L610 560 L625 650" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="3"/>
+
+    <!-- Waist -->
+    <path d="M472 842 L668 842 L676 880 L464 880 Z" fill="#222b3e" stroke="#63728e" stroke-width="2"/>
+    <rect x="545" y="846" width="50" height="32" rx="6" fill="#141b29" stroke="#ff6464" stroke-width="2"/>
+    <circle cx="570" cy="862" r="7" fill="#ff6464" filter="url(#glowS)"/>
+    <circle cx="570" cy="862" r="3" fill="#ffd0d0"/>
+    <rect x="492" y="850" width="30" height="20" rx="4" fill="#2d364a" stroke="#6b7890"/>
+    <rect x="618" y="850" width="30" height="20" rx="4" fill="#2d364a" stroke="#6b7890"/>
+
+    <!-- Shoulders -->
+    <path d="M468 470 L412 498 L390 558 L446 570 L478 520 Z" fill="url(#armorL)" stroke="#6b7a96" stroke-width="2"/>
+    <path d="M672 470 L728 498 L750 558 L694 570 L662 520 Z" fill="url(#armorL)" stroke="#6b7a96" stroke-width="2"/>
+    <path d="M418 520 L450 532" stroke="#7af2ff" stroke-width="3.5" stroke-linecap="round" filter="url(#glowS)"/>
+    <path d="M722 520 L690 532" stroke="#7af2ff" stroke-width="3.5" stroke-linecap="round" filter="url(#glowS)"/>
+    <circle cx="408" cy="538" r="4.5" fill="#ff6464" filter="url(#glowS)"/>
+    <circle cx="732" cy="538" r="4.5" fill="#ff6464" filter="url(#glowS)"/>
+
+    <!-- Left arm -->
+    <path d="M446 555 L405 640 L416 725 L460 708 L478 620 Z" fill="url(#armorD)" stroke="#5e6b86" stroke-width="2"/>
+    <path d="M402 715 L460 705 L470 772 L410 782 Z" fill="url(#armorL)" stroke="#6b7a96" stroke-width="2"/>
+    <!-- holographic shield -->
+    <g filter="url(#glowS)">
+      <path d="M338 648 L422 626 L445 715 L425 795 L335 772 Z" fill="rgba(104,240,255,0.08)" stroke="#7af2ff" stroke-width="2.8"/>
+      <path d="M356 674 L406 661 L422 715 L407 765 L354 752 Z" fill="rgba(104,240,255,0.03)" stroke="rgba(122,242,255,0.4)" stroke-width="1.5"/>
+      <path d="M380 696 L396 696 M388 688 L388 704" stroke="rgba(122,242,255,0.85)" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M365 728 L410 716" stroke="rgba(122,242,255,0.25)" stroke-width="1"/>
+      <text x="386" y="742" text-anchor="middle" fill="rgba(122,242,255,0.72)" font-family="Consolas,monospace" font-size="13" font-weight="700">FIREWALL</text>
+    </g>
+
+    <!-- Right arm -->
+    <path d="M694 555 L735 640 L724 725 L680 708 L662 620 Z" fill="url(#armorD)" stroke="#5e6b86" stroke-width="2"/>
+    <path d="M738 715 L680 705 L670 772 L730 782 Z" fill="url(#armorL)" stroke="#6b7a96" stroke-width="2"/>
+    <!-- sword -->
+    <g>
+      <path d="M702 766 L716 766 L732 370 L712 308 L692 370 Z" fill="url(#blade)" filter="url(#glow)"/>
+      <path d="M712 325 L712 755" stroke="url(#bladeCore)" stroke-width="5"/>
+      <path d="M704 395 L712 378 L720 395 L712 412 Z" fill="rgba(255,255,255,0.5)"/>
+      <path d="M704 450 L712 433 L720 450 L712 467 Z" fill="rgba(255,255,255,0.35)"/>
+      <path d="M704 505 L712 488 L720 505 L712 522 Z" fill="rgba(255,255,255,0.25)"/>
+      <!-- guard/hilt -->
+      <rect x="694" y="760" width="36" height="14" rx="3" fill="#3b4762" stroke="#7af2ff" stroke-width="1.8"/>
+      <rect x="704" y="774" width="16" height="56" rx="4" fill="#252e42" stroke="#6b7a96" stroke-width="1.5"/>
+      <path d="M707 786 L717 786 M707 798 L717 798 M707 810 L717 810" stroke="#4d5970" stroke-width="1.5"/>
+      <circle cx="712" cy="836" r="8" fill="#141b29" stroke="#7af2ff" stroke-width="2"/>
+      <circle cx="712" cy="836" r="4" fill="#7af2ff" filter="url(#glowS)"/>
+      <!-- blade particles -->
+      <g font-family="Consolas,monospace" fill="rgba(190,250,255,0.85)" filter="url(#glowS)">
+        <text x="742" y="380" font-size="13">01</text>
+        <text x="668" y="440" font-size="12">{ }</text>
+        <text x="745" y="500" font-size="12">;</text>
+        <text x="660" y="540" font-size="11">&lt;/&gt;</text>
+      </g>
+    </g>
+
+    <!-- Neck/Head -->
+    <path d="M548 412 L592 412 L598 465 L542 465 Z" fill="url(#skin)"/>
+    <path d="M542 422 L598 422 L596 445 L544 445 Z" fill="url(#skinShadow)"/>
+    <path d="M527 330 C527 282,546 248,570 248 C594 248,613 282,613 330 C613 376,596 410,570 415 C544 410,527 376,527 330 Z" fill="url(#skin)"/>
+    <!-- hair -->
+    <path d="M522 338 C516 290,532 240,570 232 C616 224,636 262,634 312 C630 345,620 360,608 348 C616 320,608 282,586 268 C564 256,538 266,532 296 Z" fill="url(#hair)"/>
+    <path d="M526 285 C505 296,498 335,510 380 C516 398,530 404,534 385 C526 358,526 318,540 292 Z" fill="url(#hair)"/>
+    <path d="M620 275 C650 286,665 320,656 362 C650 390,632 410,616 396 C627 368,630 330,618 278 Z" fill="url(#hair)"/>
+    <!-- cyan streak -->
+    <path d="M608 270 C628 298,632 342,622 380" fill="none" stroke="#6cefff" stroke-width="5.5" stroke-linecap="round"/>
+    <path d="M608 270 C628 298,632 342,622 380" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-linecap="round"/>
+    <!-- bangs highlight -->
+    <path d="M535 295 C550 275,560 270,575 275" fill="none" stroke="url(#hairHi)" stroke-width="4" stroke-linecap="round"/>
+    <!-- face -->
+    <path d="M542 342 L556 342" stroke="#2a3348" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M584 342 L598 342" stroke="#2a3348" stroke-width="2.4" stroke-linecap="round"/>
+    <!-- eyes glow -->
+    <path d="M545 353 L557 353" stroke="#7af2ff" stroke-width="3.2" stroke-linecap="round" filter="url(#glowS)"/>
+    <path d="M583 353 L595 353" stroke="#7af2ff" stroke-width="3.2" stroke-linecap="round" filter="url(#glowS)"/>
+    <circle cx="551" cy="353" r="1.5" fill="#eaffff"/>
+    <circle cx="589" cy="353" r="1.5" fill="#eaffff"/>
+    <!-- nose & mouth -->
+    <path d="M569 360 L565 374 L574 374" fill="none" stroke="#b28b73" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M558 388 Q570 395 582 388" fill="none" stroke="#a07760" stroke-width="2.3" stroke-linecap="round"/>
+    <!-- blush -->
+    <path d="M548 378 Q554 374 560 378" fill="none" stroke="rgba(255,120,120,0.16)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M580 378 Q586 374 592 378" fill="none" stroke="rgba(255,120,120,0.16)" stroke-width="4" stroke-linecap="round"/>
+    <!-- headset -->
+    <path d="M604 338 L620 344 L618 362 L602 358 Z" fill="#2d364b" stroke="#7af2ff" stroke-width="1.5"/>
+    <circle cx="612" cy="351" r="2.8" fill="#ff6464" filter="url(#glowS)"/>
+  </g>
+
+  <!-- Right panel -->
+  <g font-family="Arial,sans-serif">
+    <rect x="850" y="170" width="290" height="430" rx="16" fill="rgba(16,22,35,0.58)" stroke="rgba(122,242,255,0.16)"/>
+    <text x="878" y="208" fill="#7af2ff" font-size="12" letter-spacing="2.5" font-weight="700">PROTAGONISTA</text>
+    <text x="878" y="250" fill="#f4eff2" font-size="40" font-weight="800">Rin</text>
+    <text x="878" y="276" fill="#9aa6bc" font-size="14">Cavaleira do Código · Classe: Duelista</text>
+    <line x1="878" y1="296" x2="1112" y2="296" stroke="rgba(255,255,255,0.08)"/>
+
+    <text x="878" y="325" fill="#8fa0b5" font-size="12">FUNÇÃO</text>
+    <text x="878" y="345" fill="#e4ebf3" font-size="14">Dano rápido + suporte defensivo</text>
+    <text x="878" y="375" fill="#8fa0b5" font-size="12">ARMA</text>
+    <text x="878" y="395" fill="#e4ebf3" font-size="14">Lâmina de Código</text>
+    <text x="878" y="425" fill="#8fa0b5" font-size="12">HABILIDADES</text>
+    <text x="878" y="448" fill="#e4ebf3" font-size="14">• Patch Strike — ataque de energia</text>
+    <text x="878" y="470" fill="#e4ebf3" font-size="14">• Firewall — escudo holográfico</text>
+    <text x="878" y="492" fill="#e4ebf3" font-size="14">• Debug Burst — remove debuffs</text>
+
+    <line x1="878" y1="515" x2="1112" y2="515" stroke="rgba(255,255,255,0.08)"/>
+    <text x="878" y="542" fill="#7af2ff" font-size="12" letter-spacing="2" font-weight="700">PALETA</text>
+    <rect x="878" y="556" width="34" height="34" rx="8" fill="#1d2536" stroke="rgba(255,255,255,0.12)"/>
+    <rect x="920" y="556" width="34" height="34" rx="8" fill="#63eaff"/>
+    <rect x="962" y="556" width="34" height="34" rx="8" fill="#ff6464"/>
+    <rect x="1004" y="556" width="34" height="34" rx="8" fill="#f2dccb"/>
+    <rect x="1046" y="556" width="34" height="34" rx="8" fill="#95a3b8"/>
+  </g>
+
+  <!-- Callouts -->
+  <g font-family="Arial,sans-serif">
+    <path d="M732 410 C780 410,800 500,850 620" fill="none" stroke="rgba(122,242,255,0.28)" stroke-width="1.2"/>
+    <circle cx="732" cy="410" r="3.5" fill="#7af2ff"/>
+    <text x="858" y="628" fill="#dce9f0" font-size="13" font-weight="700">Lâmina de Código</text>
+    <text x="858" y="646" fill="#8fa0b5" font-size="12">Canaliza ataques digitais</text>
+
+    <path d="M445 715 C360 715,320 700,250 690" fill="none" stroke="rgba(122,242,255,0.28)" stroke-width="1.2"/>
+    <circle cx="445" cy="715" r="3.5" fill="#7af2ff"/>
+    <text x="242" y="686" text-anchor="end" fill="#dce9f0" font-size="13" font-weight="700">Escudo Firewall</text>
+    <text x="242" y="704" text-anchor="end" fill="#8fa0b5" font-size="12">Barreira holográfica</text>
+
+    <path d="M570 575 C700 575,760 680,850 700" fill="none" stroke="rgba(122,242,255,0.22)" stroke-width="1.2"/>
+    <circle cx="570" cy="575" r="3.5" fill="#7af2ff"/>
+    <text x="858" y="700" fill="#dce9f0" font-size="13" font-weight="700">Núcleo</text>
+    <text x="858" y="718" fill="#8fa0b5" font-size="12">Energia para habilidades</text>
+  </g>
+
+  <!-- Mini silhouette -->
+  <g transform="translate(920,980)">
+    <rect x="0" y="0" width="180" height="250" rx="14" fill="rgba(16,22,35,0.45)" stroke="rgba(122,242,255,0.12)"/>
+    <text x="90" y="28" text-anchor="middle" fill="#7af2ff" font-family="Arial,sans-serif" font-size="11" letter-spacing="2" font-weight="700">SILHUETA</text>
+    <path d="M90 50 C100 50,108 60,108 72 C108 82,102 90,96 92 L110 100 L120 135 L112 170 L100 170 L96 145 L90 130 L84 145 L80 170 L68 170 L60 135 L70 100 L84 92 C78 90,72 82,72 72 C72 60,80 50,90 50 Z" fill="#7af2ff" opacity="0.85"/>
+    <path d="M114 145 L130 95 L134 95 L118 150 Z" fill="#7af2ff" opacity="0.55"/>
+  </g>
+
+  <text x="600" y="1445" text-anchor="middle" fill="#69778d" font-family="Arial,sans-serif" font-size="12" letter-spacing="2">RIN · BYTEQUEST: CRÔNICAS DO NÚCLEO · DEV.PROGRAMIER</text>
+</svg>
