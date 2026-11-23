@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>McPanel — Servidores Minecraft</title>
+  <meta name="description" content="Painel local para criar e gerenciar servidores Minecraft com mods, plugins e modpacks." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%2316a34a'/><rect x='22' y='30' width='14' height='14' fill='%23052e16'/><rect x='64' y='30' width='14' height='14' fill='%23052e16'/><rect x='34' y='62' width='32' height='10' fill='%23052e16'/></svg>" />
+  <link rel="stylesheet" href="css/panel.css" />
+</head>
+<body>
+  <div id="app" class="layout">
+    <!-- Barra lateral -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-cube" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="brand-text">
+          <strong>McPanel</strong>
+          <small id="brand-sub">carregando…</small>
+        </div>
+      </div>
+
+      <nav class="nav" id="nav">
+        <a href="#/" data-route="dashboard" class="nav-item">
+          <span class="nav-ico">◈</span> Painel
+        </a>
+        <a href="#/servers" data-route="servers" class="nav-item">
+          <span class="nav-ico">▤</span> Servidores
+        </a>
+        <a href="#/new" data-route="new" class="nav-item">
+          <span class="nav-ico">＋</span> Criar servidor
+        </a>
+        <a href="#/jobs" data-route="jobs" class="nav-item">
+          <span class="nav-ico">⚙</span> Tarefas
+        </a>
+        <a href="#/system" data-route="system" class="nav-item">
+          <span class="nav-ico">♥</span> Sistema
+        </a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="health" id="health">
+          <span class="dot"></span>
+          <span class="health-text">verificando…</span>
+        </div>
+        <div class="sidebar-meta" id="sidebar-meta"></div>
+      </div>
+    </aside>
+
+    <!-- Conteúdo -->
+    <main class="main" id="main" tabindex="-1"></main>
+  </div>
+
+  <!-- Toasts e modal -->
+  <div class="toasts" id="toasts"></div>
+  <div class="modal-backdrop" id="modal-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" id="modal"></div>
+  </div>
+
+  <!-- Job flutuante (progresso de operações longas) -->
+  <div class="jobdock" id="jobdock" hidden></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

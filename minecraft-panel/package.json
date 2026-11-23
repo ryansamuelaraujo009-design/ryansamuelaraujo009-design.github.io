@@ -1,0 +1,10 @@
+{
+  "name": "mcpanel",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Painel local para criar e gerenciar servidores Minecraft (mods, plugins e modpacks)",
+  "scripts": {
+    "start": "node server/index.js"
+  }
+}
